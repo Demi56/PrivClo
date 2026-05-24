@@ -1,0 +1,75 @@
+<!--
+  本周穿搭回顾
+-->
+<view class="page">
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+
+  <view class="header">
+    <view class="header-back" bindtap="onBack">
+      <view class="header-back-arrow"></view>
+    </view>
+    <text class="header-title">本周穿搭回顾</text>
+    <view class="header-placeholder"></view>
+  </view>
+
+  <scroll-view class="content" scroll-y>
+    <view class="content-inner">
+      <view class="greeting-wrap">
+        <view class="avatar-wrap">
+          <image wx:if="{{!avatarError}}" class="avatar-img" src="{{illustUrl}}" mode="aspectFill" binderror="onAvatarError" />
+          <view wx:else class="avatar-img avatar-placeholder"></view>
+          <view class="avatar-heart">❤️</view>
+        </view>
+        <view class="speech-bubble">
+          <view class="speech-tail"></view>
+          <text class="speech-text">{{greeting}}</text>
+        </view>
+      </view>
+
+      <view class="summary-row">
+        <view class="summary-card">
+          <text class="summary-label">最常穿风格</text>
+          <view class="summary-icon-wrap summary-icon-style">
+            <view class="summary-icon-inner icon-hanger"></view>
+          </view>
+          <text class="summary-value">{{topStyle}}</text>
+        </view>
+        <view class="summary-card">
+          <text class="summary-label">平均心情</text>
+          <view class="summary-icon-wrap summary-icon-mood">
+            <view class="summary-icon-inner icon-smile"></view>
+          </view>
+          <text class="summary-value">{{topMood}}</text>
+        </view>
+      </view>
+
+      <view class="moment-header">
+        <view class="moment-header-icon"></view>
+        <text class="moment-header-text">精彩瞬间</text>
+      </view>
+
+      <view class="moment-grid">
+        <view class="moment-card" wx:for="{{momentCards}}" wx:key="id" data-year="{{item.year}}" data-month="{{item.month}}" data-day="{{item.day}}" data-weather="{{item.weather}}" bindtap="onCardTap">
+          <view class="moment-card-img-wrap">
+            <view class="moment-card-badge" wx:if="{{item.isBest}}">⭐ 本周最佳</view>
+            <view class="moment-card-img {{item.photo ? '' : 'moment-card-img-placeholder'}}" style="background: {{item.imgBg || '#E8E4E0'}}">
+              <image wx:if="{{item.photo}}" class="moment-card-photo" src="{{item.photo}}" mode="aspectFill" />
+            </view>
+          </view>
+          <view class="moment-card-info">
+            <view class="moment-card-meta">
+              <text class="moment-card-date">{{item.month}}.{{item.day}} {{item.week}}</text>
+              <view class="moment-card-weather">
+                <view class="moment-weather-icon moment-weather-{{item.weather}}"></view>
+                <text class="moment-temp">{{item.temp}}°</text>
+              </view>
+            </view>
+            <text class="moment-card-desc" wx:if="{{item.desc}}">{{item.desc}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="bottom-pad"></view>
+    </view>
+  </scroll-view>
+</view>

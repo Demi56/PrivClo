@@ -1,0 +1,14 @@
+{
+  "name": "smartRecommend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "axios": "^1.13.6",
+    "tencentcloud-sdk-nodejs": "^4.1.201",
+    "wx-server-sdk": "~2.6.3"
+  },
+  "cloudfunctionConfig": {
+    "timeout": 30,
+    "memorySize": 256
+  }
+}

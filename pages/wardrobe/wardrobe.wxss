@@ -1,0 +1,209 @@
+/* 衣橱页面 - 我的衣橱 */
+
+.page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #6EC5D9 0%, #88D4E8 50%, #9EE0F0 100%);
+  display: flex;
+  flex-direction: column;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.status-bar { width: 100%; flex-shrink: 0; }
+
+/* ========== 顶部留白（已无标题文案） ========== */
+.header {
+  flex-shrink: 0;
+  padding: 24rpx 32rpx 24rpx;
+}
+
+/* ========== 主内容区 ========== */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48rpx 32rpx 32rpx;
+}
+
+.wardrobe-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 72rpx;
+}
+
+.wardrobe-card {
+  width: 420rpx;
+  height: 480rpx;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+/* 魔法光效：1s 动画 */
+.wardrobe-card-magic .wardrobe-visual {
+  animation: magic-glow 1s ease-out;
+}
+
+@keyframes magic-glow {
+  0% { filter: brightness(1) drop-shadow(0 0 0 transparent); }
+  20% { filter: brightness(1.4) drop-shadow(0 0 24rpx rgba(255, 255, 255, 0.9)) drop-shadow(0 0 48rpx rgba(255, 215, 0, 0.6)); }
+  50% { filter: brightness(1.5) drop-shadow(0 0 32rpx rgba(255, 255, 255, 1)) drop-shadow(0 0 64rpx rgba(255, 215, 0, 0.8)); }
+  80% { filter: brightness(1.3) drop-shadow(0 0 20rpx rgba(255, 255, 255, 0.7)); }
+  100% { filter: brightness(1) drop-shadow(0 0 0 transparent); }
+}
+
+.wardrobe-visual {
+  width: 90%;
+  height: 90%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wardrobe-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* 衣橱占位：衣柜轮廓 */
+.wardrobe-placeholder {
+  width: 280rpx;
+  height: 380rpx;
+  background: linear-gradient(180deg, #D4A574 0%, #C4956A 40%, #B8865B 100%);
+  border-radius: 12rpx 12rpx 8rpx 8rpx;
+  box-shadow:
+    inset 0 0 0 2rpx rgba(139, 90, 43, 0.3),
+    4rpx 8rpx 24rpx rgba(0, 0, 0, 0.12);
+  position: relative;
+}
+
+.wardrobe-handle {
+  position: absolute;
+  left: 50%;
+  top: 16rpx;
+  transform: translateX(-50%);
+  width: 60rpx;
+  height: 24rpx;
+  background: #8B5A2B;
+  border-radius: 4rpx;
+}
+
+.wardrobe-current {
+  font-size: 44rpx;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 12rpx;
+  text-align: center;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.25), 0 4rpx 8rpx rgba(0, 0, 0, 0.15);
+}
+
+.wardrobe-items-badge {
+  background: rgba(255, 255, 255, 0.35);
+  padding: 8rpx 24rpx;
+  border-radius: 24rpx;
+  margin-bottom: 48rpx;
+}
+
+.wardrobe-items-wrap {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+}
+
+.wardrobe-items-text {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* 打开衣橱按钮 */
+.btn-open {
+  width: 360rpx;
+  height: 96rpx;
+  background: #4DD0E1;
+  border-radius: 48rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+  border: none;
+}
+
+.btn-open::after {
+  border: none;
+}
+
+.btn-open-text {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #FFFFFF;
+}
+
+.btn-open-icon {
+  width: 36rpx;
+  height: 36rpx;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23ffffff' d='M4 2H11V22H4V2z M13 2H20V22H13V2z'/%3E%3Cpath fill='%236EC5D9' d='M11.5 2H12.5V22H11.5V2z M6 8H9V9H6V8z M15 8H18V9H15V8z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+/* ========== 底部 Tab 栏 ========== */
+.tab-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  height: 100rpx;
+  background: #FFFFFF;
+  border-radius: 24rpx 24rpx 0 0;
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 10;
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.06);
+}
+
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6rpx;
+}
+
+.tab-icon {
+  width: 44rpx;
+  height: 44rpx;
+}
+
+.tab-icon-home {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23999999'%3E%3Cpath d='M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.tab-icon-diary {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23999999'%3E%3Cpath d='M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 18H6V4h2v8l2.5-1.5L13 12V4h5v16z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.tab-icon-wardrobe {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%234DD0E1' d='M4 2H11V22H4V2z M13 2H20V22H13V2z'/%3E%3Cpath fill='%23ffffff' d='M11.5 2H12.5V22H11.5V2z M6 8H9V9H6V8z M15 8H18V9H15V8z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.tab-icon-mine {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23999999'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.tab-text {
+  font-size: 22rpx;
+  color: #999999;
+}
+
+.tab-item.tab-active .tab-text {
+  color: #4DD0E1;
+  font-weight: 500;
+}

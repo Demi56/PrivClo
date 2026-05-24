@@ -1,0 +1,30 @@
+<view class="page">
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+  <view class="blur-bg"></view>
+
+  <view class="header">
+    <view class="header-back" bindtap="onBack">
+      <view class="header-back-arrow"></view>
+    </view>
+    <text class="header-title">穿搭偏好</text>
+    <view class="header-placeholder"></view>
+  </view>
+
+  <view class="card-wrap">
+    <view class="card">
+      <text class="card-desc">精灵小助手会记住您的偏好，推荐时自动避开不喜欢的单品，优先推荐您喜欢的～</text>
+      <view class="field">
+        <text class="label">不喜欢的单品</text>
+        <textarea class="textarea" placeholder="如：裙子、高跟鞋、紧身裤（多个用顿号或逗号分隔）" value="{{avoidItems}}" bindinput="onAvoidInput" maxlength="200" />
+      </view>
+      <view class="field">
+        <text class="label">喜欢的单品</text>
+        <textarea class="textarea" placeholder="如：宽松款、运动鞋、卫衣（多个用顿号或逗号分隔）" value="{{preferItems}}" bindinput="onPreferInput" maxlength="200" />
+      </view>
+      <view class="actions">
+        <view class="btn btn-cancel" bindtap="onBack">取消</view>
+        <view class="btn btn-save" bindtap="onSave">保存</view>
+      </view>
+    </view>
+  </view>
+</view>

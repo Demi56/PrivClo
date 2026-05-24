@@ -1,0 +1,39 @@
+<!--
+  智选衣橱展示区 - 查看官方预设搭配
+-->
+<view class="page">
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+
+  <view class="header">
+    <view class="header-back" bindtap="onBack">
+      <view class="header-back-arrow"></view>
+    </view>
+    <text class="header-title">智选衣橱展示区</text>
+    <view class="header-placeholder"></view>
+  </view>
+
+  <scroll-view class="content" scroll-y>
+    <view class="content-inner">
+      <!-- 顶部说明 -->
+      <view class="intro-card">
+        <view class="intro-icon-wrap">
+          <text class="intro-icon">◇</text>
+        </view>
+        <text class="intro-title">官方预设搭配</text>
+        <text class="intro-desc">精选风格搭配，一键试穿体验</text>
+      </view>
+
+      <!-- 预配分类（占位） -->
+      <view class="section-title">热门风格</view>
+      <view class="prefit-grid">
+        <view wx:for="{{prefitStyles}}" wx:key="id" class="prefit-card" bindtap="onPrefitTap" data-id="{{item.id}}">
+          <view class="prefit-card-bg"></view>
+          <view class="prefit-card-content">
+            <text class="prefit-card-name">{{item.name}}</text>
+            <text class="prefit-card-desc">{{item.desc}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+</view>

@@ -1,0 +1,34 @@
+<!--
+  登录/注册引导页 - PrivClo v2.0
+  布局：状态栏 | 精灵区 | 文案区 | 按钮区
+-->
+<view class="page">
+  <!-- 自定义状态栏占位 -->
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+
+  <view class="content">
+    <!-- 精灵形象：青绿背景 + 抠图 PNG -->
+    <view class="sprite-wrap">
+      <image
+        class="sprite-img"
+        src="{{spriteUrl}}"
+        mode="aspectFit"
+        show-menu-by-longpress="{{false}}"
+        binderror="onSpriteError"
+      />
+    </view>
+
+    <!-- 文案区 -->
+    <view class="text-block">
+      <text class="title-main">您的天气穿搭</text>
+      <text class="title-sub">贴心小助手</text>
+      <text class="desc">让我来帮您挑选今天最完美的天气穿搭吧!</text>
+    </view>
+
+    <!-- 底部按钮区（含安全区） -->
+    <view class="btns">
+      <button class="btn btn-primary" bindtap="onLogin">登录/注册</button>
+      <button class="btn btn-secondary" bindtap="onGuest">游客浏览</button>
+    </view>
+  </view>
+</view>

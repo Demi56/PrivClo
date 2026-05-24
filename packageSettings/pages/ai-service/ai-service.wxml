@@ -1,0 +1,41 @@
+<!--
+  AI服务说明 - 沿用隐私协议与服务条款布局
+  布局：顶部栏 | 插画区(气泡+精灵) | 内容区
+-->
+<view class="page">
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+
+  <!-- 顶部栏 -->
+  <view class="header">
+    <view class="header-back" bindtap="goBack">
+      <view class="header-back-arrow"></view>
+    </view>
+    <text class="header-title">AI服务说明</text>
+    <view class="header-placeholder"></view>
+  </view>
+
+  <!-- 插画区：气泡 + 精灵形象 -->
+  <view class="illust-area">
+    <view class="bubble-wrap">
+      <view class="bubble">
+        <text class="bubble-text">让AI更好地为你服务，也让你更了解AI!</text>
+      </view>
+    </view>
+    <view class="sprite-wrap">
+      <image class="sprite-img" src="{{spriteUrl}}" mode="aspectFit" binderror="onSpriteError" />
+    </view>
+  </view>
+
+  <!-- 内容区 -->
+  <scroll-view class="content-scroll" scroll-y show-scrollbar="{{false}}">
+    <view class="content-inner">
+      <view wx:for="{{sections}}" wx:key="num" class="section">
+        <view class="section-header">
+          <view class="section-num">{{item.num}}</view>
+          <text class="section-title">{{item.title}}</text>
+        </view>
+        <text class="section-content">{{item.content}}</text>
+      </view>
+    </view>
+  </scroll-view>
+</view>

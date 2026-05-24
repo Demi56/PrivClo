@@ -1,0 +1,10 @@
+{
+  "name": "matting",
+  "version": "1.0.0",
+  "description": "腾讯云数据万象商品抠图 - GoodsMatting API",
+  "main": "index.js",
+  "dependencies": {
+    "cos-nodejs-sdk-v5": "^2.16.0",
+    "wx-server-sdk": "~2.6.3"
+  }
+}

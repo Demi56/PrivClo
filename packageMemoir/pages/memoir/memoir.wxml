@@ -1,0 +1,148 @@
+<!--
+  穿搭回顾 - 年度报告 / 穿搭回忆录（严格按参考图复刻）
+-->
+<view class="page">
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+
+  <!-- 顶部导航栏 -->
+  <view class="nav-bar">
+    <view class="nav-back" bindtap="onBack">
+      <view class="icon-back"></view>
+    </view>
+    <text class="nav-title">年度报告</text>
+    <view class="nav-save" bindtap="onSave">保存</view>
+  </view>
+
+  <scroll-view class="content" scroll-y>
+    <!-- 头部区域：穿搭回忆录 -->
+    <view class="header-section">
+      <text class="header-subtitle">MY 2025 MEMOIR</text>
+      <text class="header-year">2025</text>
+      <text class="header-title">穿搭回忆录</text>
+      <text class="header-desc">记录你这一年的闪光时刻 ✨</text>
+      <view class="header-illustration">
+        <image src="{{headerIllusSrc}}" mode="aspectFill" class="header-illus-img" binderror="onHeaderIllusError" />
+      </view>
+    </view>
+
+    <!-- 我的时尚基因 -->
+    <view class="card">
+      <view class="card-title-row">
+        <view class="card-icon card-icon-fingerprint"></view>
+        <text class="card-title">我的时尚基因</text>
+      </view>
+      <view class="gene-row">
+        <view class="gene-item gene-orange">
+          <view class="gene-icon gene-icon-tree"></view>
+          <text class="gene-name">复古森系</text>
+          <text class="gene-rank">TOP 1</text>
+        </view>
+        <view class="gene-item gene-blue">
+          <view class="gene-icon gene-icon-hanger"></view>
+          <text class="gene-name">休闲舒适</text>
+          <text class="gene-rank">TOP 2</text>
+        </view>
+        <view class="gene-item gene-purple">
+          <view class="gene-icon gene-icon-run"></view>
+          <text class="gene-name">运动活力</text>
+          <text class="gene-rank">TOP 3</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 天气心情 -->
+    <view class="card card-weather">
+      <view class="weather-icon"></view>
+      <view class="weather-content">
+        <text class="weather-title">天气心情</text>
+        <text class="weather-desc">{{weatherDesc}}</text>
+      </view>
+    </view>
+
+    <!-- OUTFIT OF THE YEAR -->
+    <view class="card card-outfit">
+      <view class="outfit-banner">OUTFIT OF THE YEAR</view>
+      <view class="outfit-photo">
+        <image wx:if="{{outfitImgSrc}}" class="outfit-img" src="{{outfitImgSrc}}" mode="aspectFill" binderror="onOutfitImgError" />
+        <view wx:else class="outfit-placeholder"></view>
+        <view class="outfit-overlay">
+          <text class="outfit-name">{{outfitName}}</text>
+          <view class="outfit-like">
+            <view class="icon-heart"></view>
+            <text class="like-num">{{likeNum}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 年度主题色 -->
+    <view class="card card-color {{gender === 'male' ? 'card-color-male' : ''}}">
+      <view class="color-header">
+        <view class="card-icon card-icon-palette"></view>
+        <text class="card-title">年度主题色</text>
+      </view>
+      <view class="color-row">
+        <view class="color-swatch color-1"></view>
+        <view class="color-swatch color-2"></view>
+        <view class="color-swatch color-3"></view>
+        <view class="color-swatch color-4"></view>
+        <view class="color-swatch color-5"></view>
+      </view>
+      <text class="color-desc">{{colorDesc}}</text>
+    </view>
+
+    <!-- 省心指数 | 足迹分布 -->
+    <view class="stats-row">
+      <view class="stats-card stats-blue">
+        <view class="stats-icon stats-icon-hourglass"></view>
+        <text class="stats-title">省心指数</text>
+        <view class="stats-num-row">
+          <text class="stats-num">{{saveHours}}</text>
+          <text class="stats-unit">小时</text>
+        </view>
+        <text class="stats-desc">帮你节省了日常纠结时间</text>
+      </view>
+      <view class="stats-card stats-purple">
+        <view class="stats-icon stats-icon-globe"></view>
+        <text class="stats-title">足迹分布</text>
+        <view class="stats-num-row">
+          <text class="stats-num">{{cityCount}}</text>
+          <text class="stats-unit">个城市</text>
+        </view>
+        <text class="stats-desc">{{statsDesc}}</text>
+      </view>
+    </view>
+
+    <!-- 对话气泡 -->
+    <view class="speech-section">
+      <view class="speech-bubble">陪你走过的第365天，依然很爱你!</view>
+      <view class="speech-illustration">
+        <image src="{{speechIllusSrc}}" mode="aspectFill" class="speech-illus-img" binderror="onSpeechIllusError" />
+      </view>
+    </view>
+
+    <!-- 衣橱小助 -->
+    <view class="card card-qr">
+      <view class="qr-icon"></view>
+      <view class="qr-content">
+        <view class="card-title-row">
+          <view class="card-icon card-icon-person"></view>
+          <text class="card-title">衣橱小助</text>
+        </view>
+        <text class="qr-desc">长按识别二维码，开启你的穿搭之旅</text>
+      </view>
+    </view>
+
+    <!-- 底部按钮 -->
+    <view class="bottom-actions">
+      <view class="btn-save" bindtap="onSaveToAlbum">
+        <view class="btn-save-icon"></view>
+        <text class="btn-save-text">保存到相册</text>
+      </view>
+      <view class="btn-share" bindtap="onShare">
+        <view class="btn-share-icon"></view>
+        <text class="btn-share-text">分享这份美好</text>
+      </view>
+    </view>
+  </scroll-view>
+</view>

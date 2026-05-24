@@ -1,0 +1,67 @@
+<!--
+  默认角色确认及多角色切换页 - 与设计图一致
+  布局：顶部导航 | 三头像区（左/中/右）| 状态与名称 | 添加按钮
+-->
+<view class="page">
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+
+  <!-- 顶部导航：返回 | 标题 -->
+  <view class="header">
+    <view class="header-btn" bindtap="onBack">
+      <view class="header-btn-arrow"></view>
+    </view>
+    <text class="header-title">角色切换</text>
+    <view class="header-placeholder"></view>
+  </view>
+
+  <!-- 主内容：左小头像（叠锁）| 中大头像 | 右锁 -->
+  <view class="main">
+    <view class="avatar-row">
+      <view class="avatar-side avatar-left">
+        <view class="avatar-side-inner avatar-prev avatar-prev-blur">
+          <image wx:if="{{!prevAvatarError}}" class="avatar-prev-img" src="{{avatarPrevUrl}}" mode="aspectFill" binderror="onPrevAvatarError" />
+          <view wx:else class="avatar-prev-placeholder"></view>
+        </view>
+        <view class="avatar-lock-overlay">
+          <text class="lock-icon">🔒</text>
+        </view>
+        <view class="nav-arrow-btn nav-left" bindtap="onPrevRole">
+          <view class="nav-arrow-inner"></view>
+        </view>
+      </view>
+      <view class="avatar-center" bindtap="onAvatarTap">
+        <view class="avatar-center-inner">
+          <image wx:if="{{gender === 'female' && !avatarFemaleError}}" class="avatar-img" src="{{avatarFemaleUrl}}" mode="aspectFill" binderror="onAvatarFemaleError" />
+          <image wx:elif="{{gender === 'male' && !avatarMaleError}}" class="avatar-img" src="{{avatarMaleUrl}}" mode="aspectFill" binderror="onAvatarMaleError" />
+          <view wx:else class="avatar-fallback avatar-{{gender || 'female'}}">
+            <text class="avatar-symbol">{{gender === 'male' ? '♂' : '♀'}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="avatar-side avatar-right">
+        <view class="avatar-side-inner avatar-lock">
+          <text class="lock-icon">🔒</text>
+        </view>
+        <view class="nav-arrow-btn nav-right" bindtap="onNextRole">
+          <view class="nav-arrow-inner nav-arrow-right"></view>
+        </view>
+      </view>
+    </view>
+
+    <view class="status-badge">
+      <view class="status-dot"></view>
+      <text class="status-text">点击头像启用该角色</text>
+    </view>
+    <view class="role-name-wrap">
+    <text class="role-name">当前角色: {{roleName}}</text>
+    <text wx:if="{{isDefaultRole}}" class="role-name-default">*默认</text>
+  </view>
+
+    <view class="btn-add" bindtap="onAddMember">
+      <view class="btn-add-icon">
+        <text class="btn-add-plus">+</text>
+      </view>
+      <text class="btn-add-text">添加新成员</text>
+    </view>
+  </view>
+</view>

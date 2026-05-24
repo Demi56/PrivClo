@@ -1,0 +1,200 @@
+<!--
+  3D 模特全身穿搭展示页面
+  布局：天气胶囊 | 模特区 | 精灵管家 | 右侧操作按钮 | Tab 栏
+-->
+<view class="page">
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+
+  <!-- 左上角：天气信息 -->
+  <view class="weather-capsule" style="top: {{headerTop}}px;" bindtap="onWeatherCapsuleTap">
+<view class="weather-icon-wrap">
+    <view class="weather-icon weather-icon-{{weatherIcon || 'sun'}}"></view>
+  </view>
+    <view class="weather-text">
+      <text class="weather-city">{{city}}</text>
+      <text class="weather-detail">{{temp}}℃ {{weather}}</text>
+    </view>
+  </view>
+
+  <!-- 主内容区：背景图/渐变 + 天气动画 + 模特 + 精灵 + 操作按钮 -->
+  <view class="model-area">
+    <!-- 默认渐变背景：底层 -->
+    <view class="model-bg"></view>
+    <!-- 天气动画层：根据 weatherIcon 显示对应动画 -->
+    <view class="weather-animation weather-animation-{{weatherIcon || 'sun'}}" data-weather="{{weatherIcon}}">
+      <!-- 晴天：阳光射线 -->
+      <view wx:if="{{weatherIcon === 'sun'}}" class="weather-sun-rays"></view>
+      <view wx:if="{{weatherIcon === 'sun'}}" class="weather-sun-glow"></view>
+      <!-- 多云/阴：云朵飘动 -->
+      <view wx:if="{{weatherIcon === 'cloud' || weatherIcon === 'cloudy'}}" class="weather-cloud weather-cloud-1"></view>
+      <view wx:if="{{weatherIcon === 'cloud' || weatherIcon === 'cloudy'}}" class="weather-cloud weather-cloud-2"></view>
+      <view wx:if="{{weatherIcon === 'cloud' || weatherIcon === 'cloudy'}}" class="weather-cloud weather-cloud-3"></view>
+      <!-- 雨天：雨滴 -->
+      <view wx:if="{{weatherIcon === 'rain'}}" class="weather-rain">
+        <view class="rain-drop rain-drop-1"></view>
+        <view class="rain-drop rain-drop-2"></view>
+        <view class="rain-drop rain-drop-3"></view>
+        <view class="rain-drop rain-drop-4"></view>
+        <view class="rain-drop rain-drop-5"></view>
+        <view class="rain-drop rain-drop-6"></view>
+        <view class="rain-drop rain-drop-7"></view>
+        <view class="rain-drop rain-drop-8"></view>
+        <view class="rain-drop rain-drop-9"></view>
+        <view class="rain-drop rain-drop-10"></view>
+        <view class="rain-drop rain-drop-11"></view>
+        <view class="rain-drop rain-drop-12"></view>
+        <view class="rain-drop rain-drop-13"></view>
+        <view class="rain-drop rain-drop-14"></view>
+        <view class="rain-drop rain-drop-15"></view>
+      </view>
+    </view>
+    <!-- 自定义背景图：在默认背景上层，模糊遮罩 -->
+    <view wx:if="{{homeBgImage}}" class="model-bg-wrap">
+      <image class="model-bg-image" src="{{homeBgImage}}" mode="aspectFill" />
+      <view class="model-bg-mask"></view>
+    </view>
+
+    <!-- 3D 模特已暂时禁用：xr-frame 的 Draco 需 WebAssembly，小程序不支持。如需 3D，请使用未压缩 Draco 的 GLB -->
+    <!-- 2D 模特图片展示 -->
+    <view class="model-wrap model-wrap-fallback" bindtouchstart="onModelTouchStart" bindtouchmove="onModelTouchMove" bindtouchend="onModelTouchEnd">
+      <view class="model-placeholder avatar-{{gender || 'female'}}">
+        <image wx:if="{{!modelImgError}}" class="model-2d-img" src="{{modelDisplaySrc || modelOutfitSrc || modelDefaultUrl}}" mode="aspectFit" binderror="onModelImgError" />
+        <view wx:else class="model-fallback">
+          <view class="model-silhouette"></view>
+          <text class="model-label">模特</text>
+          <text class="model-hint">放入 images/model/*.png 展示 2D 形象</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 精灵头像占位（点击由 chat-assistant 处理） -->
+    <view class="fairy-wrap" bindtap="onOpenChatAssistant">
+      <view class="fairy-body">
+        <image class="fairy-img" src="{{spriteUrl}}" mode="aspectFit" />
+      </view>
+    </view>
+
+    <!-- 右侧操作按钮列：渐变遮罩 + 按钮 -->
+    <view class="action-btns-mask"></view>
+    <view class="action-btns">
+      <view class="action-btn" bindtap="onAdd">
+        <view class="action-icon action-icon-add"></view>
+        <text class="action-label">添加</text>
+      </view>
+      <view class="action-btn" bindtap="onRecord">
+        <view class="action-icon action-icon-record"></view>
+        <text class="action-label">录入</text>
+      </view>
+      <view class="action-btn" bindtap="onEmoji">
+        <view class="action-icon action-icon-emoji"></view>
+        <text class="action-label">表情</text>
+      </view>
+      <view class="action-btn" bindtap="onBackground">
+        <view class="action-icon action-icon-bg"></view>
+        <text class="action-label">背景</text>
+      </view>
+      <view class="action-btn" bindtap="onSwitch">
+        <view class="action-icon action-icon-switch"></view>
+        <text class="action-label">切换</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部 Tab 栏：首页高亮 -->
+  <view class="tab-bar">
+    <view class="tab-item tab-active">
+      <view class="tab-icon tab-icon-home"></view>
+      <text class="tab-text">首页</text>
+    </view>
+    <view class="tab-item" bindtap="onTabDiary">
+      <view class="tab-icon tab-icon-diary"></view>
+      <text class="tab-text">日记</text>
+    </view>
+    <view class="tab-item" bindtap="onTabWardrobe">
+      <view class="tab-icon tab-icon-wardrobe"></view>
+      <text class="tab-text">衣橱</text>
+    </view>
+    <view class="tab-item" bindtap="onTabMine">
+      <view class="tab-icon tab-icon-mine"></view>
+      <text class="tab-text">我的</text>
+    </view>
+  </view>
+
+  <!-- 角色信息录入浮层：半透明黑遮罩 + 圆角卡片，浮动在首页顶层 -->
+  <view wx:if="{{showRoleEntryCard}}" class="role-entry-mask">
+    <view class="role-entry-mask-bg" catchtap="onCloseRoleEntry"></view>
+    <view class="role-entry-card">
+      <view class="role-entry-close" bindtap="onCloseRoleEntry">×</view>
+      <text class="role-entry-title">角色信息录入</text>
+      <view class="role-entry-avatar-wrap">
+        <image class="role-entry-avatar" src="{{gender === 'male' ? roleAvatarMaleUrl : roleAvatarFemaleUrl}}" mode="aspectFill" />
+      </view>
+      <view class="role-entry-form">
+        <view class="role-field">
+          <text class="role-label">角色昵称</text>
+          <input class="role-input" placeholder="请输入角色昵称" value="{{roleNickname}}" bindinput="onRoleNicknameInput" />
+        </view>
+        <view class="role-field-row">
+          <view class="role-field half">
+            <text class="role-label">身高 (cm)</text>
+            <input class="role-input" type="number" placeholder="168" value="{{roleHeight}}" bindinput="onRoleHeightInput" />
+          </view>
+          <view class="role-field half">
+            <text class="role-label">体重 (kg)</text>
+            <input class="role-input" type="number" placeholder="48" value="{{roleWeight}}" bindinput="onRoleWeightInput" />
+          </view>
+        </view>
+        <view class="role-field">
+          <view class="role-label-row">
+            <text class="role-label {{roleBustWaistHipEnabled ? '' : 'role-label-muted'}}">三围 (胸/腰/臀)</text>
+            <switch class="role-switch" checked="{{roleBustWaistHipEnabled}}" bindchange="onToggleBustWaistHip" color="#4DD0E1" />
+          </view>
+          <input wx:if="{{roleBustWaistHipEnabled}}" class="role-input" placeholder="84 / 62 / 88" value="{{roleBustWaistHip}}" bindinput="onRoleBustWaistHipInput" />
+        </view>
+      </view>
+      <view class="role-entry-actions">
+        <view class="role-btn role-btn-save" bindtap="onSaveRoleEntry">保存修改</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 精灵小管家：页面级浮层，避免被 model-area overflow 裁剪 -->
+  <chat-assistant
+    wx:if="{{showChatAssistant}}"
+    avatarUrl="{{spriteUrl}}"
+    userAvatarUrl="{{chatGender === 'male' ? roleAvatarMaleUrl : roleAvatarFemaleUrl}}"
+    weather="{{chatWeather}}"
+    wardrobe="{{chatWardrobe}}"
+    profile="{{chatProfile}}"
+    gender="{{chatGender}}"
+    age="{{chatAge}}"
+    expanded="{{true}}"
+    bindclose="onCloseChatAssistant"
+  />
+
+  <!-- 切换城市弹窗（背景与面板分离，仅点背景关闭，避免点输入框误关） -->
+  <view wx:if="{{showCitySearch}}" class="city-search-mask">
+    <view class="city-search-mask-bg" catchtap="onCloseCitySearch"></view>
+    <view class="city-switch-panel">
+      <view class="city-switch-header">
+        <text class="city-switch-title">切换城市</text>
+        <view class="city-current-wrap">
+          <text class="city-current-label">当前城市：</text>
+          <text class="city-current-value">{{city}}</text>
+        </view>
+      </view>
+      <view class="city-input-wrap">
+        <input class="city-search-input" placeholder="搜索中国城市名称" bindinput="onCitySearchInput" />
+      </view>
+      <scroll-view class="city-list-scroll" scroll-y>
+        <view class="city-list-inner">
+          <view wx:for="{{filteredCityList}}" wx:key="*this" class="city-item {{item === city ? 'city-item-current' : ''}}" data-city="{{item}}" bindtap="onSelectCity">{{item}}</view>
+          <view wx:if="{{filteredCityList.length === 0}}" class="city-list-empty">未找到匹配城市</view>
+        </view>
+      </scroll-view>
+      <view class="city-switch-footer">
+        <button class="city-search-btn cancel" bindtap="onCloseCitySearch">关闭</button>
+      </view>
+    </view>
+  </view>
+</view>

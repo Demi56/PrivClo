@@ -1,0 +1,43 @@
+<!-- 积分商城 - 顶部横向 Tab + 两列商品网格 -->
+<view class="page">
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+
+  <view class="header">
+    <view class="header-back" bindtap="onBack">
+      <view class="header-back-arrow"></view>
+    </view>
+    <text class="header-title">积分商城</text>
+    <view class="header-placeholder"></view>
+  </view>
+
+  <!-- 顶部：横向滑动 Tab -->
+  <scroll-view class="tab-scroll" scroll-x scroll-with-animation>
+    <view class="tab-inner">
+      <view
+        wx:for="{{tabList}}"
+        wx:key="*this"
+        class="tab-item {{activeTabIndex === index ? 'tab-active' : ''}}"
+        data-index="{{index}}"
+        bindtap="onTabTap"
+      >{{item}}</view>
+    </view>
+  </scroll-view>
+
+  <!-- 两列商品网格 -->
+  <scroll-view class="product-scroll" scroll-y>
+    <view class="product-grid">
+      <view wx:for="{{displayList}}" wx:key="id" class="product-card {{item.category === 4 ? 'product-card-role' : ''}} {{item.category === 3 ? 'product-card-capacity' : ''}}">
+        <view class="product-img-wrap">
+          <image wx:if="{{item.image}}" class="product-img" src="{{item.image}}" mode="{{item.category === 4 || item.category === 3 ? 'aspectFit' : 'aspectFill'}}" />
+          <view wx:else class="product-img product-img-placeholder"></view>
+        </view>
+        <text class="product-name">{{item.name}}</text>
+        <view class="product-row">
+          <text class="product-points">{{item.points}} 积分</text>
+          <view class="product-btn {{item.id === '12' || item.id === '19' ? 'product-btn-exchanged' : ''}}" catchtap="onExchange" data-id="{{item.id}}">{{item.id === '12' || item.id === '19' ? '已兑换' : '兑换'}}</view>
+        </view>
+      </view>
+    </view>
+    <view wx:if="{{displayList.length === 0}}" class="empty-tip">该分类暂无商品</view>
+  </scroll-view>
+</view>

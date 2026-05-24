@@ -1,0 +1,31 @@
+<!--
+  加载过渡页 - 小程序启动或网络缓慢时展示
+  布局：渐变背景 | 精灵卡片 | 标题与副标题 | 底部加载条
+-->
+<view class="page">
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+
+  <view class="content">
+    <!-- 精灵插图卡片 -->
+    <view class="sprite-card">
+      <image class="sprite-img" src="{{loadingSpriteUrl}}" mode="aspectFit" />
+    </view>
+
+    <!-- 标题区 -->
+    <view class="text-block">
+      <text class="title">私橱小助</text>
+      <text class="tagline">知冷暖，懂穿搭，不负好时光</text>
+    </view>
+
+    <!-- 底部加载区 -->
+    <view class="loading-footer">
+      <text class="loading-label">LOADING...</text>
+      <view class="loading-bar-wrap">
+        <view class="loading-bar-track">
+          <view class="loading-bar-fill" style="width: {{progress}}%"></view>
+        </view>
+      </view>
+      <text class="version">v1.0</text>
+    </view>
+  </view>
+</view>

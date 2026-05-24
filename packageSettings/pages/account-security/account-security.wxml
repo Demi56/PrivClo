@@ -1,0 +1,69 @@
+<!--
+  账号与安全 - 沿用设置/我的界面风格
+  选项：用户头像、用户昵称、绑定手机号、退出登录、注销账号
+-->
+<view class="page">
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+
+  <!-- 顶部栏 -->
+  <view class="header">
+    <view class="header-back" bindtap="onBack">
+      <view class="header-back-arrow"></view>
+    </view>
+    <text class="header-title">账号与安全</text>
+    <view class="header-placeholder"></view>
+  </view>
+
+  <view class="main">
+    <!-- 用户头像 -->
+    <view class="setting-row" bindtap="onAvatar">
+      <text class="setting-label">用户头像</text>
+      <view class="setting-right">
+        <image class="setting-avatar" src="/images/role/avatar-{{gender || 'female'}}.png" mode="aspectFill" binderror="onAvatarError" />
+        <view class="row-arrow"></view>
+      </view>
+    </view>
+
+    <!-- 用户昵称 -->
+    <view class="setting-row" bindtap="onNickname">
+      <text class="setting-label">用户昵称</text>
+      <view class="setting-right">
+        <text class="setting-value">{{nickname}}</text>
+        <view class="row-arrow"></view>
+      </view>
+    </view>
+
+    <!-- 绑定手机号 -->
+    <view class="setting-row" bindtap="onBindPhone">
+      <text class="setting-label">绑定手机号</text>
+      <view class="setting-right">
+        <text class="setting-value {{phone ? '' : 'value-placeholder'}}">{{phone || '未绑定'}}</text>
+        <view class="row-arrow"></view>
+      </view>
+    </view>
+
+    <!-- 退出登录 / 前往登录（游客浏览） -->
+    <view class="setting-row setting-row-logout" bindtap="onLogout">
+      <text class="setting-label setting-label-logout">{{logoutLabel}}</text>
+    </view>
+
+    <!-- 注销账号 -->
+    <view class="setting-row setting-row-delete" bindtap="onDeleteAccount">
+      <text class="setting-label setting-label-delete">注销账号</text>
+    </view>
+  </view>
+
+  <!-- 挽留弹窗：确认要离开吗 -->
+  <view wx:if="{{showRetentionModal}}" class="retention-mask">
+    <view class="retention-mask-bg" catchtap="onCloseRetention"></view>
+    <view class="retention-dialog">
+      <view class="retention-character-wrap">
+        <image class="retention-character" src="/images/retention/retention-character.png" mode="aspectFit" />
+      </view>
+      <text class="retention-title">确认要离开吗?</text>
+      <text class="retention-desc">注销后,您的私人衣橱、天气日记及所有积分数据将被永久清除,无法找回。</text>
+      <view class="retention-btn-primary" bindtap="onRetentionStay">我再想想</view>
+      <view class="retention-btn-secondary" bindtap="onRetentionConfirm">确认注销</view>
+    </view>
+  </view>
+</view>

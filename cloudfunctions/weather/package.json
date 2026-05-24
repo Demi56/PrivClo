@@ -1,0 +1,10 @@
+{
+  "name": "weather",
+  "version": "1.0.0",
+  "description": "和风天气 API 云函数 - 生成 JWT 并获取实时天气",
+  "main": "index.js",
+  "dependencies": {
+    "jose": "^4.15.0",
+    "wx-server-sdk": "~2.6.3"
+  }
+}

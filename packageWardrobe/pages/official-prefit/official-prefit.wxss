@@ -1,0 +1,159 @@
+/* 智选衣橱展示区 */
+
+.page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #F5F6F8 0%, #FFFFFF 100%);
+  display: flex;
+  flex-direction: column;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.status-bar { width: 100%; flex-shrink: 0; }
+
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 32rpx;
+  background: transparent;
+}
+.header-back {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.header-back-arrow {
+  width: 24rpx;
+  height: 24rpx;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23333333'%3E%3Cpath d='M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+.header-title { font-size: 34rpx; font-weight: bold; color: #333333; }
+.header-placeholder { width: 72rpx; height: 72rpx; }
+
+.content {
+  flex: 1;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 32rpx 48rpx;
+}
+
+.content-inner {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 32rpx;
+}
+
+/* ========== 顶部说明卡片 ========== */
+.intro-card {
+  position: relative;
+  height: 200rpx;
+  border-radius: 20rpx;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0 36rpx;
+  background: linear-gradient(135deg, #2C3E50 0%, #34495E 50%, #3D5A6C 100%);
+  box-shadow: 0 6rpx 20rpx rgba(44, 62, 80, 0.25);
+}
+
+.intro-icon-wrap {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16rpx;
+}
+
+.intro-icon {
+  font-size: 36rpx;
+  color: #FFFFFF;
+}
+
+.intro-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.intro-desc {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 8rpx;
+}
+
+/* ========== 预配分类网格 ========== */
+.section-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333333;
+}
+
+.prefit-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24rpx;
+}
+
+.prefit-card {
+  position: relative;
+  height: 180rpx;
+  border-radius: 20rpx;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0 28rpx;
+}
+
+.prefit-card-bg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #E8A0A8 0%, #F0B8C0 100%);
+  z-index: 0;
+}
+
+.prefit-card:nth-child(2) .prefit-card-bg {
+  background: linear-gradient(135deg, #6EC5D9 0%, #8DD4E4 100%);
+}
+
+.prefit-card:nth-child(3) .prefit-card-bg {
+  background: linear-gradient(135deg, #B8A9C9 0%, #D4C8E0 100%);
+}
+
+.prefit-card:nth-child(4) .prefit-card-bg {
+  background: linear-gradient(135deg, #7BC67E 0%, #A5D6A7 100%);
+}
+
+.prefit-card-content {
+  position: relative;
+  z-index: 1;
+}
+
+.prefit-card-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #FFFFFF;
+  display: block;
+}
+
+.prefit-card-desc {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.9);
+  margin-top: 6rpx;
+  display: block;
+}

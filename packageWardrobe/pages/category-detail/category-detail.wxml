@@ -1,0 +1,163 @@
+<!--
+  分类详情页 - 上衣区等
+  顶部固定：实时试穿区（不变）
+  中间：顶部分类按钮 + 衣物分类滑动展示区（上下滑动分类，左右滑动单品）
+  底部固定：扫描录入单品（不变）
+-->
+<view class="page">
+  <view class="top-bar" style="height: {{statusBarHeight + headerHeightPx}}px;">
+    <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+    <view class="header">
+      <view class="header-back" catchtap="onBack">
+        <view class="header-back-arrow"></view>
+      </view>
+      <view class="header-prefit-mode-btn">
+        <view
+          class="header-prefit-half {{prefitMode === 'official' ? 'header-prefit-active' : ''}}"
+          catchtap="onPrefitModeTap"
+          data-mode="official"
+        >智选衣橱</view>
+        <view class="header-prefit-divider"></view>
+        <view
+          class="header-prefit-half {{prefitMode === 'private' ? 'header-prefit-active' : ''}}"
+          catchtap="onPrefitModeTap"
+          data-mode="private"
+        >私人衣橱</view>
+      </view>
+      <view class="header-placeholder"></view>
+    </view>
+  </view>
+
+  <!-- 固定顶部：实时试穿区（可上拉折叠/下拉展开） -->
+  <view class="tryon-header {{tryonExpanded ? '' : 'tryon-collapsed'}}" style="top: {{statusBarHeight + headerHeightPx}}px;">
+    <view class="tryon-header-inner">
+      <view wx:if="{{tryonExpanded}}" class="tryon-card">
+        <view class="tryon-favorite-btn {{tryonFavorited ? 'favorited' : ''}}" catchtap="onTryonFavorite">{{tryonFavorited ? '♥' : '♡'}}</view>
+        <view class="tryon-content">
+          <view class="tryon-model-wrap" bindtap="onModelTap">
+            <image class="tryon-model-img" src="{{modelImgSrc}}" mode="aspectFit" />
+          </view>
+          <view class="tryon-items-area">
+            <view class="tryon-items-dashed">
+              <scroll-view class="tryon-items-scroll" scroll-y>
+                <view class="tryon-items-inner">
+                  <view wx:for="{{tryonItemSlots}}" wx:key="index" class="tryon-item-slot {{item && selectedTryonSlotIndex === index ? 'slot-selected' : ''}}" catchtap="onSlotTap" data-index="{{index}}">
+                    <image wx:if="{{item}}" class="tryon-item-img" src="{{item}}" mode="aspectFit" />
+                    <view wx:else class="tryon-item-placeholder"></view>
+                    <view wx:if="{{item && selectedTryonSlotIndex === index}}" class="tryon-item-del" catchtap="onRemoveTryonItem" data-index="{{index}}"></view>
+                  </view>
+                </view>
+              </scroll-view>
+            </view>
+          </view>
+        </view>
+        <view class="tryon-btn-wrap">
+          <view class="tryon-btn" catchtap="onTryOn">实时试穿</view>
+        </view>
+      </view>
+      <view class="tryon-toggle-bar-wrap" catchtap="onTryonToggleTap" hover-class="tryon-toggle-hover" hover-stop-propagation="true">
+        <view class="tryon-toggle-bar">
+          <text class="tryon-toggle-icon">{{tryonExpanded ? '▲' : '▼'}}</text>
+          <text class="tryon-toggle-text">{{tryonExpanded ? '上拉折叠' : '下拉展开'}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 中间：分类标签栏 + 衣物分类展示区 -->
+  <view class="detail-main" style="top: {{scrollAreaTop}}px; bottom: {{scrollAreaBottom}}px;">
+    <!-- 顶部分类按钮：上衣/下装/... -->
+    <scroll-view class="category-tabs-wrap" scroll-x>
+      <view class="category-tabs">
+        <view
+          wx:for="{{categoryTabs}}"
+          wx:key="id"
+          class="tab-item {{activeTab === item.id ? 'tab-active' : ''}}"
+          catchtap="onTabTap"
+          data-id="{{item.id}}"
+          hover-class="tab-hover"
+        >{{item.name}}</view>
+      </view>
+    </scroll-view>
+
+    <!-- 衣物分类滑动展示区：上下滑动分类，左右滑动单品 -->
+    <scroll-view class="detail-scroll" scroll-y>
+      <view class="detail-inner">
+        <view wx:for="{{subCategories}}" wx:for-item="subCat" wx:key="id" id="subrow-{{subCat.id}}" class="sub-category-row {{draggingId === subCat.id ? 'sub-category-row-dragging' : ''}}">
+          <view wx:if="{{prefitMode === 'private' && (!subCat.items || subCat.items.length === 0)}}" class="sub-category-row-del" catchtap="onDeleteSubCategoryRow" data-id="{{subCat.id}}"></view>
+          <view class="sub-category-drag-handle" catchlongpress="onRowLongPress" catchtouchmove="onRowTouchMove" catchtouchend="onRowTouchEnd" catchtouchcancel="onRowTouchEnd" data-id="{{subCat.id}}">
+            <view class="drag-handle-dots"></view>
+          </view>
+          <view class="sub-category-banner banner-editable" catchtap="onBannerTap" data-id="{{subCat.id}}" data-name="{{subCat.name}}">{{subCat.name}}</view>
+          <scroll-view class="sub-category-items" scroll-x>
+            <view class="sub-category-items-inner">
+              <view
+                wx:for="{{subCat.items}}"
+                wx:for-item="subItem"
+                wx:key="index"
+                class="item-card {{selectedSubCategoryItem && selectedSubCategoryItem.subId === subCat.id && selectedSubCategoryItem.itemIndex === index ? 'item-card-selected' : ''}}"
+                catchtap="onSubCategoryItemTap"
+                data-src="{{subItem.src}}"
+                data-sub-id="{{subCat.id}}"
+                data-item-index="{{index}}"
+              >
+                <image class="item-card-img" src="{{subItem.src}}" mode="aspectFit" />
+                <view wx:if="{{selectedSubCategoryItem && selectedSubCategoryItem.subId === subCat.id && selectedSubCategoryItem.itemIndex === index}}" class="item-card-del" catchtap="onDeleteSubCategoryItem" data-sub-id="{{subCat.id}}" data-item-index="{{index}}"></view>
+              </view>
+            </view>
+          </scroll-view>
+        </view>
+        <view wx:if="{{prefitMode === 'private'}}" class="sub-category-add-btn" catchtap="onAddCustomSubCategory">
+          <text class="sub-category-add-icon">+</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 固定底部：扫描录入单品（仅私人衣橱模式显示） -->
+  <view wx:if="{{prefitMode === 'private'}}" class="scan-footer">
+    <button class="scan-btn" bindtap="onScanInput">
+      <view class="scan-icon"></view>
+      <text class="scan-text">扫描录入单品</text>
+    </button>
+  </view>
+
+  <!-- 编辑分类名称弹窗 -->
+  <view wx:if="{{showBannerEditPopup}}" class="banner-edit-popup-mask" catchtap="onCloseBannerEditPopup"></view>
+  <view wx:if="{{showBannerEditPopup}}" class="banner-edit-popup">
+    <view class="banner-edit-popup-title">修改分类名称</view>
+    <input class="banner-edit-input" value="{{editingBannerName}}" placeholder="请输入分类名称" bindinput="onBannerEditInput" focus="{{showBannerEditPopup}}" />
+    <view class="banner-edit-popup-btns">
+      <view class="banner-edit-popup-btn" catchtap="onBannerEditConfirm">确定</view>
+      <view class="banner-edit-popup-btn secondary" catchtap="onCloseBannerEditPopup">取消</view>
+    </view>
+  </view>
+
+  <!-- 点亮爱心后：编辑收藏标签弹窗（选项与收藏区试穿页筛选栏一致） -->
+  <view wx:if="{{showFavoriteTagPopup}}" class="favorite-tag-popup-mask" catchtap="onCloseFavoriteTagPopup"></view>
+  <view wx:if="{{showFavoriteTagPopup}}" class="favorite-tag-popup">
+    <view class="favorite-tag-popup-title">编辑收藏标签</view>
+    <view class="favorite-tag-section">
+      <view class="favorite-tag-label">季节</view>
+      <view class="favorite-tag-options">
+        <view wx:for="{{seasonOptions}}" wx:key="*this" class="favorite-tag-option {{favoriteTagSeasonIndex === index ? 'selected' : ''}}" catchtap="onFavoriteTagSeasonTap" data-index="{{index}}">{{item}}</view>
+      </view>
+    </view>
+    <view class="favorite-tag-section">
+      <view class="favorite-tag-label">场景</view>
+      <view class="favorite-tag-options">
+        <view wx:for="{{sceneOptions}}" wx:key="*this" class="favorite-tag-option {{favoriteTagSceneIndex === index ? 'selected' : ''}}" catchtap="onFavoriteTagSceneTap" data-index="{{index}}">{{item}}</view>
+      </view>
+    </view>
+    <view class="favorite-tag-section">
+      <view class="favorite-tag-label">风格</view>
+      <view class="favorite-tag-options">
+        <view wx:for="{{styleOptions}}" wx:key="*this" class="favorite-tag-option {{favoriteTagStyleIndex === index ? 'selected' : ''}}" catchtap="onFavoriteTagStyleTap" data-index="{{index}}">{{item}}</view>
+      </view>
+    </view>
+    <view class="favorite-tag-popup-btns">
+      <view class="favorite-tag-popup-btn" catchtap="onFavoriteTagConfirm">确定</view>
+      <view class="favorite-tag-popup-btn secondary" catchtap="onFavoriteTagCancel">取消</view>
+    </view>
+  </view>
+</view>

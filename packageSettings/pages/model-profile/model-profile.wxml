@@ -1,0 +1,63 @@
+<!-- 角色信息录入/编辑 - 居中卡片、角色昵称/身高体重/三围/风格标签、取消与保存 -->
+<view class="page">
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+  <view class="blur-bg"></view>
+
+  <view class="header">
+    <view class="header-back" bindtap="onCancel">
+      <view class="header-back-arrow"></view>
+    </view>
+    <text class="header-title">角色信息录入</text>
+    <view class="header-placeholder"></view>
+  </view>
+
+  <view class="card-wrap">
+    <view class="card">
+      <view class="card-header">
+        <text class="card-title">角色信息录入</text>
+        <view class="avatar-wrap">
+          <image class="avatar" src="{{avatarUrl || modelDefaultUrl}}" mode="aspectFill" />
+          <view class="avatar-heart"></view>
+        </view>
+      </view>
+
+      <view class="form">
+        <view class="field">
+          <text class="label">角色昵称</text>
+          <input class="input" placeholder="请输入角色昵称" value="{{nickname}}" bindinput="onNicknameInput" />
+        </view>
+        <view class="field-row">
+          <view class="field half">
+            <text class="label">身高 (cm)</text>
+            <input class="input" type="number" placeholder="168" value="{{height}}" bindinput="onHeightInput" />
+          </view>
+          <view class="field half">
+            <text class="label">体重 (kg)</text>
+            <input class="input" type="number" placeholder="48" value="{{weight}}" bindinput="onWeightInput" />
+          </view>
+        </view>
+        <view class="field">
+          <text class="label">三围 (胸/腰/臀)</text>
+          <input class="input" placeholder="84 / 62 / 88" value="{{bustWaistHip}}" bindinput="onBustWaistHipInput" />
+        </view>
+        <view class="field">
+          <text class="label">喜欢的风格</text>
+          <view class="tags">
+            <view
+              wx:for="{{styleOptions}}"
+              wx:key="*this"
+              class="tag {{selectedStyles.indexOf(item) >= 0 ? 'selected' : ''}}"
+              data-name="{{item}}"
+              bindtap="toggleStyle"
+            >{{item}}</view>
+          </view>
+        </view>
+      </view>
+
+      <view class="actions">
+        <view class="btn btn-cancel" bindtap="onCancel">取消</view>
+        <view class="btn btn-save" bindtap="onSave">保存修改</view>
+      </view>
+    </view>
+  </view>
+</view>

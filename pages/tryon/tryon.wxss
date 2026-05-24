@@ -1,0 +1,249 @@
+/* pages/tryon/tryon.wxss */
+.page {
+  min-height: 100vh;
+  background: #f5f0e8;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 导航栏：略增加顶部留白，避开状态区，整体下移一点 */
+.nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 30rpx;
+  padding-right: 30rpx;
+  padding-bottom: 22rpx;
+  padding-top: calc(92rpx + env(safe-area-inset-top));
+  background: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 16rpx 24rpx;
+  background: #f5f5f5;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.back-icon {
+  font-size: 36rpx;
+  font-weight: bold;
+}
+
+.nav-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #1a2b3c;
+}
+
+.placeholder {
+  width: 120rpx;
+}
+
+/* 试穿页顶栏：上衣 / 下装 / 套装（小号胶囊） */
+.tryon-top-tabs {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16rpx;
+  padding: 14rpx 16rpx 16rpx;
+  background: #fff;
+  margin-bottom: 16rpx;
+}
+
+.tryon-top-tab {
+  padding: 10rpx 26rpx;
+  border-radius: 44rpx;
+  font-size: 22rpx;
+  line-height: 1.35;
+  background: #f0f0f0;
+  color: #666;
+}
+
+.tryon-top-tab.active {
+  background: #2a6df4;
+  color: #fff;
+}
+
+.adjust-panel {
+  margin: 18rpx 24rpx 0;
+  padding: 20rpx;
+  background: #fff;
+  border-radius: 20rpx;
+}
+
+.adjust-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.adjust-slot-tabs {
+  display: flex;
+  gap: 12rpx;
+  margin-top: 14rpx;
+  flex-wrap: wrap;
+}
+
+.adjust-slot-item {
+  padding: 10rpx 22rpx;
+  border-radius: 28rpx;
+  font-size: 24rpx;
+  background: #f1f3f8;
+  color: #5d6470;
+}
+
+.adjust-slot-item.active {
+  background: #2a6df4;
+  color: #fff;
+}
+
+.adjust-pad {
+  margin-top: 14rpx;
+}
+
+.adjust-row {
+  display: flex;
+  justify-content: center;
+  gap: 14rpx;
+  margin-top: 10rpx;
+}
+
+.adjust-btn {
+  min-width: 120rpx;
+  height: 64rpx;
+  border-radius: 16rpx;
+  background: #eaf0ff;
+  color: #2a6df4;
+  font-size: 26rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.adjust-btn.reset {
+  background: #f0f0f0;
+  color: #666;
+}
+
+.adjust-row-history {
+  margin-top: 8rpx;
+}
+
+.adjust-btn.history {
+  background: #eef6ff;
+  color: #1a5fb4;
+  font-size: 24rpx;
+  min-width: 140rpx;
+}
+
+/* 衣物类别栏 */
+.category-bar {
+  display: flex;
+  justify-content: space-around;
+  background: #fff;
+  padding: 20rpx 30rpx;
+  margin-top: 20rpx;
+  border-top: 2rpx solid #eee;
+  border-bottom: 2rpx solid #eee;
+}
+
+.category-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+  padding: 12rpx 24rpx;
+  border-radius: 40rpx;
+  font-size: 24rpx;
+  color: #666;
+}
+
+.category-item.active {
+  background: #2a6df4;
+  color: #fff;
+}
+
+.category-item text:first-child {
+  font-size: 36rpx;
+}
+
+/* 衣橱栏 */
+.wardrobe-bar {
+  background: #fff;
+  padding: 20rpx 0;
+  min-height: 160rpx;
+}
+
+.wardrobe-scroll {
+  white-space: nowrap;
+  padding: 0 20rpx;
+}
+
+.wardrobe-item {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  width: 140rpx;
+  margin-right: 20rpx;
+  padding: 16rpx;
+  background: #f8f8f8;
+  border-radius: 20rpx;
+  vertical-align: top;
+}
+
+.wardrobe-item image {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 16rpx;
+  margin-bottom: 12rpx;
+}
+
+.wardrobe-item text {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.empty-wardrobe {
+  text-align: center;
+  padding: 40rpx;
+  color: #999;
+  font-size: 28rpx;
+}
+
+/* 底部操作栏 */
+.action-bar {
+  display: flex;
+  gap: 30rpx;
+  padding: 30rpx 40rpx;
+  background: #fff;
+  border-top: 2rpx solid #eee;
+  margin-top: auto;
+}
+
+.action-btn {
+  flex: 1;
+  height: 88rpx;
+  border-radius: 44rpx;
+  font-size: 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-btn.clear {
+  background: #f0f0f0;
+  color: #666;
+}
+
+.action-btn.save {
+  background: #2a6df4;
+  color: #fff;
+}

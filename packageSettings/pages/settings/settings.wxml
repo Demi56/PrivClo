@@ -1,0 +1,80 @@
+<!--
+  设置页面 - 沿用我的界面风格
+  布局：顶部栏 | 账号与安全 | 交互设置 | 通知设置 | 常见问题 | 隐私协议 | 服务条款
+-->
+<view class="page">
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+
+  <!-- 顶部栏：返回 | 标题 -->
+  <view class="header">
+    <view class="header-back" bindtap="onBack">
+      <view class="header-back-arrow"></view>
+    </view>
+    <text class="header-title">设置</text>
+    <view class="header-placeholder"></view>
+  </view>
+
+  <!-- 主内容区 -->
+  <view class="main">
+    <view class="pill-card" bindtap="onOutfitPreferences">
+      <view class="pill-icon pill-icon-heart">
+        <view class="pill-icon-inner icon-heart"></view>
+      </view>
+      <view class="pill-content">
+        <text class="pill-title">穿搭偏好</text>
+        <text class="pill-desc">不喜欢/喜欢的单品，精灵小助手会记住</text>
+      </view>
+      <view class="pill-arrow"></view>
+    </view>
+
+    <view class="pill-card" bindtap="onAccountSecurity">
+      <view class="pill-icon pill-icon-shield">
+        <view class="pill-icon-inner icon-shield"></view>
+      </view>
+      <view class="pill-content">
+        <text class="pill-title">账号与安全</text>
+      </view>
+      <view class="pill-arrow"></view>
+    </view>
+
+    <view class="pill-card" bindtap="onNotification">
+      <view class="pill-icon pill-icon-bell">
+        <view class="pill-icon-inner icon-bell"></view>
+      </view>
+      <view class="pill-content">
+        <text class="pill-title">通知设置</text>
+      </view>
+      <view class="pill-arrow"></view>
+    </view>
+
+    <view class="pill-card" bindtap="onFAQ">
+      <view class="pill-icon pill-icon-help">
+        <view class="pill-icon-inner icon-help"></view>
+      </view>
+      <view class="pill-content">
+        <text class="pill-title">常见问题</text>
+      </view>
+      <view class="pill-arrow"></view>
+    </view>
+
+    <view class="pill-card" bindtap="onPrivacy">
+      <view class="pill-icon pill-icon-lock">
+        <view class="pill-icon-inner icon-lock"></view>
+      </view>
+      <view class="pill-content">
+        <text class="pill-title">隐私协议与服务条款</text>
+      </view>
+      <view class="pill-arrow"></view>
+    </view>
+
+    <view class="pill-card" bindtap="onTerms">
+      <view class="pill-icon pill-icon-doc">
+        <view class="pill-icon-inner icon-doc"></view>
+      </view>
+      <view class="pill-content">
+        <text class="pill-title">AI服务说明</text>
+      </view>
+      <view class="pill-arrow"></view>
+    </view>
+  </view>
+</view>

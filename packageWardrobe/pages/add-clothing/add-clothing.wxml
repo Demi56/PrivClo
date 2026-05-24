@@ -1,0 +1,210 @@
+<!-- 添加衣物 - 默认智能抠图，不满意可手动微调 -->
+<view class="page">
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+
+  <!-- 自定义导航 -->
+  <view class="header">
+    <view class="header-back" bindtap="onBack">
+      <view class="header-back-arrow"></view>
+    </view>
+    <text class="header-title">添加衣物</text>
+    <view class="header-placeholder"></view>
+  </view>
+
+  <!-- 步骤1：选择图片 -->
+  <view class="step-content" wx:if="{{step === 'select'}}">
+    <view class="guide-card">
+      <view class="guide-icon-wrap">
+        <text class="guide-icon">📷</text>
+      </view>
+      <text class="guide-title">选择衣物图片</text>
+      <text class="guide-desc">拍照或从相册选择，AI 将自动去除背景</text>
+    </view>
+    <view class="action-buttons">
+      <view class="action-btn action-btn-primary" bindtap="onTakePhoto">
+        <view class="action-btn-glow"></view>
+        <text class="action-btn-icon">📸</text>
+        <text class="action-btn-text">拍照</text>
+      </view>
+      <view class="action-btn action-btn-secondary" bindtap="onChooseFromAlbum">
+        <text class="action-btn-icon">🖼</text>
+        <text class="action-btn-text">相册</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 步骤2&3：上传中 / 抠图中 -->
+  <view class="step-content step-loading" wx:elif="{{step === 'uploading' || step === 'matting'}}">
+    <view class="loading-card">
+      <view class="loading-spinner">
+        <view class="spinner-ring"></view>
+        <view class="spinner-ring spinner-ring-2"></view>
+        <view class="spinner-ring spinner-ring-3"></view>
+      </view>
+      <text class="loading-text">{{loadingText}}</text>
+      <view class="progress-bar-wrap">
+        <view class="progress-bar-bg">
+          <view class="progress-bar-fill" style="width: {{progress}}%"></view>
+        </view>
+        <text class="progress-percent">{{progress}}%</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 步骤4：抠图预览 + 保存 -->
+  <view class="step-content" wx:elif="{{step === 'preview'}}">
+    <view class="preview-card">
+      <view class="preview-badge">{{hasManualRefined ? '✏️ 已微调' : '✨ 智能抠图'}}</view>
+      <view class="preview-img-wrap">
+        <image wx:if="{{previewUrl}}" class="preview-img" src="{{previewUrl}}" mode="aspectFit" />
+        <view wx:else class="preview-placeholder">预览加载中...</view>
+      </view>
+    </view>
+    <view class="category-card">
+      <text class="category-title">选择分类</text>
+      <view class="category-tags">
+        <view class="category-tag" bindtap="onEditType">
+          <text class="tag-label">类型</text>
+          <text class="tag-value">{{itemType}}</text>
+          <text class="tag-arrow">▼</text>
+        </view>
+        <view class="category-tag" bindtap="onEditCategory">
+          <text class="tag-label">品类</text>
+          <text class="tag-value">{{itemCategory}}</text>
+          <text class="tag-arrow">▼</text>
+        </view>
+      </view>
+    </view>
+    <view class="footer-actions">
+      <button class="btn-refine" bindtap="onManualRefine">✏️ 手动微调</button>
+      <button class="btn-save" bindtap="onSaveToWardrobe">
+        <text class="btn-save-icon">✓</text>
+        <text>保存到衣橱</text>
+      </button>
+      <button class="btn-retry" bindtap="onRetry">重新选择</button>
+    </view>
+  </view>
+
+  <!-- 手动微调：基于 AI 结果擦除/复原 -->
+  <view class="step-content step-manual" wx:elif="{{step === 'manual_refine'}}">
+    <view class="manual-guide">
+      <text class="manual-guide-text">双指缩放 · {{brushType === 'eraser' ? '橡皮擦擦除' : '画笔复原'}}多余区域</text>
+    </view>
+    <view class="canvas-wrap">
+      <canvas
+        type="2d"
+        id="manualCanvas"
+        class="manual-canvas"
+        style="width: {{canvasWidth}}px; height: {{canvasHeight}}px;"
+        disable-scroll="{{true}}"
+        bindtouchstart="onCanvasTouchStart"
+        bindtouchmove="onCanvasTouchMove"
+        bindtouchend="onCanvasTouchEnd"
+        bindtouchcancel="onCanvasTouchEnd"
+      ></canvas>
+      <canvas type="2d" id="restoreLayerCanvas" class="restore-layer-canvas"></canvas>
+    </view>
+    <view class="brush-toolbar">
+      <view class="brush-type-row">
+        <view
+          class="brush-type-btn {{brushType === 'eraser' ? 'brush-type-active' : ''}}"
+          data-type="eraser"
+          bindtap="setBrushType"
+        >🧹 橡皮擦</view>
+        <view
+          class="brush-type-btn {{brushType === 'restore' ? 'brush-type-active' : ''}}"
+          data-type="restore"
+          bindtap="setBrushType"
+        >🖌 复原</view>
+      </view>
+      <view class="brush-size-row">
+        <text class="brush-label">笔刷</text>
+        <view class="brush-sizes">
+          <view
+            class="brush-size-btn {{brushSize === 8 ? 'brush-size-active' : ''}}"
+            data-size="8"
+            bindtap="setBrushSize"
+          >细</view>
+          <view
+            class="brush-size-btn {{brushSize === 16 ? 'brush-size-active' : ''}}"
+            data-size="16"
+            bindtap="setBrushSize"
+          >中</view>
+          <view
+            class="brush-size-btn {{brushSize === 32 ? 'brush-size-active' : ''}}"
+            data-size="32"
+            bindtap="setBrushSize"
+          >粗</view>
+        </view>
+      </view>
+      <view class="brush-actions">
+        <view class="brush-action-btn" catchtap="undoLastStroke">↩ 撤销</view>
+        <view class="brush-action-btn" bindtap="clearCanvas">🗑 清空</view>
+      </view>
+    </view>
+    <view class="manual-footer">
+      <button class="btn-back-refine" bindtap="onBackFromRefine">返回预览</button>
+      <button class="btn-save-manual" bindtap="saveManualResult">保存微调结果</button>
+    </view>
+  </view>
+
+  <!-- 类型选择弹窗 -->
+  <view wx:if="{{showTypePicker}}" class="picker-mask" catchtap="onClosePicker">
+    <view class="picker-panel" catchtap="">
+      <view class="picker-title">选择类型</view>
+      <scroll-view class="picker-scroll" scroll-y>
+        <view
+          wx:for="{{categoryTabs}}"
+          wx:key="id"
+          class="picker-option {{itemTypeId === item.id ? 'picker-option-active' : ''}}"
+          data-id="{{item.id}}"
+          data-name="{{item.name}}"
+          bindtap="onSelectType"
+        >{{item.name}}</view>
+        <view class="picker-option picker-option-custom" data-id="__custom_type__" data-name="自定义+" bindtap="onSelectType">自定义+</view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- 品类选择弹窗 -->
+  <view wx:if="{{showCategoryPicker}}" class="picker-mask" catchtap="onClosePicker">
+    <view class="picker-panel" catchtap="">
+      <view class="picker-title">选择品类</view>
+      <scroll-view class="picker-scroll" scroll-y>
+        <view
+          wx:for="{{categoryOptions}}"
+          wx:key="id"
+          class="picker-option {{itemCategoryId === item.id ? 'picker-option-active' : ''}}"
+          data-id="{{item.id}}"
+          data-name="{{item.name}}"
+          bindtap="onSelectCategory"
+        >{{item.name}}</view>
+        <view class="picker-option picker-option-custom" data-id="__custom_category__" data-name="自定义+" bindtap="onSelectCategory">自定义+</view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- 自定义类型输入弹窗 -->
+  <view wx:if="{{showCustomTypeInput}}" class="picker-mask" catchtap="onCloseCustomInput">
+    <view class="picker-panel custom-input-panel" catchtap="onBlockTap">
+      <view class="picker-title">自定义类型</view>
+      <input class="custom-input" placeholder="输入类型名称，如：外套" value="{{customInputValue}}" bindinput="onCustomTypeInput" />
+      <view class="custom-input-actions">
+        <view class="custom-input-btn" bindtap="onCloseCustomInput">取消</view>
+        <view class="custom-input-btn custom-input-btn-primary" bindtap="onCustomTypeConfirm">确定</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 自定义品类输入弹窗 -->
+  <view wx:if="{{showCustomCategoryInput}}" class="picker-mask" catchtap="onCloseCustomInput">
+    <view class="picker-panel custom-input-panel" catchtap="onBlockTap">
+      <view class="picker-title">自定义品类</view>
+      <input class="custom-input" placeholder="输入品类名称，如：皮衣" value="{{customInputValue}}" bindinput="onCustomCategoryInput" />
+      <view class="custom-input-actions">
+        <view class="custom-input-btn" bindtap="onCloseCustomInput">取消</view>
+        <view class="custom-input-btn custom-input-btn-primary" bindtap="onCustomCategoryConfirm">确定</view>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,56 @@
+<!--
+  衣橱页面 - 我的衣橱
+  布局：状态栏下留白 | 衣橱模型 | 当前衣橱信息 | 打开按钮 | Tab 栏
+-->
+<view class="page">
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+
+  <!-- 顶部留白（无主标题） -->
+  <view class="header"></view>
+
+  <!-- 主内容：衣橱模型轮播 -->
+  <view class="main">
+    <view class="wardrobe-row">
+      <view class="wardrobe-card {{magicActive ? 'wardrobe-card-magic' : ''}}">
+        <view class="wardrobe-visual">
+          <image wx:if="{{!wardrobeImgError}}" class="wardrobe-img" src="{{wardrobeImgSrc}}" mode="aspectFit" binderror="onWardrobeImgError" />
+          <view wx:else class="wardrobe-placeholder">
+            <view class="wardrobe-handle"></view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <text class="wardrobe-current">当前衣橱:{{currentWardrobe}}</text>
+    <view class="wardrobe-items-badge">
+      <view class="wardrobe-items-wrap">
+        <text class="wardrobe-items-text">({{itemCount}}件)</text>
+      </view>
+    </view>
+
+    <button class="btn-open" bindtap="onOpenWardrobe">
+      <text class="btn-open-text">打开衣橱</text>
+      <view class="btn-open-icon"></view>
+    </button>
+  </view>
+
+  <!-- 底部 Tab 栏：衣橱高亮 -->
+  <view class="tab-bar">
+    <view class="tab-item" bindtap="onTabHome">
+      <view class="tab-icon tab-icon-home"></view>
+      <text class="tab-text">首页</text>
+    </view>
+    <view class="tab-item" bindtap="onTabDiary">
+      <view class="tab-icon tab-icon-diary"></view>
+      <text class="tab-text">日记</text>
+    </view>
+    <view class="tab-item tab-active">
+      <view class="tab-icon tab-icon-wardrobe"></view>
+      <text class="tab-text">衣橱</text>
+    </view>
+    <view class="tab-item" bindtap="onTabMine">
+      <view class="tab-icon tab-icon-mine"></view>
+      <text class="tab-text">我的</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,44 @@
+<view class="page">
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+  <view class="header">
+    <view class="header-back" bindtap="onBack">
+      <view class="header-back-arrow"></view>
+    </view>
+    <text class="header-title">智能穿搭</text>
+    <view class="header-placeholder"></view>
+  </view>
+
+  <view class="content">
+    <view class="weather-bar" wx:if="{{weather}}">
+      <text class="weather-text">{{weather.city}} {{weather.temp}}℃ {{weather.weather}}</text>
+      <text class="refresh-btn" bindtap="onRefresh">刷新</text>
+    </view>
+
+    <view class="occasion-tabs">
+      <view
+        wx:for="{{occasionOptions}}"
+        wx:key="id"
+        class="occasion-item {{occasion === item.id ? 'active' : ''}}"
+        bindtap="onOccasionChange"
+        data-id="{{item.id}}"
+      >{{item.name}}</view>
+    </view>
+
+    <view wx:if="{{loading}}" class="loading-area">
+      <text>AI 正在为您搭配...</text>
+    </view>
+
+    <view wx:elif="{{recommendations}}" class="result-area">
+      <recommend-card
+        recommendations="{{recommendations}}"
+        copywriting="{{copywriting}}"
+        weather="{{weather}}"
+      />
+      <button class="btn-tryon" bindtap="onTryRecommend">去试穿</button>
+    </view>
+
+    <view wx:else class="empty-hint">
+      <text>点击上方场合切换，获取个性化穿搭推荐</text>
+    </view>
+  </view>
+</view>

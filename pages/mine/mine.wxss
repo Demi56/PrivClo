@@ -1,0 +1,435 @@
+/* 我的页面 - 个人中心（My Space 布局，Soft UI 风格） */
+
+.page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #FFF8E7 0%, #F5F0E8 40%, #E8F4F8 100%);
+  display: flex;
+  flex-direction: column;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.status-bar { width: 100%; flex-shrink: 0; }
+
+/* ========== 顶部留白（已无标题文案） ========== */
+.header {
+  flex-shrink: 0;
+  padding: 24rpx 80rpx 28rpx;
+  background: transparent;
+}
+
+.header-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 20rpx;
+}
+
+.header-icon-btn {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 4rpx 4rpx 12rpx rgba(0, 0, 0, 0.06), -2rpx -2rpx 8rpx rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-notification {
+  width: 40rpx;
+  height: 40rpx;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234DD0E1' stroke-width='2'%3E%3Cpath d='M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9'/%3E%3Cpath d='M13.73 21a2 2 0 01-3.46 0'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.icon-settings {
+  width: 40rpx;
+  height: 40rpx;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFB6C1' stroke-width='2'%3E%3Cpath d='M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.04.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+/* ========== 主内容区 ========== */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 80rpx 140rpx;
+}
+
+/* 个人信息大卡片 */
+.profile-card {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 32rpx;
+  padding: 40rpx;
+  margin-bottom: 32rpx;
+  box-shadow: 6rpx 6rpx 20rpx rgba(0, 0, 0, 0.06), -4rpx -4rpx 16rpx rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-avatar-wrap {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  border: 6rpx solid #A8E6EF;
+  overflow: hidden;
+  background: #FFFFFF;
+  position: relative;
+  margin-bottom: 20rpx;
+}
+
+.profile-avatar {
+  width: 100%;
+  height: 100%;
+}
+
+.profile-avatar-wrap .avatar-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 72rpx;
+  color: #999999;
+  background: #E8E8E8;
+}
+
+.level-badge {
+  position: absolute;
+  right: -4rpx;
+  bottom: -4rpx;
+  background: #4DD0E1;
+  color: #FFFFFF;
+  font-size: 20rpx;
+  font-weight: 600;
+  padding: 4rpx 12rpx;
+  border-radius: 16rpx;
+}
+
+.profile-nickname {
+  font-size: 38rpx;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 4rpx;
+}
+
+.profile-id {
+  font-size: 24rpx;
+  color: #999999;
+  margin-bottom: 16rpx;
+}
+
+.vip-badge {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background: linear-gradient(90deg, #FFB6C1 0%, #FFD700 100%);
+  padding: 8rpx 20rpx;
+  border-radius: 28rpx;
+}
+
+.vip-icon {
+  width: 28rpx;
+  height: 28rpx;
+  margin-right: 8rpx;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23FF6B8A'%3E%3Cpath d='M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.vip-text {
+  font-size: 22rpx;
+  font-weight: 500;
+  color: #FFFFFF;
+}
+
+/* 数据三圆环 */
+.stats-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 32rpx;
+  gap: 24rpx;
+}
+
+.stat-circle {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 4rpx 4rpx 16rpx rgba(0, 0, 0, 0.06), -2rpx -2rpx 12rpx rgba(255, 255, 255, 0.9);
+}
+
+.stat-circle-blue { border: 4rpx solid #A8E6EF; }
+.stat-circle-pink { border: 4rpx solid #FFD6E0; }
+.stat-circle-yellow { border: 4rpx solid #FFF4B8; }
+
+.stat-num {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 4rpx;
+}
+
+.stat-label {
+  font-size: 22rpx;
+  color: #999999;
+}
+
+/* 积分/商城双卡 */
+.feature-row {
+  display: flex;
+  flex-direction: row;
+  gap: 20rpx;
+  width: 100%;
+  margin-bottom: 24rpx;
+}
+
+.feature-card {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 20rpx;
+  padding: 24rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 4rpx 4rpx 16rpx rgba(0, 0, 0, 0.06), -2rpx -2rpx 12rpx rgba(255, 255, 255, 0.9);
+}
+
+.feature-card-icon {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  margin-bottom: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-bg-orange {
+  background: linear-gradient(135deg, #FFE082 0%, #FFB74D 100%);
+}
+
+.icon-bg-pink {
+  background: linear-gradient(135deg, #FFB6C1 0%, #F48FB1 100%);
+}
+
+.feature-icon-inner {
+  width: 30rpx;
+  height: 30rpx;
+}
+
+.icon-star {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23E65100'%3E%3Cpath d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.icon-gift {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23C2185B'%3E%3Cpath d='M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.feature-card-title {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 6rpx;
+}
+
+.feature-card-desc {
+  font-size: 20rpx;
+  color: #4DD0E1;
+}
+
+/* 长卡片（药丸形） */
+.pill-card {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 48rpx;
+  padding: 28rpx 32rpx;
+  margin-bottom: 24rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  box-shadow: 4rpx 4rpx 16rpx rgba(0, 0, 0, 0.06), -2rpx -2rpx 12rpx rgba(255, 255, 255, 0.9);
+}
+
+.pill-icon {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+}
+
+.pill-icon-invite {
+  background: linear-gradient(135deg, #81D4FA 0%, #4DD0E1 100%);
+}
+
+.pill-icon-task {
+  background: linear-gradient(135deg, #A5D6A7 0%, #66BB6A 100%);
+}
+
+.pill-icon-role {
+  background: linear-gradient(135deg, #4DD0E1 0%, #26C6DA 100%);
+}
+
+.pill-icon-adventure {
+  background: linear-gradient(135deg, #FFE082 0%, #FFB74D 100%);
+}
+
+.pill-icon-settings {
+  background: #E0E0E0;
+}
+
+.pill-icon-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pill-icon-gift {
+  width: 36rpx;
+  height: 36rpx;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.pill-icon-checklist {
+  width: 36rpx;
+  height: 36rpx;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23FFFFFF'%3E%3Cpath d='M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.pill-icon-person {
+  width: 36rpx;
+  height: 36rpx;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.pill-icon-map {
+  width: 36rpx;
+  height: 36rpx;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.pill-icon-gear {
+  width: 36rpx;
+  height: 36rpx;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666666'%3E%3Cpath d='M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.04.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.pill-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.pill-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 8rpx;
+}
+
+.pill-subtitle {
+  font-size: 24rpx;
+  color: #999999;
+}
+
+.pill-arrow {
+  width: 24rpx;
+  height: 24rpx;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23999999'%3E%3Cpath d='M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+/* 底部按钮 */
+.bottom-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 24rpx;
+  width: 100%;
+}
+
+.action-btn {
+  flex: 1;
+  height: 88rpx;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 44rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  box-shadow: 4rpx 4rpx 16rpx rgba(0, 0, 0, 0.06), -2rpx -2rpx 12rpx rgba(255, 255, 255, 0.9);
+}
+
+.action-btn-icon {
+  width: 36rpx;
+  height: 36rpx;
+}
+
+.icon-feedback {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23999999'%3E%3Cpath d='M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.icon-settings-gray {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23999999'%3E%3Cpath d='M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.04.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.action-btn-text {
+  font-size: 28rpx;
+  color: #666666;
+}
+
+/* ========== 底部 Tab 栏 ========== */
+.tab-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  height: 100rpx;
+  background: #FFFFFF;
+  border-radius: 24rpx 24rpx 0 0;
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 10;
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.06);
+}
+
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6rpx;
+}
+
+.tab-icon { width: 44rpx; height: 44rpx; }
+
+.tab-icon-home {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23999999'%3E%3Cpath d='M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.tab-icon-diary {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23999999'%3E%3Cpath d='M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 18H6V4h2v8l2.5-1.5L13 12V4h5v16z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.tab-icon-wardrobe {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23999999' d='M4 2H11V22H4V2z M13 2H20V22H13V2z'/%3E%3Cpath fill='%23ffffff' d='M11.5 2H12.5V22H11.5V2z M6 8H9V9H6V8z M15 8H18V9H15V8z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.tab-icon-mine {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234DD0E1'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.tab-text { font-size: 22rpx; color: #999999; }
+.tab-item.tab-active .tab-text { color: #4DD0E1; font-weight: 500; }

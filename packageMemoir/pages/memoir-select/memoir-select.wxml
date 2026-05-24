@@ -1,0 +1,58 @@
+<!--
+  穿搭回忆报告 - 角色选择（复制角色切换页：左/中/右头像，左右箭头切换依依/阳阳）
+  布局：顶部导航 | 三头像区（左模糊/中当前/右锁）| 状态与名称 | 生成报告按钮
+-->
+<view class="page">
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+
+  <!-- 顶部导航：返回 | 标题 | 占位 -->
+  <view class="header">
+    <view class="header-btn" bindtap="onBack">
+      <view class="header-btn-arrow"></view>
+    </view>
+    <text class="header-title">生成穿搭回忆报告</text>
+    <view class="header-btn header-btn-placeholder"></view>
+  </view>
+
+  <!-- 主内容：左小头像（另一角色模糊）| 中大头像（当前依依/阳阳）| 右锁 -->
+  <view class="main">
+    <view class="avatar-row">
+      <view class="avatar-side avatar-left">
+        <view class="avatar-side-inner avatar-prev avatar-prev-blur">
+          <image wx:if="{{!prevAvatarError}}" class="avatar-prev-img" src="{{avatarPrevUrl}}" mode="aspectFill" binderror="onPrevAvatarError" />
+          <view wx:else class="avatar-prev-placeholder"></view>
+        </view>
+        <view class="nav-arrow-btn nav-left" bindtap="onPrevRole">
+          <view class="nav-arrow-inner"></view>
+        </view>
+      </view>
+      <view class="avatar-center" bindtap="onAvatarTap">
+        <view class="avatar-center-inner">
+          <image wx:if="{{gender === 'female' && !avatarFemaleError}}" class="avatar-img" src="{{avatarFemaleUrl}}" mode="aspectFill" binderror="onAvatarFemaleError" />
+          <image wx:elif="{{gender === 'male' && !avatarMaleError}}" class="avatar-img" src="{{avatarMaleUrl}}" mode="aspectFill" binderror="onAvatarMaleError" />
+          <view wx:else class="avatar-fallback avatar-{{gender || 'female'}}">
+            <text class="avatar-symbol">{{gender === 'male' ? '♂' : '♀'}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="avatar-side avatar-right">
+        <view class="avatar-side-inner avatar-lock">
+          <text class="lock-icon">🔒</text>
+        </view>
+        <view class="nav-arrow-btn nav-right" bindtap="onNextRole">
+          <view class="nav-arrow-inner nav-arrow-right"></view>
+        </view>
+      </view>
+    </view>
+
+    <view class="status-badge">
+      <view class="status-dot"></view>
+      <text class="status-text">已启用</text>
+    </view>
+    <text class="role-name">当前角色：{{roleName}}</text>
+
+    <view class="btn-generate" bindtap="onGenerate">
+      <text class="btn-generate-text">生成穿搭回忆报告</text>
+    </view>
+  </view>
+</view>

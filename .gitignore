@@ -1,0 +1,44 @@
+# 依赖（云函数等勿提交 node_modules）
+node_modules/
+
+# 构建产物
+dist/
+miniprogram_npm/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 编辑器 / IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 日志
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# 环境变量与密钥（勿提交）
+.env
+.env.*
+!.env.example
+*.pem
+**/secrets.json
+**/*secret*
+*.key
+**/credentials.json
+
+# 微信小程序本地 / 私有配置（每台机器不同）
+project.private.config.json
+
+# 缓存与临时文件
+.swcache/
+.cache/
+tmp/
+*.tmp
+.tmp*
+
+# 测试覆盖率
+coverage/

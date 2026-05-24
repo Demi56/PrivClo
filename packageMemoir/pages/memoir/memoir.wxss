@@ -1,0 +1,588 @@
+/* 穿搭回顾 - 年度报告（严格按参考图复刻） */
+
+.page {
+  min-height: 100vh;
+  background: #F5F5F5;
+  display: flex;
+  flex-direction: column;
+}
+
+.status-bar { width: 100%; flex-shrink: 0; }
+
+/* ========== 顶部导航栏 ========== */
+.nav-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  height: 88rpx;
+  padding: 0 32rpx;
+  background: #FFFFFF;
+}
+
+.nav-back {
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-back {
+  width: 36rpx;
+  height: 36rpx;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23000000'%3E%3Cpath d='M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.nav-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #000000;
+}
+
+.nav-save {
+  font-size: 30rpx;
+  color: #4DD0E1;
+}
+
+/* ========== 主内容 ========== */
+.content {
+  flex: 1;
+  height: 0;
+}
+
+/* ========== 头部区域 ========== */
+.header-section {
+  background: linear-gradient(180deg, #E8F7F9 0%, #FFEEE8 50%, #FFFFFF 100%);
+  padding: 48rpx 48rpx 80rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header-subtitle {
+  font-size: 24rpx;
+  color: #FFB74D;
+  letter-spacing: 2rpx;
+  margin-bottom: 16rpx;
+}
+
+.header-year {
+  font-size: 64rpx;
+  font-weight: 700;
+  color: #4DD0E1;
+  margin-bottom: 8rpx;
+}
+
+.header-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #000000;
+  margin-bottom: 20rpx;
+}
+
+.header-desc {
+  font-size: 28rpx;
+  color: #999999;
+  margin-bottom: 40rpx;
+}
+
+.header-illustration {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(255, 182, 193, 0.4);
+}
+
+.header-illus-img {
+  width: 100%;
+  height: 100%;
+}
+
+/* ========== 卡片通用 ========== */
+.card {
+  margin: 0 32rpx 24rpx;
+  padding: 36rpx 32rpx;
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.06);
+}
+
+.card-title-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 28rpx;
+}
+
+.card-icon {
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: 12rpx;
+}
+
+.card-icon-leaf {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234DD0E1'%3E%3Cpath d='M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1.89-6.01C9.59 14.95 12 12 17 8zM14 2l2.5 2.5-7.5 7.5L7 10l7-7z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.card-icon-fingerprint {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234DD0E1'%3E%3Cpath d='M17.81 4.16c-.43-.18-.94-.06-1.21.3-.27.36-.21.86.12 1.16 2.28 2.05 3.53 5 3.53 8.38H20c0-3.72-1.39-7.1-3.68-9.58-.38-.41-.96-.53-1.51-.26zm-3.73 2.14c-.29-.22-.68-.21-.96.04-.29.25-.34.64-.13.94 1.77 2.32 2.74 5.28 2.74 8.52h2c0-3.72-.97-7.2-2.65-9.5zM4.31 8.94c-.28-.25-.67-.25-.95 0-.28.25-.28.66 0 .91 2.67 2.39 4.14 5.68 4.14 9.15h2c0-3.89-1.62-7.49-4.19-10.06zM2 18h2c0-1.66.34-3.24.96-4.69-.35-.02-.7-.03-1.04-.03-1.65 0-3.21.32-4.66.9-.19.08-.34.25-.4.45-.06.2-.02.41.11.57.59.71 1 1.54 1.21 2.39.22.85.29 1.72.2 2.59zm10.96-4.99c-.49-.05-1 .04-1.47.27-.47.23-.86.58-1.12 1.02-.27.44-.39.93-.36 1.43.03.5.17.97.42 1.39.25.41.59.76 1 1.02.41.26.86.42 1.33.47.47.05.96.01 1.44-.13.48-.14.92-.4 1.29-.77.37-.37.62-.81.76-1.29.14-.48.17-.98.09-1.46-.08-.49-.29-.95-.62-1.35-.33-.4-.76-.71-1.26-.93-.5-.21-1.04-.31-1.58-.28z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.card-icon-palette {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cellipse fill='%2334B3D4' cx='12' cy='12' rx='9' ry='8'/%3E%3Ccircle fill='%23EB6456' cx='9' cy='8' r='2'/%3E%3Ccircle fill='%23F5CE76' cx='15' cy='8' r='2'/%3E%3Ccircle fill='%238BD593' cx='9' cy='14' r='2'/%3E%3Ccircle fill='%2376C3E4' cx='15' cy='14' r='2'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.card-icon-person {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234DD0E1'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.card-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #000000;
+}
+
+/* 我的时尚基因 */
+.gene-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+
+.gene-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28rpx 16rpx;
+  border-radius: 20rpx;
+}
+
+.gene-orange,
+.gene-blue,
+.gene-purple {
+  background: transparent;
+}
+
+.gene-icon {
+  width: 88rpx;
+  height: 88rpx;
+  min-width: 88rpx;
+  min-height: 88rpx;
+  border-radius: 50%;
+  margin-bottom: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.gene-icon-tree {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%2300897B' d='M12 1l-2.5 5h5L12 1z'/%3E%3Cpath fill='%23008071' d='M12 4L7 11h10L12 4z'/%3E%3Cpath fill='%2300695C' d='M12 8L5 17h14L12 8z'/%3E%3Cpath fill='%2300897B' d='M12 14l-1.5 3h3L12 14z'/%3E%3Cpath fill='%234E342E' d='M9.5 17h5v4h-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 48rpx 48rpx;
+}
+
+.gene-icon-hanger {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231976D2'%3E%3Cpath d='M18 7V4c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v3H5v2h1v9c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9h1V7h-3zm-4 11h-4v-4h4v4zm0-6h-4V9h4v3zm0-4H8V4h8v4z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 48rpx 48rpx;
+}
+
+.gene-icon-run {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%237B1FA2'%3E%3Cpath d='M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-2.2 0-4-1-5.1-2.5l-.9 4.5-2.1-2-1.4 4.3-2.6 1.3 3.6-6.5-5.9 2.6 1.4-2.5 7.1-3z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 48rpx 48rpx;
+}
+
+.gene-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #000000;
+  margin-bottom: 6rpx;
+}
+
+.gene-rank {
+  font-size: 22rpx;
+  color: #999999;
+}
+
+/* 天气心情 */
+.card-weather {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.weather-icon {
+  width: 64rpx;
+  height: 64rpx;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234DD0E1'%3E%3Cpath d='M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5V8H2v2.5h2zm16 0V8h-2v2.5h2zM17.24 4.84l1.79 1.79 1.41-1.41-1.79-1.79-1.41 1.41zM11 21.5v2h2v-2h-2zm-4.5-12.5c0 2.49 2.01 4.5 4.5 4.5s4.5-2.01 4.5-4.5-2.01-4.5-4.5-4.5-4.5 2.01-4.5 4.5zm9 0c0 2.49 2.01 4.5 4.5 4.5s4.5-2.01 4.5-4.5-2.01-4.5-4.5-4.5-4.5 2.01-4.5 4.5zM12 19c-2.49 0-4.5-2.01-4.5-4.5S9.51 10 12 10s4.5 2.01 4.5 4.5S14.49 19 12 19z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.weather-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.weather-title {
+  font-size: 30rpx;
+  color: #4DD0E1;
+  font-weight: 600;
+  margin-bottom: 12rpx;
+}
+
+.weather-desc {
+  font-size: 28rpx;
+  color: #333333;
+  line-height: 1.5;
+}
+
+.weather-num {
+  font-weight: 700;
+  color: #1976D2;
+}
+
+/* OUTFIT OF THE YEAR */
+.card-outfit {
+  padding: 0;
+  overflow: hidden;
+}
+
+.outfit-banner {
+  background: #FFB74D;
+  color: #FFFFFF;
+  font-size: 22rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+  text-align: center;
+  padding: 12rpx;
+  margin-bottom: 0;
+  border-radius: 12rpx 12rpx 0 0;
+}
+
+.outfit-photo {
+  position: relative;
+  width: 100%;
+  height: 1100rpx;
+  background: #E0E0E0;
+}
+
+.outfit-img {
+  width: 100%;
+  height: 100%;
+}
+
+.outfit-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #B2DFDB 0%, #FFCCBC 100%);
+}
+
+.outfit-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24rpx 32rpx;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 24rpx 24rpx 0 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.outfit-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #000000;
+}
+
+.outfit-like {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.icon-heart {
+  width: 36rpx;
+  height: 36rpx;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23FFD54F'%3E%3Cpath d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.like-num {
+  font-size: 26rpx;
+  color: #999999;
+}
+
+/* 年度主题色 */
+.card-color {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-color .card-title {
+  color: #333333;
+}
+
+.color-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 28rpx;
+}
+
+.color-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.color-swatch {
+  width: 72rpx;
+  height: 72rpx;
+  min-width: 72rpx;
+  min-height: 72rpx;
+  border-radius: 50%;
+  margin-left: -20rpx;
+  box-shadow: 2rpx 4rpx 12rpx rgba(0, 0, 0, 0.12);
+  border: 2rpx solid rgba(255, 255, 255, 0.6);
+  box-sizing: border-box;
+}
+
+.color-swatch:first-child {
+  margin-left: 0;
+}
+
+.color-1 { background: #816B61; }
+.color-2 { background: #D8D1CC; }
+.color-3 { background: #F4CC93; }
+.color-4 { background: #A4D4BC; }
+.color-5 { background: #8ECBD6; }
+
+/* 阳阳男性版：灰色、米色、黑色、棕色、白色 */
+.card-color-male .color-1 { background: #9E9E9E; }
+.card-color-male .color-2 { background: #D4C4A8; }
+.card-color-male .color-3 { background: #212121; }
+.card-color-male .color-4 { background: #5D4037; }
+.card-color-male .color-5 { background: #FFFFFF; border: 2rpx solid #E0E0E0; }
+
+.color-desc {
+  font-size: 26rpx;
+  color: #A0A0A0;
+  line-height: 1.4;
+  text-align: right;
+  margin-top: auto;
+  padding-top: 16rpx;
+}
+
+/* 统计卡片 */
+.stats-row {
+  display: flex;
+  flex-direction: row;
+  gap: 24rpx;
+  margin: 0 32rpx 24rpx;
+}
+
+.stats-card {
+  flex: 1;
+  padding: 32rpx 24rpx;
+  border-radius: 24rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.06);
+}
+
+.stats-blue { background: #E3F2FD; }
+.stats-purple { background: #F3E5F5; }
+
+.stats-icon {
+  width: 56rpx;
+  height: 56rpx;
+  margin-bottom: 16rpx;
+}
+
+.stats-icon-hourglass {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234DD0E1'%3E%3Cpath d='M6 2v6h.01L6 8.01 10 12l-4 4 .01.01V22h12v-5.99h-.01L18 16l-4-4 4-3.99-.01-.01V2H6zm16 14.5V20H8v-3.5l4-4 4 4zm-4-5l-4-4V4h8v3.5l-4 4z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.stats-icon-globe {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239C27B0'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.53c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.stats-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #000000;
+  margin-bottom: 12rpx;
+}
+
+.stats-num-row {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  margin-bottom: 12rpx;
+}
+
+.stats-num {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: #1976D2;
+  margin-right: 6rpx;
+}
+
+.stats-purple .stats-num {
+  color: #7B1FA2;
+}
+
+.stats-unit {
+  font-size: 24rpx;
+  color: #666666;
+}
+
+.stats-desc {
+  font-size: 24rpx;
+  color: #999999;
+  line-height: 1.4;
+}
+
+/* 对话气泡 */
+.speech-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40rpx 32rpx;
+}
+
+.speech-bubble {
+  background: #FFFFFF;
+  padding: 28rpx 40rpx;
+  border-radius: 24rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #34B3D4;
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.06);
+  position: relative;
+}
+
+.speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -16rpx;
+  left: 50%;
+  margin-left: -16rpx;
+  border: 16rpx solid transparent;
+  border-top-color: #FFFFFF;
+}
+
+.speech-illustration {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(255, 182, 193, 0.5);
+}
+
+.speech-illus-img {
+  width: 100%;
+  height: 100%;
+}
+
+/* 衣橱小助 */
+.card-qr {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.qr-icon {
+  width: 120rpx;
+  height: 120rpx;
+  margin-right: 24rpx;
+  background: repeating-conic-gradient(#000 0% 25%, #fff 0% 50%) 50% / 24rpx 24rpx;
+  border-radius: 16rpx;
+  flex-shrink: 0;
+}
+
+.qr-content {
+  flex: 1;
+}
+
+.qr-desc {
+  font-size: 26rpx;
+  color: #999999;
+  margin-top: 8rpx;
+}
+
+/* 底部按钮 */
+.bottom-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 24rpx;
+  padding: 32rpx 32rpx 48rpx;
+}
+
+.btn-save,
+.btn-share {
+  flex: 1;
+  height: 96rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  border-radius: 48rpx;
+  border: 2rpx solid #4DD0E1;
+}
+
+.btn-save {
+  background: #FFFFFF;
+}
+
+.btn-share {
+  background: #4DD0E1;
+  border-color: #4DD0E1;
+}
+
+.btn-save-icon {
+  width: 36rpx;
+  height: 36rpx;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234DD0E1'%3E%3Cpath d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.btn-share-icon {
+  width: 36rpx;
+  height: 36rpx;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.btn-save-text {
+  font-size: 30rpx;
+  color: #4DD0E1;
+}
+
+.btn-share-text {
+  font-size: 30rpx;
+  color: #FFFFFF;
+}

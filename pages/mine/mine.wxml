@@ -1,0 +1,129 @@
+<!--
+  我的页面 - 个人中心（参照 My Space 布局）
+  布局：状态栏下留白 | 个人信息卡片 | 数据三圆环 | … | Tab 栏
+-->
+<view class="page">
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+
+  <!-- 顶部留白（无主标题） -->
+  <view class="header"></view>
+
+  <!-- 主内容区 -->
+  <view class="main">
+    <!-- 个人信息大卡片 -->
+    <view class="profile-card">
+      <view class="profile-avatar-wrap" bindtap="onAvatarTap">
+        <image wx:if="{{!avatarError}}" class="profile-avatar" src="{{gender === 'male' ? avatarMaleUrl : avatarFemaleUrl}}" mode="aspectFill" binderror="onAvatarError" />
+        <view wx:else class="avatar-fallback">{{gender === 'male' ? '♂' : '♀'}}</view>
+        <view class="level-badge">LV.4</view>
+      </view>
+      <text class="profile-nickname">{{roleName}}</text>
+      <text class="profile-id">ID: {{userId}}</text>
+      <view class="vip-badge">
+        <view class="vip-icon"></view>
+        <text class="vip-text">VIP超级会员</text>
+      </view>
+    </view>
+
+    <!-- 数据三圆环：已搭 | 日记 | 收藏 -->
+    <view class="stats-row">
+      <view class="stat-circle stat-circle-blue">
+        <text class="stat-num">{{styledCount}}</text>
+        <text class="stat-label">已搭</text>
+      </view>
+      <view class="stat-circle stat-circle-pink">
+        <text class="stat-num">{{diaryCount}}</text>
+        <text class="stat-label">日记</text>
+      </view>
+      <view class="stat-circle stat-circle-yellow">
+        <text class="stat-num">{{favorCount}}</text>
+        <text class="stat-label">收藏</text>
+      </view>
+    </view>
+
+    <!-- 积分中心 | 积分商城 双卡 -->
+    <view class="feature-row">
+      <view class="feature-card feature-card-points" bindtap="onPointsCenter">
+        <view class="feature-card-icon icon-bg-orange">
+          <view class="feature-icon-inner icon-star"></view>
+        </view>
+        <text class="feature-card-title">积分中心</text>
+        <text class="feature-card-desc">{{points}} pt</text>
+      </view>
+      <view class="feature-card feature-card-store" bindtap="onThemeStore">
+        <view class="feature-card-icon icon-bg-pink">
+          <view class="feature-icon-inner icon-gift"></view>
+        </view>
+        <text class="feature-card-title">积分商城</text>
+        <text class="feature-card-desc">主题商店</text>
+      </view>
+    </view>
+
+    <!-- 任务广场 长卡片 -->
+    <view class="pill-card" catchtap="onTaskSquare">
+      <view class="pill-icon pill-icon-task">
+        <view class="pill-icon-inner pill-icon-checklist"></view>
+      </view>
+      <view class="pill-content">
+        <text class="pill-title">任务广场</text>
+        <text class="pill-subtitle">完成任务赚取积分</text>
+      </view>
+      <view class="pill-arrow"></view>
+    </view>
+
+    <!-- 角色管理 长卡片：跳转角色页，使用 catchtap 避免误触或冒泡 -->
+    <view class="pill-card" catchtap="onRoleManage">
+      <view class="pill-icon pill-icon-role">
+        <view class="pill-icon-inner pill-icon-person"></view>
+      </view>
+      <view class="pill-content">
+        <text class="pill-title">角色管理</text>
+        <text class="pill-subtitle">帮家人一起探索穿搭DNA</text>
+      </view>
+      <view class="pill-arrow"></view>
+    </view>
+
+    <!-- 穿搭回顾 长卡片：跳转穿搭回忆报告角色选择页 -->
+    <view class="pill-card" catchtap="onFashionAdventure">
+      <view class="pill-icon pill-icon-adventure">
+        <view class="pill-icon-inner pill-icon-map"></view>
+      </view>
+      <view class="pill-content">
+        <text class="pill-title">穿搭回顾</text>
+        <text class="pill-subtitle">年度回忆大放送</text>
+      </view>
+      <view class="pill-arrow"></view>
+    </view>
+
+    <!-- 更多设置 长卡片（穿搭回顾下方） -->
+    <view class="pill-card" bindtap="onMoreSettings">
+      <view class="pill-icon pill-icon-settings">
+        <view class="pill-icon-inner pill-icon-gear"></view>
+      </view>
+      <view class="pill-content">
+        <text class="pill-title">更多设置</text>
+      </view>
+      <view class="pill-arrow"></view>
+    </view>
+  </view>
+
+  <!-- 底部 Tab 栏：我的高亮 -->
+  <view class="tab-bar">
+    <view class="tab-item" bindtap="onTabHome">
+      <view class="tab-icon tab-icon-home"></view>
+      <text class="tab-text">首页</text>
+    </view>
+    <view class="tab-item" bindtap="onTabDiary">
+      <view class="tab-icon tab-icon-diary"></view>
+      <text class="tab-text">日记</text>
+    </view>
+    <view class="tab-item" bindtap="onTabWardrobe">
+      <view class="tab-icon tab-icon-wardrobe"></view>
+      <text class="tab-text">衣橱</text>
+    </view>
+    <view class="tab-item tab-active">
+      <view class="tab-icon tab-icon-mine"></view>
+      <text class="tab-text">我的</text>
+    </view>
+  </view>
+</view>

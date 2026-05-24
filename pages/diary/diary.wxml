@@ -1,0 +1,57 @@
+<!--
+  日记页面 - 我的日记本
+  布局：状态栏下留白 | 日记卡片 | 当前日记信息 | 打开按钮 | Tab 栏
+-->
+<view class="page">
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+
+  <!-- 顶部留白（无主标题） -->
+  <view class="header"></view>
+
+  <!-- 主内容：日记卡片轮播 -->
+  <view class="main">
+    <view class="diary-row">
+      <view class="diary-card {{magicActive ? 'diary-card-magic' : ''}}">
+        <view class="diary-visual">
+          <image wx:if="{{!diaryImgError}}" class="diary-img" src="{{diaryImgSrc}}" mode="aspectFit" binderror="onDiaryImgError" />
+          <view wx:else class="diary-placeholder">
+            <view class="diary-bookmark"></view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <text class="diary-current">当前日记本:{{currentDiary}}</text>
+    <view class="diary-pages-badge">
+      <view class="diary-pages-wrap">
+        <text class="diary-pages-text">({{pageCount}}页)</text>
+        <text wx:if="{{showSampleHint}}" class="diary-pages-sample">*示例</text>
+      </view>
+    </view>
+
+    <button class="btn-open" bindtap="onOpenDiary">
+      <text class="btn-open-text">打开日记</text>
+      <view class="btn-open-icon"></view>
+    </button>
+  </view>
+
+  <!-- 底部 Tab 栏：日记高亮 -->
+  <view class="tab-bar">
+    <view class="tab-item" bindtap="onTabHome">
+      <view class="tab-icon tab-icon-home"></view>
+      <text class="tab-text">首页</text>
+    </view>
+    <view class="tab-item tab-active">
+      <view class="tab-icon tab-icon-diary"></view>
+      <text class="tab-text">日记</text>
+    </view>
+    <view class="tab-item" bindtap="onTabWardrobe">
+      <view class="tab-icon tab-icon-wardrobe"></view>
+      <text class="tab-text">衣橱</text>
+    </view>
+    <view class="tab-item" bindtap="onTabMine">
+      <view class="tab-icon tab-icon-mine"></view>
+      <text class="tab-text">我的</text>
+    </view>
+  </view>
+</view>

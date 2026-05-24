@@ -1,0 +1,137 @@
+<!--
+  登录页 - 私橱小助
+  布局：状态栏 | 顶部图标+名称 | 登录卡片 | 底部协议
+-->
+<view class="page">
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+
+  <!-- 背景装饰：柔和青绿 + 模糊白圆 -->
+  <view class="bg-deco">
+    <view class="bg-circle bg-circle-1"></view>
+    <view class="bg-circle bg-circle-2"></view>
+    <view class="bg-circle bg-circle-3"></view>
+  </view>
+
+  <view class="main">
+    <!-- 顶部：App 图标 + 名称 -->
+    <view class="top-section">
+      <view class="app-icon-wrap">
+        <view class="app-icon"></view>
+      </view>
+      <text class="app-name">私橱小助</text>
+    </view>
+
+    <!-- 登录卡片 -->
+    <view class="card">
+      <text class="card-title">{{isRegisterMode ? '创建账号' : '欢迎回来'}}</text>
+      <text class="card-subtitle">{{isRegisterMode ? '使用手机号或邮箱注册' : '开启您的穿搭之旅'}}</text>
+
+      <view class="form">
+        <view class="input-wrap">
+          <view class="input-icon input-icon-phone"></view>
+          <input
+            class="input"
+            type="text"
+            value="{{account}}"
+            bindinput="onAccountInput"
+            placeholder="请输入手机号或邮箱"
+            placeholder-class="input-placeholder"
+          />
+        </view>
+        <view class="input-wrap">
+          <view class="input-icon input-icon-lock"></view>
+          <view class="pwd-stack">
+            <text
+              wx:if="{{!showPwd && password}}"
+              class="pwd-star-underlay"
+              selectable="{{false}}"
+            >{{passwordMaskStars}}</text>
+            <input
+              class="input pwd-real-input {{!showPwd && password ? 'pwd-real-input-masked' : ''}}"
+              type="text"
+              value="{{password}}"
+              bindinput="onPasswordInput"
+              confirm-type="done"
+              maxlength="64"
+              placeholder="请输入密码（至少6位）"
+              placeholder-class="input-placeholder"
+            />
+          </view>
+          <view
+            class="pwd-toggle"
+            catchtap="togglePwd"
+            hover-class="pwd-toggle-hover"
+            hover-stay-time="80"
+            aria-role="button"
+            aria-label="{{showPwd ? '隐藏密码，已开启可见' : '显示密码'}}"
+          >
+            <view class="pwd-toggle-icon {{showPwd ? 'pwd-toggle-icon-visible' : 'pwd-toggle-icon-hidden'}}"></view>
+          </view>
+        </view>
+        <view wx:if="{{isRegisterMode}}" class="input-wrap">
+          <view class="input-icon input-icon-lock"></view>
+          <view class="pwd-stack">
+            <text
+              wx:if="{{!showPwd2 && confirmPassword}}"
+              class="pwd-star-underlay"
+              selectable="{{false}}"
+            >{{confirmMaskStars}}</text>
+            <input
+              class="input pwd-real-input {{!showPwd2 && confirmPassword ? 'pwd-real-input-masked' : ''}}"
+              type="text"
+              value="{{confirmPassword}}"
+              bindinput="onConfirmPasswordInput"
+              confirm-type="done"
+              maxlength="64"
+              placeholder="请再次输入密码"
+              placeholder-class="input-placeholder"
+            />
+          </view>
+          <view
+            class="pwd-toggle"
+            catchtap="togglePwd2"
+            hover-class="pwd-toggle-hover"
+            hover-stay-time="80"
+            aria-role="button"
+            aria-label="{{showPwd2 ? '隐藏确认密码，已开启可见' : '显示确认密码'}}"
+          >
+            <view class="pwd-toggle-icon {{showPwd2 ? 'pwd-toggle-icon-visible' : 'pwd-toggle-icon-hidden'}}"></view>
+          </view>
+        </view>
+        <view class="forgot-row" wx:if="{{!isRegisterMode}}">
+          <text class="forgot-link" bindtap="onForgotPwd">忘记密码?</text>
+        </view>
+
+        <button class="btn-login" bindtap="onLogin" loading="{{submitting}}" disabled="{{submitting}}">{{isRegisterMode ? '注册' : '登录'}}</button>
+
+        <view class="register-row">
+          <block wx:if="{{!isRegisterMode}}">
+            <text class="register-tip">还没有账号? </text>
+            <text class="register-link" bindtap="onRegister">快速注册</text>
+          </block>
+          <block wx:else>
+            <text class="register-tip">已有账号? </text>
+            <text class="register-link" bindtap="onRegister">去登录</text>
+          </block>
+        </view>
+
+        <view class="social-row">
+          <view class="social-item social-item-wechat" bindtap="onWechatLogin">
+            <view class="social-btn">
+              <view class="social-icon social-icon-wechat"></view>
+            </view>
+            <text class="social-label social-label-link">微信登录</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 底部协议 -->
+    <view class="footer">
+      <text class="footer-text">登录即代表您同意 </text>
+      <text class="footer-link" bindtap="onAgreement">《用户协议》</text>
+      <text class="footer-text"> 与 </text>
+      <text class="footer-link" bindtap="onPrivacy">《隐私政策》</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,103 @@
+<!--
+  天气日历 - 日记目录页（完全仿照参考图）
+  顶部插画区 | 长条卡片 | 日历卡片 | 本月统计
+-->
+<view class="page">
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+
+  <!-- 顶部栏：返回 | 标题 | 占位 -->
+  <view class="header">
+    <view class="header-back" bindtap="onBack">
+      <view class="header-back-arrow"></view>
+    </view>
+    <text class="header-title">天气日历</text>
+    <view class="header-placeholder"></view>
+  </view>
+
+  <scroll-view class="content" scroll-y>
+    <!-- 顶部气泡 -->
+    <view class="speech-bubble-wrap">
+      <view class="speech-bubble">看看我们一起走过的晴雨四季吧！</view>
+    </view>
+
+    <!-- 插画图片 -->
+    <view class="illust-wrap">
+      <image class="illust-img" src="{{illustUrl}}" mode="aspectFill" binderror="onIllustError" />
+    </view>
+
+    <!-- 本周穿搭回顾 -->
+    <view class="week-review-card" bindtap="onWeekReviewTap">
+      <view class="week-review-left">
+        <text class="week-review-title">本周穿搭回顾</text>
+        <text class="week-review-desc" wx:if="{{weekReviewCount > 0}}">本周已记录 {{weekReviewCount}} 天穿搭</text>
+        <text class="week-review-desc" wx:else>点击查看本周穿搭记录</text>
+      </view>
+      <view class="week-review-arrow">›</view>
+    </view>
+
+    <!-- 日历卡片 -->
+    <view class="calendar-card">
+      <view class="calendar-header">
+        <view class="month-prev" bindtap="onPrevMonth">‹</view>
+        <picker class="month-title-wrap" mode="date" value="{{pickerDate}}" start="2020-01-01" end="2030-12-31" bindchange="onDatePickerChange">
+          <text class="month-title">{{displayYear}}年{{displayMonth}}月</text>
+        </picker>
+        <view class="month-next" bindtap="onNextMonth">›</view>
+      </view>
+      <view class="weekday-row">
+        <text class="weekday">日</text>
+        <text class="weekday">一</text>
+        <text class="weekday">二</text>
+        <text class="weekday">三</text>
+        <text class="weekday">四</text>
+        <text class="weekday">五</text>
+        <text class="weekday">六</text>
+      </view>
+      <view class="calendar-grid">
+        <block wx:for="{{calendarDays}}" wx:key="id">
+          <view class="day-cell {{item.empty ? 'day-empty' : ''}} {{item.today ? 'day-today' : ''}}" bindtap="onDayTap" data-date="{{item.date}}">
+            <text wx:if="{{!item.empty}}" class="day-num">{{item.day}}</text>
+            <view wx:if="{{!item.empty}}" class="day-weather-icon day-weather-{{item.weather}}"></view>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <!-- 本月统计 -->
+    <view class="stats-card">
+      <text class="stats-title">本月统计</text>
+      <view class="stats-row">
+        <view class="stats-item stats-sunny">
+          <view class="stats-icon stats-icon-sunny"></view>
+          <text class="stats-label">晴天</text>
+          <text class="stats-days">{{stats.sunny}}天</text>
+        </view>
+        <view class="stats-item stats-cloudy">
+          <view class="stats-icon stats-icon-cloudy"></view>
+          <text class="stats-label">阴天</text>
+          <text class="stats-days">{{stats.cloudy}}天</text>
+        </view>
+        <view class="stats-item stats-overcast">
+          <view class="stats-icon stats-icon-overcast"></view>
+          <text class="stats-label">多云</text>
+          <text class="stats-days">{{stats.overcast}}天</text>
+        </view>
+      </view>
+      <view class="stats-row">
+        <view class="stats-item stats-rainy">
+          <view class="stats-icon stats-icon-rainy"></view>
+          <text class="stats-label">雨天</text>
+          <text class="stats-days">{{stats.rainy}}天</text>
+        </view>
+        <view class="stats-item stats-haze">
+          <view class="stats-icon stats-icon-haze"></view>
+          <text class="stats-label">雾霾</text>
+          <text class="stats-days">{{stats.haze}}天</text>
+        </view>
+        <view class="stats-item stats-placeholder"></view>
+      </view>
+    </view>
+
+    <view class="bottom-pad"></view>
+  </scroll-view>
+</view>

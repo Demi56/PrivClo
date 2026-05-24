@@ -1,0 +1,61 @@
+<!--
+  用户协议与隐私政策 - 参考设计布局
+  布局：顶部栏 | 插画区(气泡+精灵) | Tab切换 | 内容区
+-->
+<view class="page">
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+
+  <!-- 顶部栏 -->
+  <view class="header">
+    <view class="header-back" bindtap="onBack">
+      <view class="header-back-arrow"></view>
+    </view>
+    <text class="header-title">用户协议与隐私政策</text>
+    <view class="header-placeholder"></view>
+  </view>
+
+  <!-- 插画区：气泡 + 精灵形象 -->
+  <view class="illust-area">
+    <view class="bubble-wrap">
+      <view class="bubble">
+        <text class="bubble-text">保障你的信息安全是我们的首要任务哦!</text>
+      </view>
+    </view>
+    <view class="sprite-wrap">
+      <image class="sprite-img" src="{{spriteUrl}}" mode="aspectFit" binderror="onSpriteError" />
+    </view>
+  </view>
+
+  <!-- Tab 切换 -->
+  <view class="tab-bar">
+    <view
+      wx:for="{{tabList}}"
+      wx:key="*this"
+      class="tab-item {{activeTab === index ? 'tab-active' : ''}}"
+      data-index="{{index}}"
+      bindtap="onTabTap"
+    >{{item}}</view>
+  </view>
+
+  <!-- 内容区 -->
+  <scroll-view class="content-scroll" scroll-y>
+    <view wx:if="{{activeTab === 0}}" class="content-inner">
+      <view wx:for="{{privacySections}}" wx:key="num" class="section">
+        <view class="section-header">
+          <view class="section-num">{{item.num}}</view>
+          <text class="section-title">{{item.title}}</text>
+        </view>
+        <text class="section-content">{{item.content}}</text>
+      </view>
+    </view>
+    <view wx:if="{{activeTab === 1}}" class="content-inner">
+      <view wx:for="{{termsSections}}" wx:key="num" class="section">
+        <view class="section-header">
+          <view class="section-num">{{item.num}}</view>
+          <text class="section-title">{{item.title}}</text>
+        </view>
+        <text class="section-content">{{item.content}}</text>
+      </view>
+    </view>
+  </scroll-view>
+</view>

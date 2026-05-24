@@ -1,0 +1,56 @@
+<!--
+  闲置转卖 - 精灵管家 + 对话气泡 + 闲置统计
+  布局：正方形精灵图 | 对话气泡 | 闲置统计标题 | 高亮文案 | 批量处理按钮
+-->
+<view class="page">
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+
+  <view class="header">
+    <view class="header-back" bindtap="onBack">
+      <view class="header-back-arrow"></view>
+    </view>
+    <text class="header-title">闲置转卖</text>
+    <view class="header-placeholder"></view>
+  </view>
+
+  <scroll-view class="content" scroll-y>
+    <view class="content-inner">
+      <!-- 顶部：正方形精灵管家图片 -->
+      <view class="sprite-wrap">
+        <image wx:if="{{!spriteError}}" class="sprite-img" src="{{spriteUrl}}" mode="aspectFit" binderror="onSpriteError" />
+        <image wx:else class="sprite-img" src="{{spriteFallbackUrl}}" mode="aspectFit" />
+      </view>
+
+      <!-- 对话气泡 -->
+      <view class="bubble-wrap">
+        <view class="bubble-tail"></view>
+        <text class="bubble-text">衣服太满啦？把旧爱分享给有需要的人吧！</text>
+      </view>
+
+      <!-- 平台按钮：闲鱼 | 转转 -->
+      <view class="platform-btns">
+        <view class="platform-btn" bindtap="onXianyuTap">
+          <view class="platform-btn-icon platform-btn-icon-xianyu"></view>
+          <view class="platform-btn-text">
+            <text class="platform-btn-title">发布到闲鱼</text>
+            <text class="platform-btn-subtitle">AI一键导出图标与描述</text>
+          </view>
+        </view>
+        <view class="platform-btn" bindtap="onZhuanzhuanTap">
+          <view class="platform-btn-icon platform-btn-icon-zhuanzhuan"></view>
+          <view class="platform-btn-text">
+            <text class="platform-btn-title">转转一键转卖</text>
+            <text class="platform-btn-subtitle">快速估价，极速回血</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 闲置统计 -->
+      <view class="stats-section">
+        <text class="stats-title">闲置统计</text>
+        <text class="stats-desc">发现<text class="highlight">{{idleCount}}</text>件衣物已将超过<text class="highlight">{{idleDays}}</text>天未穿着</text>
+        <view class="btn-batch" bindtap="onBatchProcess">批量处理</view>
+      </view>
+    </view>
+  </scroll-view>
+</view>

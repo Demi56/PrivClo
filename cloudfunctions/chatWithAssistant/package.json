@@ -1,0 +1,10 @@
+{
+  "name": "chatWithAssistant",
+  "version": "1.0.0",
+  "description": "精灵小管家 AI 对话 - 云开发 AI 扩展调用混元（成长计划免费额度）",
+  "main": "index.js",
+  "dependencies": {
+    "@cloudbase/node-sdk": "^3.16.0",
+    "wx-server-sdk": "~2.6.3"
+  }
+}

@@ -1,0 +1,52 @@
+<!--
+  添加成员页 - 角色位购买
+  布局：顶部导航 | 六角色图（站位与图层按设计图）| 温馨提示卡片
+-->
+<view class="page">
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+
+  <!-- 自定义标题栏：返回 | 标题 -->
+  <view class="header">
+    <view class="header-back" bindtap="onBack">
+      <view class="header-back-arrow"></view>
+    </view>
+    <text class="header-title">添加新成员</text>
+    <view class="header-placeholder"></view>
+  </view>
+
+  <!-- 六角色图 + 温馨提示卡片（整体上移 130rpx） -->
+  <view class="content-up">
+    <view class="characters-wrap">
+      <image class="characters-composite" src="{{addMemberCharactersUrl}}" mode="aspectFit" />
+      <!-- 6 个透明热区：按设计规范 left/width/height，底部对齐，z-index 递增 -->
+      <view
+        wx:for="{{characters}}"
+        wx:key="id"
+        class="character-hotzone {{selectedIndex === item.index ? 'character-hotzone-selected' : ''}}"
+        style="left: {{item.left}}rpx; width: {{item.width}}rpx; height: {{item.height}}rpx; bottom: {{item.bottom}}rpx; z-index: {{item.zIndex}};"
+        catchtap="onCharacterTap"
+        data-index="{{item.index}}"
+      ></view>
+    </view>
+    <view class="tip-card">
+    <text class="tip-text">角色位兑换成功后，系统会自动发放该角色的日记与衣橱名额</text>
+    </view>
+  </view>
+
+  <!-- 角色兑换弹窗：全屏透明遮罩 + 居中卡片（复刻积分商城角色数量卡片，等比例放大30%） -->
+  <view wx:if="{{selectedIndex >= 0}}" class="exchange-popup-mask" catchtap="onCloseExchangePopup">
+    <view class="exchange-popup-card" catchtap="onCardTap">
+      <view class="exchange-popup-close" catchtap="onCloseExchangePopup"></view>
+      <view wx:if="{{selectedIndex >= 0 && characters[selectedIndex]}}" class="exchange-card-inner">
+        <view class="exchange-img-wrap">
+          <image class="exchange-img" src="{{characters[selectedIndex].roleImage}}" mode="aspectFit" />
+        </view>
+        <text class="exchange-name">{{characters[selectedIndex].exchangeName}}</text>
+        <view class="exchange-row">
+          <text class="exchange-points">{{characters[selectedIndex].points}} 积分</text>
+          <view class="exchange-btn" catchtap="onExchangeConfirm">兑换</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

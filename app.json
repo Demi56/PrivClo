@@ -1,0 +1,121 @@
+{
+  "lazyCodeLoading": "requiredComponents",
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于获取当地天气并推荐合适的穿搭"
+    },
+    "scope.camera": {
+      "desc": "用于扫描录入衣物单品"
+    },
+    "scope.album": {
+      "desc": "用于选择衣物图片进行录入"
+    }
+  },
+  "pages": [
+    "pages/loading/loading",
+    "pages/index/index",
+    "pages/login/login",
+    "pages/wechatauth/wechatauth",
+    "pages/preference/preference",
+    "pages/role/role",
+    "pages/add-member/add-member",
+    "pages/model/model",
+    "pages/diary/diary",
+    "pages/wardrobe/wardrobe",
+    "pages/recommend/recommend",
+    "pages/street-to-outfit/street-to-outfit",
+    "pages/tryon/tryon",
+    "pages/mine/mine"
+  ],
+  "subpackages": [
+    {
+      "root": "packagePoints",
+      "name": "points",
+      "pages": [
+        "pages/pointscenter/pointscenter",
+        "pages/task-square/task-square",
+        "pages/invite/invite",
+        "pages/points-store/points-store",
+        "pages/background-select/background-select"
+      ]
+    },
+    {
+      "root": "packageMemoir",
+      "name": "memoir",
+      "pages": [
+        "pages/memoir-select/memoir-select",
+        "pages/memoir/memoir"
+      ]
+    },
+    {
+      "root": "packageDiary",
+      "name": "diary",
+      "pages": [
+        "pages/diary-calendar/diary-calendar",
+        "pages/diary-detail/diary-detail",
+        "pages/diary-week-review/diary-week-review"
+      ]
+    },
+    {
+      "root": "packageWardrobe",
+      "name": "wardrobe",
+      "pages": [
+        "pages/add-clothing/add-clothing",
+        "pages/wardrobe-inner/wardrobe-inner",
+        "pages/official-prefit/official-prefit",
+        "pages/resale/resale",
+        "pages/category-detail/category-detail",
+        "pages/item-entry/item-entry",
+        "pages/favorites-tryon/favorites-tryon"
+      ]
+    },
+    {
+      "root": "packageSettings",
+      "name": "settings",
+      "pages": [
+        "pages/settings/settings",
+        "pages/ai-service/ai-service",
+        "pages/privacy-terms/privacy-terms",
+        "pages/account-security/account-security",
+        "pages/model-profile/model-profile",
+        "pages/outfit-preferences/outfit-preferences"
+      ]
+    }
+  ],
+  "preloadRule": {
+    "pages/loading/loading": {
+      "network": "all",
+      "packages": [
+        "wardrobe"
+      ]
+    },
+    "pages/index/index": {
+      "network": "all",
+      "packages": [
+        "wardrobe"
+      ]
+    },
+    "pages/wardrobe/wardrobe": {
+      "network": "all",
+      "packages": [
+        "wardrobe"
+      ]
+    },
+    "pages/mine/mine": {
+      "network": "all",
+      "packages": [
+        "memoir"
+      ]
+    }
+  },
+  "window": {
+    "navigationStyle": "custom",
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#F9F6ED",
+    "navigationBarTitleText": "",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#F9F6ED"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

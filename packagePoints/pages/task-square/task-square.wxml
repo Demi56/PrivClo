@@ -1,0 +1,156 @@
+<!--
+  任务广场 - 卡片化、手游质感
+  布局：头部(积分+今日进度) | 分类Tab | 任务卡片列表 | 底部邀请入口+积分规则
+-->
+<view class="page">
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+
+  <!-- 顶部栏 -->
+  <view class="nav-header">
+    <view class="header-back" bindtap="onBack">
+      <view class="header-back-arrow"></view>
+    </view>
+    <view class="header-title-wrap">
+      <view class="header-title-icon"></view>
+      <text class="header-title">任务广场</text>
+    </view>
+    <view class="header-placeholder"></view>
+  </view>
+
+  <!-- 4.1 头部区域：积分余额 + 今日进度条 -->
+  <view class="header-area">
+    <view class="points-balance" bindtap="onPointsTap">
+      <view class="points-diamond"></view>
+      <text class="points-label">当前积分</text>
+      <text class="points-value">{{totalPoints}}</text>
+      <view class="points-arrow"></view>
+    </view>
+    <view class="daily-progress">
+      <text class="progress-label">今日获得积分</text>
+      <view class="progress-bar-wrap">
+        <view class="progress-bar-fill" style="width: {{todayPoints >= dailyMax ? 100 : (todayPoints / dailyMax * 100)}}%;"></view>
+      </view>
+      <text class="progress-value">{{todayPoints}}/{{dailyMax}}</text>
+    </view>
+  </view>
+
+  <!-- 4.2 分类Tab -->
+  <view class="tab-bar">
+    <view
+      wx:for="{{tabList}}"
+      wx:key="*this"
+      class="tab-item {{activeTab === index ? 'tab-active' : ''}}"
+      data-index="{{index}}"
+      bindtap="onTabTap"
+    >{{item}}</view>
+    <view class="tab-slider" style="left: {{activeTab * 25}}%;"></view>
+  </view>
+
+  <!-- 任务列表 -->
+  <scroll-view class="task-scroll" scroll-y>
+    <!-- 每日任务 -->
+    <view wx:if="{{activeTab === 0}}" class="task-list">
+      <block wx:if="{{dailyAllDone}}">
+        <view class="empty-done">
+          <text class="empty-text">今天任务已完成，明天再来吧</text>
+        </view>
+      </block>
+      <block wx:else>
+      <view wx:for="{{dailyTasks}}" wx:key="id" class="task-card">
+        <view class="task-card-inner">
+          <view class="task-info">
+            <text class="task-name">{{item.name}}</text>
+            <text class="task-desc">{{item.desc}}</text>
+            <text class="task-remark">{{item.remark}}</text>
+          </view>
+          <view class="task-right">
+            <text class="task-reward">+{{item.reward}}</text>
+            <view class="task-btn" data-id="{{item.id}}" data-type="daily" catchtap="onClaim">领取</view>
+          </view>
+        </view>
+      </view>
+      </block>
+    </view>
+
+    <!-- 新手任务 -->
+    <view wx:if="{{activeTab === 1}}" class="task-list">
+      <view wx:for="{{noviceTasks}}" wx:key="id" class="task-card">
+        <view class="task-card-inner">
+          <view class="task-info">
+            <text class="task-name">{{item.name}}</text>
+            <text class="task-desc">{{item.desc}}</text>
+          </view>
+          <view class="task-right">
+            <text class="task-reward">+{{item.reward}}</text>
+            <view class="task-btn" data-id="{{item.id}}" data-type="novice" catchtap="onClaim">领取</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 成就任务 -->
+    <view wx:if="{{activeTab === 2}}" class="task-list">
+      <view wx:for="{{achieveTasks}}" wx:key="id" class="task-card">
+        <view class="task-card-inner">
+          <view class="task-info">
+            <text class="task-name">{{item.name}}</text>
+            <text class="task-desc">{{item.desc}}</text>
+            <text wx:if="{{item.extra}}" class="task-remark">{{item.extra}}</text>
+          </view>
+          <view class="task-right">
+            <text class="task-reward">+{{item.reward}}</text>
+            <view class="task-btn" data-id="{{item.id}}" data-type="achieve" catchtap="onClaim">领取</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 限时任务 -->
+    <view wx:if="{{activeTab === 3}}" class="task-list">
+      <view wx:for="{{limitedTasks}}" wx:key="id" class="task-card">
+        <view class="task-card-inner">
+          <view class="task-info">
+            <text class="task-name">{{item.name}}</text>
+            <text class="task-desc">{{item.desc}}</text>
+            <text class="task-remark">有效期：{{item.validity}}</text>
+          </view>
+          <view class="task-right task-right-limited">
+            <text class="task-reward">{{item.reward}}</text>
+            <view class="task-btn task-btn-disabled" data-id="{{item.id}}" data-type="limited" catchtap="onClaim">暂未开放</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 4.4 底部区域：邀请入口 + 积分规则 -->
+    <view class="bottom-area">
+      <view class="invite-entry" bindtap="onInviteTap">
+        <view class="invite-icon"></view>
+        <text class="invite-text">邀请好友，各得1000积分</text>
+        <view class="invite-arrow"></view>
+      </view>
+      <view class="rules-link" bindtap="onRulesTap">
+        <view class="rules-icon"></view>
+        <text class="rules-text">积分规则</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 积分规则弹窗 -->
+  <view wx:if="{{showRulesModal}}" class="rules-mask">
+    <view class="rules-mask-bg" catchtap="onCloseRules"></view>
+    <view class="rules-modal">
+      <text class="rules-title">积分规则</text>
+      <scroll-view class="rules-content" scroll-y>
+        <text class="rules-text">• 1元人民币 = 100积分</text>
+        <text class="rules-text">• 注册奖励：1000积分（新用户一次性）</text>
+        <text class="rules-text">• 邀请好友：1000积分/人（邀请者与被邀请者各得1000）</text>
+        <text class="rules-text">• 新增角色位：2000积分</text>
+        <text class="rules-text">• 每日任务上限：220积分</text>
+        <text class="rules-text">• 新手任务总计：380积分</text>
+        <text class="rules-text">• 成就任务总计：2250积分</text>
+      </scroll-view>
+      <view class="rules-close" bindtap="onCloseRules">关闭</view>
+    </view>
+  </view>
+</view>

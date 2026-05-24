@@ -1,0 +1,131 @@
+/* 登录/注册引导页 - 索引页样式 */
+
+.page {
+  min-height: 100vh;
+  background-color: #F9F6ED; /* 页面背景主色 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.status-bar {
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.content {
+  flex: 1;
+  width: 100%;
+  max-width: 750rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx 40rpx 0;
+  box-sizing: border-box;
+}
+
+/* ========== 精灵形象区域 ========== */
+.sprite-wrap {
+  width: 560rpx;
+  height: 560rpx;
+  border-radius: 32rpx;
+  background-color: #88ADA6; /* 小精灵背后方块色 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 48rpx;
+  overflow: hidden;
+  box-shadow: 0 8rpx 24rpx rgba(102, 204, 170, 0.15);
+}
+
+.sprite-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ========== 文字信息区 ========== */
+.text-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 64rpx;
+}
+
+.title-main {
+  font-size: 44rpx;
+  font-weight: bold;
+  color: #333333; /* 文字主色 */
+  line-height: 1.35;
+  margin-bottom: 8rpx;
+}
+
+.title-sub {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #66CCAA; /* 主点缀色 */
+  line-height: 1.35;
+  margin-bottom: 24rpx;
+  padding-left: 16rpx; /* 与主标题轻微错落 */
+}
+
+.desc {
+  font-size: 28rpx;
+  font-weight: normal;
+  color: #555555; /* 文字辅助色 */
+  line-height: 1.6;
+  text-align: center;
+  padding: 0 24rpx;
+}
+
+/* ========== 底部操作按钮区 ========== */
+.btns {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24rpx;
+  padding-bottom: calc(60rpx + env(safe-area-inset-bottom));
+}
+
+.btn {
+  width: 100%;
+  height: 96rpx;
+  line-height: 96rpx;
+  border-radius: 48rpx;
+  font-size: 32rpx;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+}
+
+.btn::after {
+  border: none;
+}
+
+.btn-primary {
+  background-color: #333333; /* 文字主色作主按钮背景 */
+  color: #FFFFFF;
+}
+
+.btn-primary:active {
+  background-color: #2a2a2a;
+  opacity: 0.95;
+}
+
+.btn-secondary {
+  background-color: #FFFFFF; /* 卡片/区块背景 */
+  color: #333333; /* 文字主色 */
+  border: 2rpx solid #E8E8E8; /* 分割线/边框 */
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.btn-secondary:active {
+  background-color: #F5F5F5;
+  border-color: #E0E0E0;
+}

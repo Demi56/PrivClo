@@ -1,0 +1,32 @@
+.spine-model {
+  position: relative;
+  width: 100%;
+  min-height: 400rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f0e8;
+}
+
+.spine-canvas {
+  width: 100%;
+  height: 920rpx;
+  display: block;
+}
+
+.spine-fallback {
+  width: 100%;
+  min-height: 460rpx;
+}
+
+.spine-loading {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  padding: 24rpx 48rpx;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  color: #666;
+}

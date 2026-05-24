@@ -1,0 +1,6 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "chat-assistant": "/components/chat-assistant/chat-assistant"
+  }
+}

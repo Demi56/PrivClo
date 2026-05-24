@@ -1,0 +1,199 @@
+/* 角色信息录入 - 居中卡片、浅色背景、主色青绿 */
+.page {
+  min-height: 100vh;
+  background: #F5F0E8;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.status-bar { width: 100%; flex-shrink: 0; }
+
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 32rpx;
+  position: relative;
+  z-index: 2;
+}
+.header-back {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.header-back-arrow {
+  width: 24rpx;
+  height: 24rpx;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23333333'%3E%3Cpath d='M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+.header-title { font-size: 34rpx; font-weight: bold; color: #333333; }
+.header-placeholder { width: 72rpx; height: 72rpx; }
+
+.blur-bg {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: #F5F0E8;
+  z-index: 0;
+}
+
+.card-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48rpx;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+}
+
+.card {
+  width: 100%;
+  max-width: 620rpx;
+  background: #FBF8F5;
+  border-radius: 32rpx;
+  box-shadow: 0 12rpx 48rpx rgba(0, 0, 0, 0.08);
+  padding: 40rpx 36rpx 36rpx;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.card-header {
+  position: relative;
+  margin-bottom: 32rpx;
+}
+
+.card-title {
+  display: block;
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #333333;
+  text-align: center;
+  padding-right: 100rpx;
+}
+
+.avatar-wrap {
+  position: absolute;
+  top: -24rpx;
+  right: -24rpx;
+  width: 120rpx;
+  height: 120rpx;
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #EEE;
+  border: 4rpx solid #FBF8F5;
+  box-sizing: border-box;
+}
+
+.avatar-heart {
+  position: absolute;
+  top: -4rpx;
+  right: -4rpx;
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 50%;
+  background: #FFB6C1;
+  z-index: 1;
+}
+
+.form {
+  margin-bottom: 40rpx;
+}
+
+.field {
+  margin-bottom: 28rpx;
+}
+
+.field-row {
+  display: flex;
+  flex-direction: row;
+  gap: 24rpx;
+  margin-bottom: 28rpx;
+}
+
+.field.half {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.label {
+  display: block;
+  font-size: 28rpx;
+  color: #333333;
+  margin-bottom: 12rpx;
+}
+
+.input {
+  width: 100%;
+  height: 80rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  color: #333333;
+  background: #F0EDE8;
+  border-radius: 16rpx;
+  box-sizing: border-box;
+}
+
+.tags {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 20rpx;
+  margin-top: 12rpx;
+}
+
+.tag {
+  padding: 16rpx 32rpx;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  color: #555555;
+  background: #FFFFFF;
+  border: 2rpx solid #E8E4DE;
+}
+
+.tag.selected {
+  background: #5DB8A8;
+  border-color: #5DB8A8;
+  color: #FFFFFF;
+}
+
+.actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24rpx;
+}
+
+.btn {
+  flex: 1;
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  font-size: 30rpx;
+  border-radius: 44rpx;
+}
+
+.btn-cancel {
+  background: transparent;
+  color: #666666;
+}
+
+.btn-save {
+  background: #5DB8A8;
+  color: #FFFFFF;
+  flex: 1.4;
+}

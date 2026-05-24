@@ -1,0 +1,571 @@
+/* 日记内页 - 竖屏米黄纸张质感 */
+
+.page {
+  min-height: 100vh;
+  background: #E8E4DC;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.status-bar { width: 100%; flex-shrink: 0; }
+
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16rpx 32rpx 20rpx;
+  background: #E8E4DC;
+}
+
+.header-back {
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-back-arrow {
+  width: 28rpx;
+  height: 28rpx;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23555'%3E%3Cpath d='M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.header-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #5D4E37;
+}
+
+.header-placeholder { width: 56rpx; height: 56rpx; }
+
+.diary-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 卷边翻页 3D 场景 */
+.flip-scene {
+  width: 100%;
+  perspective: 800px;
+  perspective-origin: center center;
+  transform-style: preserve-3d;
+  overflow: hidden;
+}
+
+.flip-wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+.flip-page {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24rpx;
+  box-sizing: border-box;
+}
+
+.flip-page-current {
+  z-index: 1;
+}
+
+.flip-page-under {
+  z-index: 1;
+}
+
+.flip-page-flip {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  transform-style: preserve-3d;
+  transition: transform 1.2s cubic-bezier(0.33, 1, 0.68, 1);
+  -webkit-transition: transform 1.2s cubic-bezier(0.33, 1, 0.68, 1);
+  will-change: transform;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flip-page-front,
+.flip-page-back {
+  position: absolute;
+  left: 24rpx;
+  right: 24rpx;
+  top: 24rpx;
+  bottom: 24rpx;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flip-page-front {
+  transform: rotateY(0deg);
+  z-index: 2;
+}
+
+.flip-page-back {
+  transform: rotateY(180deg);
+  z-index: 1;
+  background: transparent;
+}
+
+.diary-page {
+  width: 100%;
+  max-width: 640rpx;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+/* 纸张区域 - 暖米色点阵质感 */
+.page-paper {
+  width: 100%;
+  flex: 1;
+  min-height: 1200rpx;
+  background-color: #FEFEFE;
+  background-image: radial-gradient(circle at center, rgba(200, 198, 195, 0.6) 1.5rpx, transparent 1.5rpx);
+  background-size: 24rpx 24rpx;
+  border-radius: 24rpx;
+  box-shadow:
+    inset 0 0 0 1rpx rgba(200, 195, 185, 0.4),
+    0 8rpx 32rpx rgba(120, 110, 95, 0.12),
+    0 2rpx 12rpx rgba(0, 0, 0, 0.06);
+  padding: 48rpx 40rpx;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 上半部分：拍立得照片 */
+.photo-area {
+  flex: 0 0 400rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24rpx;
+}
+
+.polaroid-frame {
+  width: 280rpx;
+  height: 300rpx;
+  background: #FFFFFF;
+  padding: 16rpx 16rpx 48rpx;
+  box-shadow:
+    0 2rpx 8rpx rgba(0, 0, 0, 0.08),
+    0 8rpx 24rpx rgba(93, 78, 55, 0.1);
+  transform: rotate(-1deg);
+}
+
+.polaroid-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.polaroid-placeholder {
+  width: 100%;
+  height: 100%;
+  border: 2rpx dashed #D4CFC4;
+  border-radius: 4rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #FFFFFF;
+}
+
+.placeholder-icon {
+  font-size: 64rpx;
+  color: #C4BDB0;
+  line-height: 1;
+  margin-bottom: 12rpx;
+}
+
+.placeholder-text {
+  font-size: 24rpx;
+  color: #A89F8E;
+}
+
+/* 下半部分：文案区 */
+.text-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 400rpx;
+  overflow: visible;
+}
+
+.text-header {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+  flex-shrink: 0;
+}
+
+.date-block {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8rpx 12rpx;
+}
+
+.date-year {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #1A1A1A;
+  line-height: 1.3;
+}
+
+.date-month-day {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #1A1A1A;
+  line-height: 1.3;
+}
+
+.date-week {
+  font-size: 24rpx;
+  color: #6B6B6B;
+  line-height: 1.3;
+  flex-basis: 100%;
+}
+
+.date-weather {
+  font-size: 22rpx;
+  color: #6B6B6B;
+  line-height: 1.3;
+}
+
+.weather-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.weather-block .date-weather {
+  text-align: center;
+}
+
+.weather-icon-large {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+}
+
+.weather-sunny {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23FFB74D'%3E%3Cpath d='M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.weather-cloudy {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239E9E9E'%3E%3Cpath d='M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.weather-overcast {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2390A4AE'%3E%3Cpath d='M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.weather-rainy {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234FC3F7'%3E%3Cpath d='M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 17l-2 4h2l-2 4 2-4h-2l2-4z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.weather-haze {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%238D6E63'%3E%3Cpath d='M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.text-content {
+  flex: 1;
+  min-height: 120rpx;
+  padding: 12rpx 0;
+  position: relative;
+}
+
+.content-text {
+  font-size: 28rpx;
+  line-height: 2;
+  color: #1A1A1A;
+  white-space: pre-wrap;
+}
+
+/* 贴纸层：覆盖文案区，用于展示已粘贴的贴纸 */
+.sticker-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.paper-sticker {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8rpx;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+  pointer-events: auto;
+}
+
+.paper-sticker-emoji {
+  font-size: 48rpx;
+  line-height: 1;
+}
+
+/* 翻页按钮 */
+.flip-area {
+  position: absolute;
+  bottom: 50rpx;
+  width: 120rpx;
+  height: 120rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+.flip-area-prev {
+  left: 40rpx;
+}
+
+.flip-area-next {
+  right: 40rpx;
+}
+
+.flip-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16rpx 24rpx;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+}
+
+.flip-text {
+  font-size: 20rpx;
+  color: #8B7765;
+  margin-bottom: 4rpx;
+}
+
+.flip-arrow {
+  font-size: 36rpx;
+  color: #5D4E37;
+}
+
+/* 底部操作栏 */
+.bottom-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  height: 120rpx;
+  padding: 16rpx 32rpx;
+  padding-bottom: calc(16rpx + env(safe-area-inset-bottom));
+  background: #F5F0E6;
+  border-top: 1rpx solid #E0DAD0;
+}
+
+.bar-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.bar-icon {
+  width: 48rpx;
+  height: 48rpx;
+}
+
+.bar-icon-edit {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%235D4E37'%3E%3Cpath d='M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.bar-icon-camera {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%235D4E37'%3E%3Cpath d='M12 15.2c1.77 0 3.2-1.43 3.2-3.2 0-1.77-1.43-3.2-3.2-3.2-1.77 0-3.2 1.43-3.2 3.2 0 1.77 1.43 3.2 3.2 3.2zM9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.bar-icon-sticker {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%235D4E37'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.bar-icon-save {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2334B3D4'%3E%3Cpath d='M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.bar-item-save .bar-label {
+  color: #34B3D4;
+  font-weight: 600;
+}
+
+.bar-label {
+  font-size: 22rpx;
+  color: #5D4E37;
+}
+
+/* 文案输入框 */
+.input-wrap {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 24rpx;
+  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  background: #F5F0E6;
+  border-top: 1rpx solid #E0DAD0;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+  z-index: 20;
+}
+
+.input-visible {
+  transform: translateY(0);
+}
+
+.diary-input {
+  width: 100%;
+  height: 200rpx;
+  padding: 24rpx;
+  background: #FFFEF9;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  color: #5D4E37;
+  box-sizing: border-box;
+  border: 1rpx solid #E0DAD0;
+}
+
+.input-close {
+  margin-top: 16rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: #4DD0E1;
+  font-weight: 600;
+}
+
+/* 贴纸素材库 */
+.sticker-wrap {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 30;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.sticker-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.sticker-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: 70vh;
+  background: #FBF8F4;
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 32rpx 24rpx;
+  padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+  box-shadow: 0 -8rpx 32rpx rgba(0, 0, 0, 0.08);
+}
+
+.sticker-visible .sticker-panel {
+  transform: translateY(0);
+}
+
+.sticker-tabs {
+  white-space: nowrap;
+  margin-bottom: 24rpx;
+}
+
+.sticker-tab {
+  display: inline-block;
+  padding: 16rpx 28rpx;
+  margin-right: 16rpx;
+  border-radius: 40rpx;
+  background: #EBE8E2;
+  font-size: 26rpx;
+  color: #6B6B6B;
+}
+
+.sticker-tab-active {
+  background: #34B3D4;
+  color: #FFFFFF;
+}
+
+.sticker-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #2C2C2C;
+  text-align: center;
+  margin-bottom: 24rpx;
+}
+
+.sticker-grid-wrap {
+  height: 360rpx;
+  margin-bottom: 24rpx;
+}
+
+.sticker-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24rpx;
+  padding: 8rpx 0;
+}
+
+.sticker-item {
+  height: 140rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease;
+}
+
+.sticker-item:active {
+  transform: scale(0.95);
+}
+
+.sticker-icon {
+  font-size: 56rpx;
+  line-height: 1;
+}
+
+.sticker-close {
+  text-align: center;
+  font-size: 28rpx;
+  color: #34B3D4;
+  font-weight: 600;
+  padding: 16rpx;
+}

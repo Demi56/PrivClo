@@ -1,0 +1,387 @@
+/* 任务广场 - 卡片化、手游质感 */
+
+.page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #FFF8E7 0%, #F5F0E8 35%, #E8F4F8 100%);
+  display: flex;
+  flex-direction: column;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.status-bar { width: 100%; flex-shrink: 0; }
+
+/* 顶部栏 */
+.nav-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 32rpx;
+  background: transparent;
+}
+
+.header-back {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.06);
+}
+
+.header-back-arrow {
+  width: 24rpx;
+  height: 24rpx;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23333333'%3E%3Cpath d='M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.header-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.header-title-icon {
+  width: 36rpx;
+  height: 36rpx;
+  background: linear-gradient(135deg, #D4A574 0%, #C4956A 100%);
+  border-radius: 8rpx;
+  box-shadow: 0 2rpx 8rpx rgba(196, 149, 106, 0.4);
+}
+
+.header-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #333333;
+}
+
+.header-placeholder { width: 72rpx; height: 72rpx; }
+
+/* ========== 4.1 头部区域 ========== */
+.header-area {
+  padding: 24rpx 32rpx 32rpx;
+}
+
+.points-balance {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20rpx;
+  padding: 24rpx 28rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.06), 0 -2rpx 12rpx rgba(255, 255, 255, 0.9);
+}
+
+.points-diamond {
+  width: 32rpx;
+  height: 32rpx;
+  margin-right: 12rpx;
+  background: linear-gradient(135deg, #4DD0E1 0%, #26C6DA 100%);
+  transform: rotate(45deg);
+  box-shadow: 0 2rpx 8rpx rgba(77, 208, 225, 0.5);
+}
+
+.points-label {
+  font-size: 26rpx;
+  color: #999999;
+  margin-right: 8rpx;
+}
+
+.points-value {
+  flex: 1;
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #4DD0E1;
+}
+
+.points-arrow {
+  width: 24rpx;
+  height: 24rpx;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23999999'%3E%3Cpath d='M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.daily-progress {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20rpx;
+  padding: 20rpx 28rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.06);
+}
+
+.progress-label {
+  font-size: 26rpx;
+  color: #666666;
+  margin-bottom: 12rpx;
+  display: block;
+}
+
+.progress-bar-wrap {
+  height: 16rpx;
+  background: rgba(77, 208, 225, 0.2);
+  border-radius: 8rpx;
+  overflow: hidden;
+  margin-bottom: 8rpx;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4DD0E1 0%, #26C6DA 100%);
+  border-radius: 8rpx;
+  transition: width 0.3s ease;
+}
+
+.progress-value {
+  font-size: 24rpx;
+  color: #4DD0E1;
+  font-weight: 600;
+}
+
+/* ========== 4.2 分类Tab ========== */
+.tab-bar {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  padding: 0 32rpx 20rpx;
+  background: transparent;
+}
+
+.tab-item {
+  flex: 1;
+  text-align: center;
+  font-size: 28rpx;
+  color: #999999;
+  padding: 16rpx 0;
+  transition: color 0.2s;
+}
+
+.tab-active {
+  color: #333333;
+  font-weight: 600;
+}
+
+.tab-slider {
+  position: absolute;
+  bottom: 16rpx;
+  width: 25%;
+  height: 4rpx;
+  background: linear-gradient(90deg, #4DD0E1 0%, #26C6DA 100%);
+  border-radius: 2rpx;
+  transition: left 0.25s ease;
+}
+
+/* ========== 任务卡片列表 ========== */
+.task-scroll {
+  flex: 1;
+  height: 0;
+}
+
+.task-list {
+  padding: 0 32rpx 32rpx;
+}
+
+.task-card {
+  margin-bottom: 20rpx;
+  border-radius: 24rpx;
+  overflow: hidden;
+  box-shadow: 0 6rpx 24rpx rgba(0, 0, 0, 0.08), 0 -2rpx 12rpx rgba(255, 255, 255, 0.9);
+}
+
+.task-card-inner {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28rpx 24rpx;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 24rpx;
+}
+
+.task-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.task-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333333;
+}
+
+.task-desc {
+  font-size: 24rpx;
+  color: #666666;
+}
+
+.task-remark {
+  font-size: 22rpx;
+  color: #999999;
+}
+
+.task-right {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16rpx;
+  flex-shrink: 0;
+}
+
+.task-reward {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #4DD0E1;
+  white-space: nowrap;
+}
+
+.task-btn {
+  padding: 12rpx 28rpx;
+  font-size: 24rpx;
+  color: #FFFFFF;
+  background: linear-gradient(135deg, #4DD0E1 0%, #26C6DA 100%);
+  border-radius: 32rpx;
+  box-shadow: 0 4rpx 12rpx rgba(77, 208, 225, 0.4);
+}
+
+.task-btn:active {
+  transform: scale(0.97);
+}
+
+.task-btn-disabled {
+  background: #E0E0E0 !important;
+  color: #999999 !important;
+  box-shadow: none !important;
+}
+
+.task-right-limited {
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12rpx;
+}
+
+.empty-done {
+  padding: 80rpx 32rpx;
+  text-align: center;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999999;
+}
+
+/* ========== 4.4 底部区域 ========== */
+.bottom-area {
+  padding: 24rpx 32rpx 48rpx;
+}
+
+.invite-entry {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, rgba(77, 208, 225, 0.25) 0%, rgba(38, 198, 218, 0.2) 100%);
+  border: 2rpx solid rgba(77, 208, 225, 0.6);
+  border-radius: 20rpx;
+  padding: 24rpx 28rpx;
+  margin-bottom: 16rpx;
+  box-shadow: 0 4rpx 16rpx rgba(77, 208, 225, 0.2);
+}
+
+.invite-icon {
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: 16rpx;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234DD0E1'%3E%3Cpath d='M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.invite-text {
+  flex: 1;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333333;
+}
+
+.invite-arrow {
+  width: 24rpx;
+  height: 24rpx;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234DD0E1'%3E%3Cpath d='M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.rules-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16rpx;
+}
+
+.rules-icon {
+  width: 28rpx;
+  height: 28rpx;
+  margin-right: 8rpx;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23999999'%3E%3Cpath d='M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.rules-text {
+  font-size: 24rpx;
+  color: #999999;
+}
+
+/* ========== 积分规则弹窗 ========== */
+.rules-mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+}
+
+.rules-mask-bg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.rules-modal {
+  position: absolute;
+  left: 48rpx;
+  right: 48rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  max-height: 70vh;
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.15);
+}
+
+.rules-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333333;
+  display: block;
+  margin-bottom: 24rpx;
+}
+
+.rules-content {
+  max-height: 400rpx;
+  margin-bottom: 24rpx;
+}
+
+.rules-content .rules-text {
+  display: block;
+  font-size: 26rpx;
+  color: #666666;
+  line-height: 1.8;
+  margin-bottom: 8rpx;
+}
+
+.rules-close {
+  text-align: center;
+  padding: 20rpx;
+  font-size: 28rpx;
+  color: #4DD0E1;
+  font-weight: 500;
+}

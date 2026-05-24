@@ -1,0 +1,180 @@
+<!-- 单品录入页面：拍照 → 预览确认 → 处理识别 -->
+<view class="page {{step === 'camera' ? 'step-camera-active' : ''}}">
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+
+  <view class="header">
+    <view class="header-back" bindtap="onBack">
+      <view class="header-back-arrow"></view>
+    </view>
+    <text class="header-title">新单品</text>
+    <view class="header-placeholder"></view>
+  </view>
+
+  <!-- 步骤1：拍照 -->
+  <view class="step-camera" wx:if="{{step === 'camera'}}">
+    <view class="camera-view"></view>
+    <view class="camera-footer">
+      <view class="camera-footer-left">
+        <view class="album-btn-wrap" bindtap="onAlbumUpload">
+          <view class="album-btn-icon"></view>
+          <text class="album-btn-text">图库上传</text>
+        </view>
+      </view>
+      <view class="camera-btn-wrap" bindtap="onTakePhoto">
+        <view class="camera-btn">
+          <view class="camera-btn-inner"></view>
+        </view>
+        <text class="camera-btn-text">点击拍照</text>
+      </view>
+      <view class="camera-footer-right"></view>
+    </view>
+  </view>
+
+  <!-- 步骤2：预览确认/重拍 -->
+  <view class="step-preview" wx:elif="{{step === 'preview'}}">
+    <image class="preview-img" src="{{tempImagePath}}" mode="aspectFill" />
+    <view class="preview-actions">
+      <button class="preview-btn preview-retake" bindtap="onRetake">重拍</button>
+      <button class="preview-btn preview-confirm" bindtap="onConfirm">确认</button>
+    </view>
+  </view>
+
+  <!-- 步骤3：处理识别 -->
+  <view class="step-processing" wx:elif="{{step === 'processing'}}">
+    <!-- 顶部进度 -->
+    <view class="processing-header">
+      <text class="processing-status">处理中...</text>
+      <view class="progress-wrap">
+        <view class="progress-bar" style="width: {{progress}}%"></view>
+      </view>
+      <text class="progress-percent">{{progress}}%</text>
+    </view>
+
+    <!-- 精灵小管家 + 对话气泡 -->
+    <view class="sprite-chat">
+      <image class="sprite-avatar" src="{{spriteUrl}}" mode="aspectFit" />
+      <view class="chat-bubble">
+        <text class="chat-text">{{spriteMessage}}</text>
+        <view class="chat-actions">
+          <view class="chat-action" bindtap="onSpriteYes">
+            <text class="chat-action-icon">👍</text>
+            <text class="chat-action-text">是的</text>
+          </view>
+          <view class="chat-action" bindtap="onSpriteNo">
+            <text class="chat-action-icon">👎</text>
+            <text class="chat-action-text">不对</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 录入识别框 -->
+    <view class="recognition-frame">
+      <image class="recognition-img" src="{{processedImagePath || tempImagePath}}" mode="aspectFit" />
+      <view class="recognition-badge">
+        <text class="recognition-badge-icon">✨</text>
+        <text class="recognition-badge-text">背景已移除</text>
+      </view>
+    </view>
+
+    <!-- 识别详情 -->
+    <view class="recognition-detail">
+      <text class="detail-title">识别详情</text>
+      <text class="detail-edit" bindtap="onEditAll">全部编辑</text>
+      <view class="detail-tags">
+        <view class="detail-tag" bindtap="onEditType">
+          <text class="tag-icon">👔</text>
+          <text class="tag-label">类型</text>
+          <text class="tag-value">{{itemType}}</text>
+          <text class="tag-arrow">▼</text>
+        </view>
+        <view class="detail-tag" bindtap="onEditCategory">
+          <text class="tag-icon">🧥</text>
+          <text class="tag-label">品类</text>
+          <text class="tag-value">{{itemCategory}}</text>
+          <text class="tag-arrow">▼</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 底部按钮 -->
+    <view class="action-footer">
+      <button class="btn-primary" bindtap="onConfirmSave">
+        <text class="btn-icon">✓</text>
+        <text>确认并保存</text>
+      </button>
+      <button class="btn-secondary" bindtap="onManualEdit">
+        <text class="btn-icon">✎</text>
+        <text>手动编辑</text>
+      </button>
+    </view>
+  </view>
+
+  <!-- 类型选择弹窗 -->
+  <view wx:if="{{showTypePicker}}" class="picker-mask" catchtap="onClosePicker">
+    <view class="picker-panel" catchtap="">
+      <view class="picker-title">选择类型</view>
+      <scroll-view class="picker-scroll" scroll-y>
+        <view class="picker-option {{itemTypeId === item.id ? 'picker-option-active' : ''}}" wx:for="{{categoryTabs}}" wx:key="id" data-id="{{item.id}}" data-name="{{item.name}}" bindtap="onSelectType">{{item.name}}</view>
+        <view class="picker-option picker-option-custom" data-id="__custom_type__" data-name="自定义+" bindtap="onSelectType">自定义+</view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- 品类选择弹窗 -->
+  <view wx:if="{{showCategoryPicker}}" class="picker-mask" catchtap="onClosePicker">
+    <view class="picker-panel" catchtap="">
+      <view class="picker-title">选择品类</view>
+      <scroll-view class="picker-scroll" scroll-y>
+        <view class="picker-option {{itemCategoryId === item.id ? 'picker-option-active' : ''}}" wx:for="{{categoryOptions}}" wx:key="id" data-id="{{item.id}}" data-name="{{item.name}}" bindtap="onSelectCategory">{{item.name}}</view>
+        <view class="picker-option picker-option-custom" data-id="__custom_category__" data-name="自定义+" bindtap="onSelectCategory">自定义+</view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- 全部编辑弹窗 -->
+  <view wx:if="{{showEditAllPanel}}" class="picker-mask" catchtap="onClosePicker">
+    <view class="picker-panel picker-panel-wide" catchtap="">
+      <view class="picker-title">全部编辑</view>
+      <view class="picker-section">
+        <text class="picker-section-label">类型</text>
+        <scroll-view class="picker-scroll picker-scroll-sm" scroll-y>
+          <view class="picker-option {{itemTypeId === item.id ? 'picker-option-active' : ''}}" wx:for="{{categoryTabs}}" wx:key="id" data-id="{{item.id}}" data-name="{{item.name}}" bindtap="onSelectTypeInEditAll">{{item.name}}</view>
+          <view class="picker-option picker-option-custom" data-id="__custom_type__" data-name="自定义+" bindtap="onSelectTypeInEditAll">自定义+</view>
+        </scroll-view>
+      </view>
+      <view class="picker-section">
+        <text class="picker-section-label">品类</text>
+        <scroll-view class="picker-scroll picker-scroll-sm" scroll-y>
+          <view class="picker-option {{itemCategoryId === item.id ? 'picker-option-active' : ''}}" wx:for="{{categoryOptions}}" wx:key="id" data-id="{{item.id}}" data-name="{{item.name}}" bindtap="onSelectCategoryInEditAll">{{item.name}}</view>
+          <view class="picker-option picker-option-custom" data-id="__custom_category__" data-name="自定义+" bindtap="onSelectCategoryInEditAll">自定义+</view>
+        </scroll-view>
+      </view>
+      <view class="picker-footer">
+        <button class="picker-confirm-btn" bindtap="onClosePicker">完成</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 自定义类型/品类输入弹窗 -->
+  <view wx:if="{{showCustomTypeInput}}" class="picker-mask" catchtap="onCloseCustomInput">
+    <view class="picker-panel custom-input-panel" catchtap="onBlockTap">
+      <view class="picker-title">自定义类型</view>
+      <input class="custom-input" placeholder="输入类型名称，如：外套" value="{{customInputValue}}" bindinput="onCustomTypeInput" />
+      <view class="custom-input-actions">
+        <view class="custom-input-btn" bindtap="onCloseCustomInput">取消</view>
+        <view class="custom-input-btn custom-input-btn-primary" bindtap="onCustomTypeConfirm">确定</view>
+      </view>
+    </view>
+  </view>
+  <view wx:if="{{showCustomCategoryInput}}" class="picker-mask" catchtap="onCloseCustomInput">
+    <view class="picker-panel custom-input-panel" catchtap="onBlockTap">
+      <view class="picker-title">自定义品类</view>
+      <input class="custom-input" placeholder="输入品类名称，如：皮衣" value="{{customInputValue}}" bindinput="onCustomCategoryInput" />
+      <view class="custom-input-actions">
+        <view class="custom-input-btn" bindtap="onCloseCustomInput">取消</view>
+        <view class="custom-input-btn custom-input-btn-primary" bindtap="onCustomCategoryConfirm">确定</view>
+      </view>
+    </view>
+  </view>
+</view>

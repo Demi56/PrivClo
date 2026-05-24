@@ -1,0 +1,672 @@
+/* 添加衣物 - 手游级质感 */
+
+.page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.status-bar {
+  width: 100%;
+  flex-shrink: 0;
+  background: transparent;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 32rpx;
+  position: relative;
+  z-index: 10;
+}
+
+.header-back {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.header-back:active {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.header-back-arrow {
+  width: 24rpx;
+  height: 24rpx;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.header-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 2rpx;
+}
+
+.header-placeholder {
+  width: 72rpx;
+  height: 72rpx;
+}
+
+/* ========== 步骤内容区 ========== */
+.step-content {
+  padding: 48rpx 48rpx 120rpx;
+}
+
+/* 操作指引卡片 */
+.guide-card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+  border-radius: 32rpx;
+  padding: 64rpx 48rpx;
+  margin-bottom: 64rpx;
+  border: 2rpx solid rgba(255,255,255,0.1);
+  box-shadow: 0 16rpx 48rpx rgba(0,0,0,0.3);
+}
+
+.guide-icon-wrap {
+  width: 120rpx;
+  height: 120rpx;
+  margin: 0 auto 32rpx;
+  background: linear-gradient(135deg, #5BB5C9 0%, #6EC5D9 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 32rpx rgba(110, 197, 217, 0.4);
+}
+
+.guide-icon {
+  font-size: 56rpx;
+}
+
+.guide-title {
+  display: block;
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+  margin-bottom: 16rpx;
+}
+
+.guide-desc {
+  display: block;
+  font-size: 28rpx;
+  color: rgba(255,255,255,0.65);
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* 操作按钮 */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 32rpx;
+}
+
+.action-btn {
+  flex: 1;
+  height: 120rpx;
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20rpx;
+  position: relative;
+  overflow: hidden;
+}
+.action-btn:active {
+  transform: scale(0.98);
+}
+
+.action-btn-primary {
+  background: linear-gradient(135deg, #5BB5C9 0%, #6EC5D9 100%);
+  box-shadow: 0 12rpx 40rpx rgba(110, 197, 217, 0.4);
+}
+.action-btn-primary .action-btn-glow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.action-btn-secondary {
+  background: rgba(255,255,255,0.1);
+  border: 2rpx solid rgba(255,255,255,0.25);
+}
+
+.action-btn-icon {
+  font-size: 44rpx;
+}
+
+.action-btn-text {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* ========== 加载中 ========== */
+.step-loading {
+  padding-top: 120rpx;
+}
+
+.loading-card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+  border-radius: 32rpx;
+  padding: 80rpx 48rpx;
+  border: 2rpx solid rgba(255,255,255,0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.loading-spinner {
+  position: relative;
+  width: 120rpx;
+  height: 120rpx;
+  margin-bottom: 48rpx;
+}
+
+.spinner-ring {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  border: 6rpx solid transparent;
+  border-top-color: #6EC5D9;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.spinner-ring-2 {
+  border-top-color: transparent;
+  border-right-color: #5BB5C9;
+  animation-duration: 1.2s;
+  animation-direction: reverse;
+}
+
+.spinner-ring-3 {
+  width: 80rpx;
+  height: 80rpx;
+  left: 20rpx;
+  top: 20rpx;
+  border-top-color: transparent;
+  border-bottom-color: #6EC5D9;
+  animation-duration: 0.8s;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 32rpx;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 32rpx;
+}
+
+.progress-bar-wrap {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.progress-bar-bg {
+  flex: 1;
+  height: 16rpx;
+  background: rgba(255,255,255,0.15);
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #5BB5C9 0%, #6EC5D9 100%);
+  border-radius: 8rpx;
+  transition: width 0.2s;
+}
+
+.progress-percent {
+  font-size: 26rpx;
+  color: rgba(255,255,255,0.9);
+  min-width: 64rpx;
+}
+
+/* ========== 预览区 ========== */
+.preview-card {
+  position: relative;
+  background: linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+  border-radius: 32rpx;
+  padding: 32rpx;
+  margin-bottom: 32rpx;
+  border: 2rpx solid rgba(255,255,255,0.1);
+}
+
+.preview-badge {
+  position: absolute;
+  top: 24rpx;
+  right: 24rpx;
+  height: 48rpx;
+  line-height: 48rpx;
+  padding: 0 24rpx;
+  background: linear-gradient(135deg, #5BB5C9 0%, #6EC5D9 100%);
+  border-radius: 24rpx;
+  font-size: 24rpx;
+  color: #fff;
+  z-index: 2;
+}
+
+.preview-img-wrap {
+  background: #000;
+  border-radius: 20rpx;
+  overflow: hidden;
+}
+
+.preview-img {
+  width: 100%;
+  height: 560rpx;
+  display: block;
+}
+
+.preview-placeholder {
+  width: 100%;
+  height: 560rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.5);
+  color: rgba(255,255,255,0.7);
+  font-size: 28rpx;
+}
+
+.btn-refine {
+  height: 88rpx;
+  background: rgba(255,255,255,0.1);
+  border: 2rpx solid rgba(255,255,255,0.25);
+  border-radius: 44rpx;
+  font-size: 30rpx;
+  color: rgba(255,255,255,0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-refine::after { border: none; }
+
+/* 分类选择 */
+.category-card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+  border-radius: 24rpx;
+  padding: 32rpx;
+  margin-bottom: 32rpx;
+  border: 2rpx solid rgba(255,255,255,0.1);
+}
+
+.category-title {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 24rpx;
+}
+
+.category-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx;
+}
+
+.category-tag {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  background: rgba(255,255,255,0.1);
+  padding: 20rpx 28rpx;
+  border-radius: 50rpx;
+  border: 2rpx solid rgba(255,255,255,0.15);
+}
+.category-tag:active {
+  background: rgba(255,255,255,0.15);
+}
+
+.tag-label {
+  font-size: 24rpx;
+  color: rgba(255,255,255,0.6);
+}
+
+.tag-value {
+  font-size: 28rpx;
+  color: #fff;
+  font-weight: 500;
+}
+
+.tag-arrow {
+  font-size: 20rpx;
+  color: rgba(255,255,255,0.5);
+}
+
+/* 底部按钮 */
+.footer-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.btn-save {
+  height: 100rpx;
+  background: linear-gradient(135deg, #5BB5C9 0%, #6EC5D9 100%);
+  border-radius: 50rpx;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #fff;
+  box-shadow: 0 12rpx 40rpx rgba(110, 197, 217, 0.4);
+}
+.btn-save::after { border: none; }
+.btn-save:active { transform: scale(0.98); }
+
+.btn-save-icon {
+  font-size: 40rpx;
+}
+
+.btn-retry {
+  height: 88rpx;
+  background: transparent;
+  border: 2rpx solid rgba(255,255,255,0.4);
+  border-radius: 44rpx;
+  font-size: 30rpx;
+  color: rgba(255,255,255,0.9);
+}
+.btn-retry::after { border: none; }
+
+/* ========== 弹窗 ========== */
+.picker-mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.picker-panel {
+  width: 100%;
+  max-height: 70vh;
+  background: #1a1a2e;
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 32rpx;
+  padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
+  border-top: 2rpx solid rgba(255,255,255,0.1);
+}
+
+.picker-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 24rpx;
+}
+
+.picker-scroll {
+  max-height: 480rpx;
+}
+
+.picker-option {
+  padding: 28rpx 32rpx;
+  font-size: 30rpx;
+  color: rgba(255,255,255,0.85);
+  background: rgba(255,255,255,0.06);
+  border-radius: 16rpx;
+  margin-bottom: 16rpx;
+}
+
+.picker-option:last-child {
+  margin-bottom: 0;
+}
+
+.picker-option-active {
+  background: rgba(110, 197, 217, 0.3);
+  color: #6EC5D9;
+  font-weight: 600;
+}
+
+.picker-option-custom {
+  border: 2rpx dashed rgba(255,255,255,0.3);
+  color: #4ade80;
+}
+
+.custom-input-panel {
+  padding: 40rpx;
+}
+
+.custom-input {
+  width: 100%;
+  height: 88rpx;
+  background: rgba(255,255,255,0.08);
+  border-radius: 16rpx;
+  padding: 0 24rpx;
+  font-size: 30rpx;
+  color: #fff;
+  margin-bottom: 32rpx;
+}
+
+.custom-input-actions {
+  display: flex;
+  gap: 24rpx;
+}
+
+.custom-input-btn {
+  flex: 1;
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  font-size: 30rpx;
+  color: rgba(255,255,255,0.8);
+  background: rgba(255,255,255,0.1);
+  border-radius: 16rpx;
+}
+
+.custom-input-btn-primary {
+  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ========== 手动抠图 ========== */
+.step-manual {
+  padding-bottom: 48rpx;
+}
+
+.manual-guide {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 16rpx;
+  padding: 20rpx 24rpx;
+  margin-bottom: 24rpx;
+  border: 2rpx solid rgba(255, 255, 255, 0.15);
+}
+
+.manual-guide-text {
+  font-size: 26rpx;
+  color: rgba(255,255,255,0.9);
+}
+
+.manual-footer {
+  display: flex;
+  gap: 24rpx;
+  margin-top: 24rpx;
+}
+
+.btn-back-refine {
+  flex: 1;
+  height: 96rpx;
+  background: transparent;
+  border: 2rpx solid rgba(255,255,255,0.4);
+  border-radius: 48rpx;
+  font-size: 30rpx;
+  color: rgba(255,255,255,0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-back-refine::after { border: none; }
+
+.btn-save-manual {
+  flex: 1;
+  height: 96rpx;
+  line-height: 96rpx;
+  padding: 0;
+  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  border-radius: 48rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #fff;
+  border: none;
+  box-shadow: 0 12rpx 40rpx rgba(34, 197, 94, 0.4);
+}
+.btn-save-manual::after { border: none; }
+.btn-save-manual:active { transform: scale(0.98); }
+
+.canvas-wrap {
+  background: #000;
+  border-radius: 20rpx;
+  overflow: hidden;
+  margin-bottom: 24rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 560rpx;
+}
+
+.manual-canvas {
+  display: block;
+}
+
+.restore-layer-canvas {
+  position: fixed;
+  left: -9999px;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+.brush-toolbar {
+  background: linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+  border-radius: 24rpx;
+  padding: 24rpx;
+  margin-bottom: 24rpx;
+  border: 2rpx solid rgba(255,255,255,0.1);
+}
+
+.brush-type-row {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 20rpx;
+}
+
+.brush-type-btn {
+  flex: 1;
+  height: 64rpx;
+  line-height: 64rpx;
+  text-align: center;
+  font-size: 26rpx;
+  color: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.1);
+  border-radius: 12rpx;
+  border: 2rpx solid rgba(255,255,255,0.2);
+}
+.brush-type-btn:active {
+  background: rgba(255,255,255,0.15);
+}
+
+.brush-type-active {
+  background: rgba(34, 197, 94, 0.3);
+  border-color: rgba(34, 197, 94, 0.6);
+  color: #4ade80;
+}
+
+.brush-size-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.brush-label {
+  font-size: 26rpx;
+  color: rgba(255,255,255,0.7);
+  width: 80rpx;
+}
+
+.brush-sizes {
+  display: flex;
+  gap: 16rpx;
+}
+
+.brush-size-btn {
+  padding: 12rpx 28rpx;
+  font-size: 26rpx;
+  color: rgba(255,255,255,0.8);
+  background: rgba(255,255,255,0.1);
+  border-radius: 12rpx;
+  border: 2rpx solid rgba(255,255,255,0.2);
+}
+.brush-size-btn:active {
+  background: rgba(255,255,255,0.15);
+}
+
+.brush-size-active {
+  background: rgba(34, 197, 94, 0.3);
+  border-color: rgba(34, 197, 94, 0.6);
+  color: #4ade80;
+}
+
+.brush-actions {
+  display: flex;
+  gap: 24rpx;
+}
+
+.brush-action-btn {
+  flex: 1;
+  height: 72rpx;
+  line-height: 72rpx;
+  text-align: center;
+  font-size: 26rpx;
+  color: rgba(255,255,255,0.9);
+  background: rgba(255,255,255,0.1);
+  border-radius: 12rpx;
+  border: 2rpx solid rgba(255,255,255,0.2);
+}
+.brush-action-btn:active {
+  background: rgba(255,255,255,0.15);
+}
+
+.btn-save-manual {
+  flex: 1;
+  height: 96rpx;
+  line-height: 96rpx;
+  padding: 0;
+  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  border-radius: 48rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #fff;
+  border: none;
+  box-shadow: 0 12rpx 40rpx rgba(34, 197, 94, 0.4);
+}
+.btn-save-manual::after { border: none; }
+.btn-save-manual:active { transform: scale(0.98); }

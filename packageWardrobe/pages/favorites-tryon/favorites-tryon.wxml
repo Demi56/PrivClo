@@ -1,0 +1,127 @@
+<!-- 收藏区试穿页 - 布局复刻分类详情页，无底部扫描按钮，数据与分类详情页独立 -->
+<view class="page">
+  <view class="top-bar" style="height: {{statusBarHeight + headerHeightPx}}px;">
+    <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+    <view class="header">
+      <view class="header-back" catchtap="onBack">
+        <view class="header-back-arrow"></view>
+      </view>
+      <view class="header-prefit-mode-btn">
+        <view
+          class="header-prefit-half {{prefitMode === 'official' ? 'header-prefit-active' : ''}}"
+          catchtap="onPrefitModeTap"
+          data-mode="official"
+        >智选衣橱</view>
+        <view class="header-prefit-divider"></view>
+        <view
+          class="header-prefit-half {{prefitMode === 'private' ? 'header-prefit-active' : ''}}"
+          catchtap="onPrefitModeTap"
+          data-mode="private"
+        >私人衣橱</view>
+      </view>
+      <view class="header-placeholder"></view>
+    </view>
+  </view>
+
+  <view class="tryon-header {{tryonExpanded ? '' : 'tryon-collapsed'}}" style="top: {{statusBarHeight + headerHeightPx}}px;">
+    <view class="tryon-header-inner">
+    <view wx:if="{{tryonExpanded}}" class="tryon-card">
+      <view class="tryon-favorite-btn {{tryonFavorited ? 'favorited' : ''}}" catchtap="onTryonFavorite">{{tryonFavorited ? '♥' : '♡'}}</view>
+      <view class="tryon-content">
+        <view class="tryon-model-wrap" bindtap="onModelTap">
+          <image class="tryon-model-img" src="{{modelImgSrc}}" mode="aspectFit" />
+        </view>
+        <view class="tryon-items-area">
+          <view class="tryon-items-dashed">
+            <scroll-view class="tryon-items-scroll" scroll-y>
+              <view class="tryon-items-inner">
+                <view wx:for="{{tryonItemSlots}}" wx:key="index" class="tryon-item-slot {{item && selectedTryonSlotIndex === index ? 'slot-selected' : ''}}" catchtap="onSlotTap" data-index="{{index}}">
+                  <image wx:if="{{item}}" class="tryon-item-img" src="{{item}}" mode="aspectFit" />
+                  <view wx:else class="tryon-item-placeholder"></view>
+                  <view wx:if="{{item && selectedTryonSlotIndex === index}}" class="tryon-item-del" catchtap="onRemoveTryonItem" data-index="{{index}}"></view>
+                </view>
+              </view>
+            </scroll-view>
+          </view>
+        </view>
+      </view>
+      <view class="tryon-btn-wrap">
+        <view class="tryon-btn" catchtap="onTryOn">实时试穿</view>
+      </view>
+    </view>
+    <view class="tryon-toggle-bar-wrap" catchtap="onTryonToggleTap" hover-class="tryon-toggle-hover" hover-stop-propagation="true">
+      <view class="tryon-toggle-bar">
+        <text class="tryon-toggle-icon">{{tryonExpanded ? '▲' : '▼'}}</text>
+        <text class="tryon-toggle-text">{{tryonExpanded ? '上拉折叠' : '下拉展开'}}</text>
+      </view>
+    </view>
+    </view>
+  </view>
+
+  <!-- 中下部：筛选栏 + 搭配卡片两列网格（参考图） -->
+  <view class="detail-main" style="top: {{scrollAreaTop}}px; bottom: {{scrollAreaBottom}}px;">
+    <view class="filter-bar-wrap" catchtap="onFilterBarShield" catchtouchmove="onFilterBarShield">
+      <view class="filter-bar" catchtap="onFilterBarShield" catchtouchmove="onFilterBarShield">
+        <view class="filter-item {{filterActive === 'all' ? 'filter-active' : ''}}" catchtap="onFilterTap" data-id="all">全部</view>
+        <view class="filter-item {{filterActive === 'date' ? 'filter-active' : ''}}" catchtap="onDateChevronTap" catchtouchmove="onFilterBarShield">日期<text class="filter-chevron">▼</text></view>
+        <view class="filter-item {{filterActive === 'season' ? 'filter-active' : ''}}" catchtap="onSeasonChevronTap">季节<text class="filter-chevron">▼</text></view>
+        <view class="filter-item {{filterActive === 'scene' ? 'filter-active' : ''}}" catchtap="onSceneChevronTap">场景<text class="filter-chevron">▼</text></view>
+        <view class="filter-item {{filterActive === 'style' ? 'filter-active' : ''}}" catchtap="onStyleChevronTap">风格<text class="filter-chevron">▼</text></view>
+      </view>
+    </view>
+
+    <scroll-view class="outfit-scroll" scroll-y>
+      <view class="outfit-grid">
+        <view wx:for="{{outfitCards}}" wx:key="id" class="outfit-card {{item.isEmptyPlaceholder ? 'outfit-card-empty' : ''}}">
+          <view class="outfit-card-img-wrap">
+            <image wx:if="{{!item.isEmptyPlaceholder}}" class="outfit-card-img" src="{{item.image}}" mode="aspectFill" />
+            <view wx:if="{{item.isEmptyPlaceholder}}" class="outfit-card-empty-plus">+</view>
+            <view wx:if="{{!item.isEmptyPlaceholder}}" class="outfit-card-heart {{item.favorited ? 'favorited' : ''}}" catchtap="onOutfitFavorite" data-id="{{item.id}}">{{item.favorited ? '♥' : '♡'}}</view>
+          </view>
+          <view class="outfit-card-tags">
+            <text wx:if="{{!item.isEmptyPlaceholder}}" wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this" class="outfit-tag">{{tag}}</text>
+          </view>
+          <view class="outfit-card-title-row">
+            <text wx:if="{{!item.isEmptyPlaceholder}}" class="outfit-card-title">{{item.title}}</text>
+            <text wx:if="{{!item.isEmptyPlaceholder}}" class="outfit-card-date">{{item.date}}</text>
+          </view>
+          <view wx:if="{{item.isEmptyPlaceholder}}" class="outfit-card-btn outfit-card-btn-gocollect" catchtap="onGoToCollect">
+            <text>去收藏</text>
+          </view>
+          <view wx:else class="outfit-card-btn {{item.tryonPrimary ? 'primary' : ''}}" catchtap="onOutfitTryOn" data-id="{{item.id}}">
+            <text class="outfit-btn-icon">👤</text>
+            <text>穿上</text>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 点亮爱心后：编辑收藏标签弹窗（选项与筛选栏一致） -->
+  <view wx:if="{{showFavoriteTagPopup}}" class="favorite-tag-popup-mask" catchtap="onCloseFavoriteTagPopup"></view>
+  <view wx:if="{{showFavoriteTagPopup}}" class="favorite-tag-popup">
+    <view class="favorite-tag-popup-title">编辑收藏标签</view>
+    <view class="favorite-tag-section">
+      <view class="favorite-tag-label">季节</view>
+      <view class="favorite-tag-options">
+        <view wx:for="{{seasonOptions}}" wx:key="*this" class="favorite-tag-option {{favoriteTagSeasonIndex === index ? 'selected' : ''}}" catchtap="onFavoriteTagSeasonTap" data-index="{{index}}">{{item}}</view>
+      </view>
+    </view>
+    <view class="favorite-tag-section">
+      <view class="favorite-tag-label">场景</view>
+      <view class="favorite-tag-options">
+        <view wx:for="{{sceneOptions}}" wx:key="*this" class="favorite-tag-option {{favoriteTagSceneIndex === index ? 'selected' : ''}}" catchtap="onFavoriteTagSceneTap" data-index="{{index}}">{{item}}</view>
+      </view>
+    </view>
+    <view class="favorite-tag-section">
+      <view class="favorite-tag-label">风格</view>
+      <view class="favorite-tag-options">
+        <view wx:for="{{styleOptions}}" wx:key="*this" class="favorite-tag-option {{favoriteTagStyleIndex === index ? 'selected' : ''}}" catchtap="onFavoriteTagStyleTap" data-index="{{index}}">{{item}}</view>
+      </view>
+    </view>
+    <view class="favorite-tag-popup-btns">
+      <view class="favorite-tag-popup-btn" catchtap="onFavoriteTagConfirm">确定</view>
+      <view class="favorite-tag-popup-btn secondary" catchtap="onFavoriteTagCancel">取消</view>
+    </view>
+  </view>
+</view>

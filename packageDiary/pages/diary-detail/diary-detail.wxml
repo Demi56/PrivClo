@@ -1,0 +1,196 @@
+<!--
+  日记内页 - 竖屏米黄纸张质感，卷边翻页效果
+-->
+<view class="page">
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+
+  <view class="header">
+    <view class="header-back" bindtap="onBack">
+      <view class="header-back-arrow"></view>
+    </view>
+    <text class="header-title">日记</text>
+    <view class="header-placeholder"></view>
+  </view>
+
+  <view class="diary-container">
+    <view class="flip-scene" style="height: {{swiperHeight}}px">
+      <view class="flip-wrapper">
+        <!-- 空闲时：仅显示当前页 -->
+        <block wx:if="{{!isFlipping && pages[currentPage]}}">
+          <view class="flip-page flip-page-current">
+            <view class="diary-page">
+              <view class="page-paper">
+                <view class="photo-area">
+                  <view class="polaroid-frame">
+                    <image wx:if="{{pages[currentPage].photo}}" class="polaroid-img" src="{{pages[currentPage].photo}}" mode="aspectFill" />
+                    <view wx:else class="polaroid-placeholder" bindtap="onUploadPhoto" data-page-id="{{pages[currentPage].id}}">
+                      <view class="placeholder-icon">+</view>
+                      <text class="placeholder-text">点击添加照片</text>
+                    </view>
+                  </view>
+                </view>
+                <view class="text-area">
+                  <view class="text-header">
+                    <view class="date-block">
+                      <text class="date-year">{{pages[currentPage].year}}年</text>
+                      <text class="date-month-day">{{pages[currentPage].month}}月{{pages[currentPage].day}}日</text>
+                      <text class="date-week">{{pages[currentPage].week}}</text>
+                    </view>
+                    <view class="weather-block">
+                      <view class="weather-icon-large weather-{{pages[currentPage].weather || 'sunny'}}"></view>
+                      <text class="date-weather">{{pages[currentPage].weatherText}}</text>
+                    </view>
+                  </view>
+                  <view class="text-content">
+                    <text class="content-text">{{pages[currentPage].content || defaultContent}}</text>
+                  </view>
+                  <view class="sticker-layer" id="stickerLayer" wx:if="{{pages[currentPage].stickers && pages[currentPage].stickers.length > 0}}">
+                    <view class="paper-sticker" wx:for="{{pages[currentPage].stickers}}" wx:key="sid" data-sid="{{item.sid}}" style="left: {{item.left}}; top: {{item.top}}" bindtouchstart="onStickerTouchStart" catchtouchmove="onStickerTouchMove" bindtouchend="onStickerTouchEnd">
+                      <text class="paper-sticker-emoji">{{item.emoji}}</text>
+                    </view>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </block>
+
+        <!-- 翻页中：底层下一页 + 卷边翻转的当前页 -->
+        <block wx:if="{{isFlipping && pages[flipFromIndex] && pages[flipTargetIndex]}}">
+          <view class="flip-page flip-page-under">
+            <view class="diary-page">
+              <view class="page-paper">
+                <view class="photo-area">
+                  <view class="polaroid-frame">
+                    <image wx:if="{{pages[flipTargetIndex].photo}}" class="polaroid-img" src="{{pages[flipTargetIndex].photo}}" mode="aspectFill" />
+                    <view wx:else class="polaroid-placeholder">
+                      <view class="placeholder-icon">+</view>
+                      <text class="placeholder-text">点击添加照片</text>
+                    </view>
+                  </view>
+                </view>
+                <view class="text-area">
+                  <view class="text-header">
+                    <view class="date-block">
+                      <text class="date-year">{{pages[flipTargetIndex].year}}年</text>
+                      <text class="date-month-day">{{pages[flipTargetIndex].month}}月{{pages[flipTargetIndex].day}}日</text>
+                      <text class="date-week">{{pages[flipTargetIndex].week}}</text>
+                    </view>
+                    <view class="weather-block">
+                      <view class="weather-icon-large weather-{{pages[flipTargetIndex].weather || 'sunny'}}"></view>
+                      <text class="date-weather">{{pages[flipTargetIndex].weatherText}}</text>
+                    </view>
+                  </view>
+                  <view class="text-content">
+                    <text class="content-text">{{pages[flipTargetIndex].content || defaultContent}}</text>
+                  </view>
+                  <view class="sticker-layer" wx:if="{{pages[flipTargetIndex].stickers && pages[flipTargetIndex].stickers.length > 0}}">
+                    <view class="paper-sticker" wx:for="{{pages[flipTargetIndex].stickers}}" wx:key="sid" style="left: {{item.left}}; top: {{item.top}}">
+                      <text class="paper-sticker-emoji">{{item.emoji}}</text>
+                    </view>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+          <view class="flip-page-flip" style="transform: rotateY({{flipDeg}}deg); transform-origin: {{flipOrigin}}">
+            <view class="flip-page-front">
+              <view class="diary-page">
+                <view class="page-paper">
+                  <view class="photo-area">
+                    <view class="polaroid-frame">
+                      <image wx:if="{{pages[flipFromIndex].photo}}" class="polaroid-img" src="{{pages[flipFromIndex].photo}}" mode="aspectFill" />
+                      <view wx:else class="polaroid-placeholder">
+                        <view class="placeholder-icon">+</view>
+                        <text class="placeholder-text">点击添加照片</text>
+                      </view>
+                    </view>
+                  </view>
+                  <view class="text-area">
+                    <view class="text-header">
+                      <view class="date-block">
+                        <text class="date-year">{{pages[flipFromIndex].year}}年</text>
+                        <text class="date-month-day">{{pages[flipFromIndex].month}}月{{pages[flipFromIndex].day}}日</text>
+                        <text class="date-week">{{pages[flipFromIndex].week}}</text>
+                      </view>
+                      <view class="weather-block">
+                        <view class="weather-icon-large weather-{{pages[flipFromIndex].weather || 'sunny'}}"></view>
+                        <text class="date-weather">{{pages[flipFromIndex].weatherText}}</text>
+                      </view>
+                    </view>
+                    <view class="text-content">
+                      <text class="content-text">{{pages[flipFromIndex].content || defaultContent}}</text>
+                    </view>
+                    <view class="sticker-layer" wx:if="{{pages[flipFromIndex].stickers && pages[flipFromIndex].stickers.length > 0}}">
+                      <view class="paper-sticker" wx:for="{{pages[flipFromIndex].stickers}}" wx:key="sid" style="left: {{item.left}}; top: {{item.top}}">
+                        <text class="paper-sticker-emoji">{{item.emoji}}</text>
+                      </view>
+                    </view>
+                  </view>
+                </view>
+              </view>
+            </view>
+            <view class="flip-page-back"></view>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <view class="flip-area flip-area-prev" bindtap="onPrevPage">
+      <view class="flip-hint">
+        <view class="flip-arrow flip-arrow-prev">‹</view>
+        <text class="flip-text">上一页</text>
+      </view>
+    </view>
+    <view class="flip-area flip-area-next" bindtap="onNextPage">
+      <view class="flip-hint">
+        <view class="flip-arrow">›</view>
+        <text class="flip-text">下一页</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="bottom-bar">
+    <view class="bar-item" bindtap="onFocusInput">
+      <view class="bar-icon bar-icon-edit"></view>
+      <text class="bar-label">文案</text>
+    </view>
+    <view class="bar-item" bindtap="onUploadPhoto">
+      <view class="bar-icon bar-icon-camera"></view>
+      <text class="bar-label">照片</text>
+    </view>
+    <view class="bar-item" bindtap="onSticker">
+      <view class="bar-icon bar-icon-sticker"></view>
+      <text class="bar-label">贴纸</text>
+    </view>
+    <view class="bar-item bar-item-save" bindtap="onSave">
+      <view class="bar-icon bar-icon-save"></view>
+      <text class="bar-label">保存</text>
+    </view>
+  </view>
+
+  <view class="input-wrap {{inputVisible ? 'input-visible' : ''}}">
+    <textarea class="diary-input" placeholder="写下今天的穿搭心情..." value="{{editingContent}}" bindinput="onInput" bindblur="onBlur" />
+    <view class="input-close" bindtap="onCloseInput">完成</view>
+  </view>
+
+  <!-- 贴纸素材库 -->
+  <view class="sticker-wrap {{stickerVisible ? 'sticker-visible' : ''}}" bindtap="onCloseSticker">
+    <view class="sticker-panel" catchtap="onStickerPanelTap">
+      <scroll-view class="sticker-tabs" scroll-x="{{true}}" enhanced="{{true}}" show-scrollbar="{{false}}">
+        <view class="sticker-tab {{stickerCurrentCat === item.id ? 'sticker-tab-active' : ''}}" wx:for="{{stickerCategories}}" wx:key="id" data-cat="{{item.id}}" bindtap="onStickerCategory">
+          <text>{{item.name}}</text>
+        </view>
+      </scroll-view>
+      <view class="sticker-title">贴纸素材库</view>
+      <scroll-view class="sticker-grid-wrap" scroll-y="{{true}}" enhanced="{{true}}">
+        <view class="sticker-grid">
+          <view class="sticker-item" wx:for="{{stickerList}}" wx:key="id" data-item="{{item}}" bindtap="onStickerSelect">
+            <view class="sticker-icon">{{item.emoji}}</view>
+          </view>
+        </view>
+      </scroll-view>
+      <view class="sticker-close" bindtap="onCloseSticker">收起</view>
+    </view>
+  </view>
+</view>

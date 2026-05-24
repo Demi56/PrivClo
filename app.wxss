@@ -1,0 +1,7 @@
+/** 全局样式 - PrivClo v2.0 **/
+page {
+  background-color: #F9F6ED; /* 页面背景主色 - 浅米白 */
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", STHeiti, "Microsoft Yahei", sans-serif;
+  box-sizing: border-box;
+}
+

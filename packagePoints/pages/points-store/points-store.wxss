@@ -1,0 +1,185 @@
+/* 积分商城 - 顶部横向 Tab + 两列商品网格 */
+
+.page {
+  min-height: 100vh;
+  background: #F5F0E8;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.status-bar { width: 100%; flex-shrink: 0; }
+
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 32rpx;
+  background: #F5F0E8;
+}
+.header-back {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.header-back-arrow {
+  width: 24rpx;
+  height: 24rpx;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23333333'%3E%3Cpath d='M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+.header-title { font-size: 34rpx; font-weight: bold; color: #333333; }
+.header-placeholder { width: 72rpx; height: 72rpx; }
+
+/* ========== 横向滑动 Tab ========== */
+.tab-scroll {
+  flex-shrink: 0;
+  white-space: nowrap;
+  background: #FFFFFF;
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid #F0EDE8;
+}
+
+.tab-inner {
+  display: inline-flex;
+  flex-direction: row;
+  padding: 0 32rpx;
+  gap: 24rpx;
+}
+
+.tab-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16rpx 28rpx;
+  font-size: 26rpx;
+  color: #666666;
+  background: #F5F0E8;
+  border-radius: 32rpx;
+  flex-shrink: 0;
+}
+
+.tab-item.tab-active {
+  background: #6EC5D9;
+  color: #FFFFFF;
+  font-weight: 500;
+}
+
+/* ========== 两列商品网格 ========== */
+.product-scroll {
+  flex: 1;
+  height: 0;
+}
+
+.product-grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 24rpx;
+  padding: 24rpx 24rpx 32rpx;
+  padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+.product-card {
+  width: 340rpx;
+  flex-shrink: 0;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+}
+
+.product-img-wrap {
+  width: 100%;
+  height: 320rpx;
+  background: #E8E4DE;
+  overflow: hidden;
+}
+
+.product-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.product-img-placeholder {
+  background: #E8E4DE;
+}
+
+/* 角色数量卡片：图片缩放适应，不裁剪 */
+.product-card-role .product-img-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-card-role .product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* 衣橱容量卡片：图片缩放适应，不裁剪 */
+.product-card-capacity .product-img-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-card-capacity .product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.product-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333333;
+  padding: 16rpx 16rpx 8rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.product-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8rpx 16rpx 20rpx;
+}
+
+.product-points {
+  font-size: 24rpx;
+  color: #6EC5D9;
+  font-weight: 500;
+}
+
+.product-btn {
+  padding: 10rpx 24rpx;
+  font-size: 24rpx;
+  color: #FFFFFF;
+  background: #6EC5D9;
+  border-radius: 24rpx;
+}
+
+.product-btn-exchanged {
+  background: #B0BEC5;
+  color: #ECEFF1;
+}
+
+.empty-tip {
+  width: 100%;
+  padding: 80rpx 0;
+  text-align: center;
+  font-size: 28rpx;
+  color: #999999;
+}

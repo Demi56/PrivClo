@@ -1,0 +1,334 @@
+/* 本周穿搭回顾 - 完全复刻参考图 */
+
+.page {
+  min-height: 100vh;
+  background: #F9F9F9;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.status-bar { width: 100%; flex-shrink: 0; }
+
+/* 顶部导航 */
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 32rpx 24rpx;
+  background: #F9F9F9;
+}
+
+.header-back {
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-back-arrow {
+  width: 32rpx;
+  height: 32rpx;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23333333'%3E%3Cpath d='M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.header-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #333333;
+}
+
+.header-placeholder { width: 56rpx; height: 56rpx; }
+
+.content {
+  flex: 1;
+  height: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.content-inner {
+  width: 100%;
+  padding: 0 40rpx;
+  box-sizing: border-box;
+}
+
+/* 头像 + 问候气泡 */
+.greeting-wrap {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  margin-bottom: 24rpx;
+  min-width: 0;
+}
+
+.avatar-wrap {
+  position: relative;
+  width: 112rpx;
+  height: 112rpx;
+  flex-shrink: 0;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #E8E4E0;
+}
+
+.avatar-placeholder {
+  background: linear-gradient(135deg, #E1F5FE 0%, #FFF8E1 100%);
+}
+
+.avatar-heart {
+  position: absolute;
+  right: -4rpx;
+  bottom: -4rpx;
+  font-size: 28rpx;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 50%;
+  width: 40rpx;
+  height: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
+}
+
+.speech-bubble {
+  flex: 1;
+  min-width: 0;
+  margin-left: 20rpx;
+  padding: 24rpx 28rpx;
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  position: relative;
+}
+
+.speech-tail {
+  position: absolute;
+  left: -16rpx;
+  top: 36rpx;
+  width: 0;
+  height: 0;
+  border-top: 12rpx solid transparent;
+  border-bottom: 12rpx solid transparent;
+  border-right: 16rpx solid #FFFFFF;
+}
+
+.speech-text {
+  font-size: 28rpx;
+  color: #333333;
+  line-height: 1.5;
+}
+
+/* 最常穿风格 | 平均心情 */
+.summary-row {
+  display: flex;
+  flex-direction: row;
+  gap: 20rpx;
+  margin-bottom: 32rpx;
+  min-width: 0;
+}
+
+.summary-card {
+  flex: 1;
+  min-width: 0;
+  padding: 28rpx 24rpx;
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12rpx;
+}
+
+.summary-icon-wrap {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.summary-icon-style {
+  background: #E1F5FE;
+}
+
+.summary-icon-mood {
+  background: #FFF8E1;
+}
+
+.summary-icon-inner {
+  width: 40rpx;
+  height: 40rpx;
+}
+
+.icon-hanger {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234DD0E1'%3E%3Cpath d='M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12z'/%3E%3Cpath d='M12 6c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 1.5-1.2 2.74-2.73 2.96L10 18h4v2H8v-2.93c-2.26-.41-4-2.35-4-4.57 0-2.76 2.24-5 5-5s5 2.24 5 5h2c0-3.31-2.69-6-6-6z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.icon-smile {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23FFB74D'%3E%3Cpath d='M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.summary-label {
+  font-size: 24rpx;
+  color: #999999;
+}
+
+.summary-value {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333333;
+}
+
+/* 精彩瞬间 */
+.moment-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.moment-header-icon {
+  width: 36rpx;
+  height: 36rpx;
+  margin-right: 12rpx;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234DD0E1'%3E%3Cpath d='M4 4h6v6H4V4zm10 0h6v6h-6V4zM4 14h6v6H4v-6zm10 0h6v6h-6v-6z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.moment-header-text {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333333;
+}
+
+/* 穿搭卡片列表 1列×7行，长方形比例，两侧留白 */
+.moment-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.moment-card {
+  width: 100%;
+  max-width: 100%;
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
+}
+
+.moment-card-img-wrap {
+  position: relative;
+  width: 100%;
+  padding-top: 120%;
+  overflow: hidden;
+}
+
+.moment-card-badge {
+  position: absolute;
+  top: 16rpx;
+  right: 16rpx;
+  padding: 8rpx 16rpx;
+  background: #FFE082;
+  border-radius: 20rpx;
+  font-size: 22rpx;
+  color: #5D4E37;
+  z-index: 2;
+}
+
+.moment-card-img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.moment-card-img-placeholder {
+  background: #E8E4E0;
+}
+
+.moment-card-photo {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.moment-card-info {
+  padding: 28rpx 24rpx;
+  min-height: 110rpx;
+}
+
+.moment-card-meta {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8rpx;
+}
+
+.moment-card-date {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #333333;
+}
+
+.moment-card-weather {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.moment-weather-icon {
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 50%;
+}
+
+.moment-weather-sunny {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23FFB74D'%3E%3Cpath d='M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.moment-weather-cloudy {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239E9E9E'%3E%3Cpath d='M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.moment-weather-rainy {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234FC3F7'%3E%3Cpath d='M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 17l-2 4h2l-2 4 2-4h-2l2-4z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.moment-weather-overcast {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2390A4AE'%3E%3Cpath d='M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.moment-weather-haze {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%238D6E63'%3E%3Cpath d='M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.moment-temp {
+  font-size: 24rpx;
+  color: #333333;
+}
+
+.moment-card-desc {
+  font-size: 24rpx;
+  color: #999999;
+  line-height: 1.4;
+}
+
+.bottom-pad {
+  height: 60rpx;
+}

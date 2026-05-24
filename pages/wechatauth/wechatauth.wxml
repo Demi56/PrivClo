@@ -1,0 +1,41 @@
+<!--
+  微信登录确认及同意授权页
+  布局：状态栏 | 标题 | 说明文案 | 协议勾选 | 同意并登录按钮
+-->
+<view class="page">
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+  <view class="nav-back" style="top: {{statusBarHeight}}px;" bindtap="onBack">
+    <view class="nav-back-arrow"></view>
+  </view>
+
+  <view class="bg-deco">
+    <view class="bg-circle bg-circle-1"></view>
+    <view class="bg-circle bg-circle-2"></view>
+  </view>
+
+  <view class="main">
+    <view class="card">
+      <view class="icon-wrap">
+        <view class="icon-wechat"></view>
+      </view>
+      <text class="title">微信登录</text>
+      <text class="desc">我们将获取你的微信昵称、头像等信息，用于完善账号与个性化服务。</text>
+
+      <view class="agreement">
+        <view class="agreement-row" bindtap="toggleAgreement">
+          <view class="checkbox {{agreed ? 'checked' : ''}}">
+            <text class="checkbox-inner" wx:if="{{agreed}}">✓</text>
+          </view>
+          <text class="agreement-text">登录即表示同意</text>
+        </view>
+        <view class="links-row">
+          <text class="link" bindtap="onAgreement">《用户协议》</text>
+          <text class="link-divider">和</text>
+          <text class="link" bindtap="onPrivacy">《隐私政策》</text>
+        </view>
+      </view>
+
+      <button class="btn-confirm" disabled="{{!agreed}}" bindtap="onConfirm">同意并登录</button>
+    </view>
+  </view>
+</view>

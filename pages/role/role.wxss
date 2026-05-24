@@ -1,0 +1,287 @@
+/* 默认角色确认及多角色切换页 - 与设计图一致 */
+
+.page {
+  min-height: 100vh;
+  background-color: #4DD0E1;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.status-bar { width: 100%; flex-shrink: 0; }
+
+/* 顶部导航 */
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 32rpx 32rpx;
+}
+
+.header-btn {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-btn-arrow {
+  width: 24rpx;
+  height: 24rpx;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23333333'%3E%3Cpath d='M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.header-btn-gear {
+  width: 40rpx;
+  height: 40rpx;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23333333'%3E%3Cpath d='M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.04.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.header-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #FFFFFF;
+}
+
+.header-placeholder {
+  width: 72rpx;
+  height: 72rpx;
+}
+
+/* 主内容区 */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24rpx 48rpx 56rpx;
+}
+
+.avatar-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 24rpx;
+  margin-bottom: 32rpx;
+}
+
+.avatar-side {
+  width: 160rpx;
+  height: 160rpx;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-side-inner {
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(8rpx);
+}
+
+.avatar-prev {
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-prev-blur {
+  filter: blur(1rpx);
+}
+
+.avatar-prev-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.avatar-prev-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.avatar-lock {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lock-icon {
+  font-size: 48rpx;
+}
+
+/* 左侧上一角色头像顶层的锁（与右侧样式一致，不拦截箭头按钮点击） */
+.avatar-lock-overlay {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.nav-arrow-btn {
+  position: absolute;
+  bottom: -8rpx;
+  left: 50%;
+  margin-left: -24rpx;
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-arrow-inner {
+  width: 20rpx;
+  height: 20rpx;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23333333'%3E%3Cpath d='M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.nav-right .nav-arrow-inner {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23333333'%3E%3Cpath d='M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.avatar-center {
+  width: 240rpx;
+  height: 240rpx;
+  padding: 8rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  box-sizing: border-box;
+}
+
+.avatar-center-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4rpx solid #FFFFFF;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+}
+
+.avatar-fallback {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-fallback.avatar-female {
+  background: linear-gradient(135deg, #FFB6C1 0%, #FFC0CB 100%);
+}
+
+.avatar-fallback.avatar-male {
+  background: linear-gradient(135deg, #87CEEB 0%, #B0E0E6 100%);
+}
+
+.avatar-symbol {
+  font-size: 100rpx;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+
+.status-badge {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16rpx;
+  padding: 16rpx 32rpx;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 40rpx;
+  margin-bottom: 16rpx;
+}
+
+.status-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background-color: #07C160;
+}
+
+.status-text {
+  font-size: 28rpx;
+  color: #FFFFFF;
+}
+
+.role-name-wrap {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  margin-bottom: 40rpx;
+}
+
+.role-name {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #FFFFFF;
+}
+
+.role-name-default {
+  font-size: 20rpx;
+  color: rgba(255, 255, 255, 0.85);
+  margin-left: 6rpx;
+  line-height: 1;
+  transform: translateY(-12rpx);
+}
+
+.btn-add {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+  padding: 24rpx 48rpx;
+  background-color: #FFFFFF;
+  border-radius: 48rpx;
+}
+
+.btn-add-icon {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  background-color: #4DD0E1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-add-plus {
+  font-size: 36rpx;
+  color: #FFFFFF;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.btn-add-text {
+  font-size: 30rpx;
+  color: #333333;
+}

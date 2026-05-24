@@ -1,0 +1,31 @@
+<view class="recommend-card" wx:if="{{recommendations}}">
+  <view class="card-header">
+    <view class="style-tag">{{recommendations.style}}</view>
+    <text class="reason">{{recommendations.reason}}</text>
+    <text wx:if="{{copywriting}}" class="copywriting">{{copywriting}}</text>
+  </view>
+
+  <view class="items-section">
+    <view class="item-row">
+  <text class="label">上衣</text>
+  <text class="value">{{recommendations.top.name}}</text>
+</view>
+<view class="item-row">
+  <text class="label">下装</text>
+  <text class="value">{{recommendations.bottom.name}}</text>
+</view>
+<view class="item-row">
+  <text class="label">鞋子</text>
+  <text class="value">{{recommendations.shoes.name}}</text>
+</view>
+    <view class="item-row" wx:if="{{recommendations.outerwear}}">
+      <text class="label">外套</text>
+      <text class="value">{{recommendations.outerwear}}</text>
+    </view>
+  </view>
+
+  <view class="tips-section" wx:if="{{recommendations.tips}}">
+    <text class="tips-title">搭配建议</text>
+    <text class="tips-text">{{recommendations.tips}}</text>
+  </view>
+</view>
