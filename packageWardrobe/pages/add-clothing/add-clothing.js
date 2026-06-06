@@ -1,7 +1,9 @@
 /**
  * 添加衣物 - 默认智能抠图，不满意可手动微调
- * 流程：选择图片 → AI抠图 → 预览 →（可选）手动微调 → 保存衣橱
+ * 流程：选择图片 → AI抠图 → 预览 →（可选）背面抠图 → 保存衣橱
  */
+
+const { needsDualSide } = require('../../../utils/wardrobeItem.js')
 
 const CATEGORY_TABS = [
   { id: 'tops', name: '上衣' },
@@ -67,11 +69,14 @@ function getCategoryOptionsWithCustom(typeId) {
 Page({
   data: {
     statusBarHeight: 20,
-    step: 'select',             // select | uploading | matting | preview | manual_refine
+    step: 'select',             // select | uploading | matting | preview | back_select | manual_refine
     tempImagePath: '',
     originalFileID: '',
     mattedFileID: '',
+    backMattedFileID: '',
     previewUrl: '',
+    previewBackUrl: '',
+    needsBackSide: true,
     hasManualRefined: false,    // 是否经过手动微调
     progress: 0,
     loadingText: '准备中...',
@@ -115,7 +120,8 @@ Page({
       this.setData({
         statusBarHeight: sys.statusBarHeight || 20,
         canvasWidth: canvasSize,
-        canvasHeight: canvasSize
+        canvasHeight: canvasSize,
+        needsBackSide: needsDualSide(this.data.itemTypeId)
       })
       this.canvasDpr = sys.pixelRatio || 2
     } catch (e) {
@@ -135,13 +141,17 @@ Page({
   },
 
   onChooseImage(sourceType) {
+    this._captureSide = 'front'
     wx.chooseMedia({
       count: 1,
       mediaType: ['image'],
       sourceType: [sourceType],
       success: (res) => {
         const path = res.tempFiles[0] && res.tempFiles[0].tempFilePath
-        if (path) this.startUpload(path)
+        if (path) {
+          if (this._captureSide === 'back') this.startBackUpload(path)
+          else this.startUpload(path)
+        }
       },
       fail: (err) => {
         wx.showToast({ title: sourceType === 'camera' ? '请授权摄像头' : '请授权相册', icon: 'none' })
@@ -155,6 +165,71 @@ Page({
 
   onChooseFromAlbum() {
     this.onChooseImage('album')
+  },
+
+  onStartBackCapture() {
+    this._captureSide = 'back'
+    this.setData({ step: 'back_select' })
+  },
+
+  onTakeBackPhoto() {
+    this._captureSide = 'back'
+    this.onChooseImage('camera')
+  },
+
+  onChooseBackFromAlbum() {
+    this._captureSide = 'back'
+    this.onChooseImage('album')
+  },
+
+  async startBackUpload(tempPath) {
+    this.setData({
+      step: 'uploading',
+      progress: 0,
+      loadingText: '上传背面图...'
+    })
+    this._animateProgress(0, 40, 800)
+    const cloudPath = `wardrobe/raw/back_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.jpg`
+    try {
+      const res = await wx.cloud.uploadFile({ cloudPath, filePath: tempPath })
+      this.setData({ progress: 40 })
+      this.runBackMatting(res.fileID)
+    } catch (e) {
+      console.error('back upload failed:', e)
+      wx.showToast({ title: '背面上传失败', icon: 'none' })
+      this.setData({ step: 'preview' })
+    }
+  },
+
+  async runBackMatting(fileID) {
+    this.setData({ step: 'matting', loadingText: '背面抠图中...' })
+    this._animateProgress(40, 85, 2000)
+    try {
+      const res = await wx.cloud.callFunction({ name: 'matting', data: { fileID } })
+      const result = res.result || {}
+      const backMattedFileID = result.fileID
+      if (result.errMsg || !backMattedFileID) throw new Error(result.errMsg || '背面抠图失败')
+      let previewBackUrl = result.tempFileURL || ''
+      if (!previewBackUrl) {
+        try {
+          const urlRes = await wx.cloud.getTempFileURL({ fileList: [backMattedFileID] })
+          if (urlRes.fileList && urlRes.fileList[0] && urlRes.fileList[0].tempFileURL) {
+            previewBackUrl = urlRes.fileList[0].tempFileURL
+          }
+        } catch (e) {}
+      }
+      this._animateProgress(85, 100, 300)
+      this.setData({
+        step: 'preview',
+        backMattedFileID,
+        previewBackUrl,
+        progress: 100
+      })
+      wx.showToast({ title: '背面已录入', icon: 'success' })
+    } catch (e) {
+      wx.showToast({ title: e.message || '背面抠图失败', icon: 'none' })
+      this.setData({ step: 'preview', progress: 0 })
+    }
   },
 
   async startUpload(tempPath) {
@@ -705,7 +780,8 @@ Page({
       itemCategoryId: first ? first.id : 'default',
       itemCategory: first ? first.name : name,
       categoryOptions: opts,
-      showTypePicker: false
+      showTypePicker: false,
+      needsBackSide: needsDualSide(id)
     })
   },
 
@@ -790,12 +866,16 @@ Page({
 
   onSaveToWardrobe() {
     if (!getApp().requireGuestLoginForSave()) return
-    const { mattedFileID, itemTypeId, itemCategoryId } = this.data
+    const { mattedFileID, backMattedFileID, itemTypeId, itemCategoryId } = this.data
     if (!mattedFileID || !itemTypeId || !itemCategoryId) {
       wx.showToast({ title: '请选择分类', icon: 'none' })
       return
     }
-    getApp().addUserWardrobeItem(itemTypeId, itemCategoryId, mattedFileID)
+    getApp().addUserWardrobeItem(itemTypeId, itemCategoryId, {
+      src: mattedFileID,
+      srcFront: mattedFileID,
+      srcBack: backMattedFileID || ''
+    })
     wx.showToast({ title: '已保存到衣橱', icon: 'success' })
     setTimeout(() => wx.navigateBack(), 1200)
   },
@@ -806,7 +886,9 @@ Page({
       tempImagePath: '',
       originalFileID: '',
       mattedFileID: '',
+      backMattedFileID: '',
       previewUrl: '',
+      previewBackUrl: '',
       hasManualRefined: false,
       progress: 0
     })

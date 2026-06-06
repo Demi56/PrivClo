@@ -17,6 +17,7 @@
         <view wx:else class="avatar-fallback">{{gender === 'male' ? '♂' : '♀'}}</view>
         <view class="level-badge">LV.4</view>
       </view>
+      <text wx:if="{{showLoginHint}}" class="profile-login-hint">点击头像去登录</text>
       <text class="profile-nickname">{{roleName}}</text>
       <text class="profile-id">ID: {{userId}}</text>
       <view class="vip-badge">

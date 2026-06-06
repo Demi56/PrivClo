@@ -1,6 +1,6 @@
 <!--
-  衣橱内页 - 收藏区 + 衣物分区
-  可滚动：收藏区卡片 | 上衣区等 6 个分类卡片
+  衣橱内页 - 衣物分区
+  可滚动：上衣区等 6 个分类卡片
   底部固定：扫描录入单品按钮
 -->
 <view class="page">
@@ -10,39 +10,25 @@
     <view class="header-back" bindtap="onBack">
       <view class="header-back-arrow"></view>
     </view>
-    <text class="header-title">衣橱</text>
+    <view class="header-wardrobe-nav">
+      <view
+        class="header-nav-item {{wardrobeNavTab === 'resale' ? 'header-nav-active' : ''}}"
+        catchtap="onWardrobeNavTap"
+        data-tab="resale"
+      >闲置区</view>
+      <view class="header-nav-divider"></view>
+      <view
+        class="header-nav-item {{wardrobeNavTab === 'favorites' ? 'header-nav-active' : ''}}"
+        catchtap="onWardrobeNavTap"
+        data-tab="favorites"
+      >收藏区</view>
+    </view>
     <view class="header-placeholder"></view>
   </view>
 
-  <!-- 可滚动：收藏区 + 衣物分区 -->
+  <!-- 可滚动：衣物分区 -->
   <scroll-view class="categories-scroll" scroll-y style="top: {{scrollAreaTop}}px; bottom: {{scrollAreaBottom}}px;">
     <view class="categories-inner">
-      <!-- 闲置转卖卡片（收藏区上方） -->
-      <view class="resale-card" bindtap="onResaleCardTap">
-        <view class="resale-card-bg"></view>
-        <view class="resale-card-content">
-          <view class="resale-icon-wrap">
-            <view class="resale-icon-double-arrow"></view>
-          </view>
-          <view class="resale-info">
-            <text class="resale-name">闲置转卖</text>
-            <text class="resale-desc">让闲置衣物流动起来</text>
-          </view>
-        </view>
-      </view>
-      <!-- 收藏区卡片（位于上衣区上方） -->
-      <view class="favorite-card" bindtap="onFavoriteCardTap">
-        <view class="favorite-card-bg"></view>
-        <view class="favorite-card-content">
-          <view class="favorite-icon-wrap">
-            <text class="favorite-icon">♥</text>
-          </view>
-          <view class="favorite-info">
-            <text class="favorite-name">收藏区</text>
-            <text class="favorite-count">已收藏{{favoriteCount}}套搭配</text>
-          </view>
-        </view>
-      </view>
       <view wx:for="{{categories}}" wx:key="id" class="category-card category-card-{{item.id}}" bindtap="onCategoryTap" data-id="{{item.id}}">
         <image wx:if="{{item.cover}}" class="category-cover" src="{{item.cover}}" mode="aspectFill" />
         <view class="category-bg"></view>

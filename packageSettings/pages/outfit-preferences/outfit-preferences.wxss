@@ -47,7 +47,7 @@
 
 .card-wrap {
   flex: 1;
-  padding: 48rpx;
+  padding: 24rpx 48rpx 48rpx;
   box-sizing: border-box;
   position: relative;
   z-index: 1;
@@ -121,4 +121,105 @@
   background: #5DB8A8;
   color: #FFFFFF;
   flex: 1.4;
+}
+
+.scroll-main {
+  flex: 1;
+  height: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.section-divider {
+  height: 1rpx;
+  background: #E8E4DC;
+  margin: 12rpx 0 28rpx;
+}
+
+.section-heading {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 24rpx;
+}
+
+.field-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+
+.section-hint {
+  font-size: 24rpx;
+  color: #66CCAA;
+}
+
+.age-value {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333333;
+}
+
+.slider-wrap {
+  padding: 0 8rpx;
+  margin-bottom: 8rpx;
+}
+
+.slider {
+  width: 100%;
+}
+
+.slider-labels {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 0 8rpx;
+}
+
+.slider-label {
+  font-size: 24rpx;
+  color: #999999;
+}
+
+.field-style {
+  margin-bottom: 8rpx;
+}
+
+.tags {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.tag {
+  padding: 16rpx 28rpx;
+  border-radius: 40rpx;
+  background-color: #F0EDE8;
+  border: 2rpx solid #E0DAD0;
+  font-size: 26rpx;
+  color: #333333;
+}
+
+.tag.selected {
+  background-color: #66CCAA;
+  border-color: #66CCAA;
+  color: #FFFFFF;
+}
+
+.tag-more {
+  background-color: transparent;
+  border-style: dashed;
+  color: #66CCAA;
+}
+
+.tag-more.expanded {
+  color: #999999;
+}
+
+.tags-more {
+  margin-top: 16rpx;
 }

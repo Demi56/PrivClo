@@ -248,12 +248,23 @@
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.06);
 }
 
+.stats-head {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+}
+
 .stats-title {
   font-size: 30rpx;
   font-weight: 600;
   color: #000000;
-  margin-bottom: 24rpx;
-  display: block;
+}
+
+.stats-city {
+  font-size: 26rpx;
+  color: #666666;
 }
 
 .stats-row {

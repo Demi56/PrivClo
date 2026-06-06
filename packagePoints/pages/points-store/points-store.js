@@ -6,7 +6,7 @@ const _img = (p) => getImageUrl('/images/points-store/' + p)
 Page({
   data: {
     statusBarHeight: 20,
-    tabList: ['日记皮肤', '日记贴纸', '衣橱主题', '衣橱容量', '角色数量', '首页背景'],
+    tabList: ['日记皮肤', '日记贴纸', '衣橱主题', '衣橱容量', '角色数量'],
     activeTabIndex: 0,
     productList: [
       { id: '1', name: '白色涂鸦', points: 80, image: _img('skin/1.png'), category: 0 },
@@ -27,17 +27,7 @@ Page({
       { id: '27', name: '男童角色位+1', points: 2000, image: _img('role/3.png'), category: 4 },
       { id: '28', name: '女童角色位+1', points: 2000, image: _img('role/4.png'), category: 4 },
       { id: '29', name: '老年男性角色位+1', points: 2000, image: _img('role/5.png'), category: 4 },
-      { id: '30', name: '老年女性角色位+1', points: 2000, image: _img('role/6.png'), category: 4 },
-      { id: '11', name: '城市建筑', points: 60, image: _img('bg/1.jpeg'), category: 5 },
-      { id: '12', name: '公园小路', points: 60, image: _img('bg/2.jpeg'), category: 5 },
-      { id: '18', name: '卡通客厅', points: 60, image: _img('bg/3.jpeg'), category: 5 },
-      { id: '19', name: '深秋公园', points: 60, image: _img('bg/4.jpeg'), category: 5 },
-      { id: '20', name: '线条客厅', points: 60, image: _img('bg/5.jpeg'), category: 5 },
-      { id: '21', name: '夕阳公园', points: 60, image: _img('bg/6.jpeg'), category: 5 },
-      { id: '22', name: '抽象海滩', points: 60, image: _img('bg/7.jpeg'), category: 5 },
-      { id: '23', name: '森之光', points: 60, image: _img('bg/8.jpeg'), category: 5 },
-      { id: '24', name: '卡通森林', points: 60, image: _img('bg/9.jpeg'), category: 5 },
-      { id: '25', name: '静谧沙滩', points: 60, image: _img('bg/10.jpeg'), category: 5 }
+      { id: '30', name: '老年女性角色位+1', points: 2000, image: _img('role/6.png'), category: 4 }
     ],
     displayList: []
   },

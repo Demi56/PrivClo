@@ -5,7 +5,7 @@ Page({
   data: {
     statusBarHeight: 20,
     gender: 'female',
-    roleName: '依依',
+    roleName: '默认用户',
     isDefaultRole: true,
     avatarPrevUrl: '',
     avatarFemaleUrl: '',
@@ -24,7 +24,8 @@ Page({
     }
     const gender = options.gender || getApp().getUserGender() || 'female'
     const roleName = getApp().getRoleDisplayName(gender)
-    const isDefaultRole = roleName === '阳阳' || roleName === '依依'
+    const defaultName = getApp().getDefaultUserDisplayName()
+    const isDefaultRole = roleName === defaultName
     this.setData({
       gender,
       roleName,
@@ -38,7 +39,8 @@ Page({
   onShow() {
     const gender = this.data.gender || 'female'
     const roleName = getApp().getRoleDisplayName(gender)
-    const isDefaultRole = roleName === '阳阳' || roleName === '依依'
+    const defaultName = getApp().getDefaultUserDisplayName()
+    const isDefaultRole = roleName === defaultName
     this.setData({ roleName, isDefaultRole })
   },
 

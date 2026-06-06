@@ -5,7 +5,7 @@ Page({
   data: {
     statusBarHeight: 20,
     gender: 'female',
-    roleName: '依依',
+    roleName: '默认用户',
     avatarPrevUrl: '',
     avatarFemaleUrl: '',
     avatarMaleUrl: '',

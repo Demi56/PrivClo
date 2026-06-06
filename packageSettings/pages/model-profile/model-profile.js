@@ -1,23 +1,28 @@
 const { getImageUrl } = require('../../../utils/image.js')
-const { getModelImagePath } = require('../../../utils/clothingPositions.js')
 
-// 角色信息录入/编辑页 - 风格选项与注册 preference 页一致
 const STYLE_OPTIONS = [
   '日常休闲风', '法式风', '商务职场风', '运动风', '极简风', '复古风', '街头潮酷', '新中式',
   '汉服', 'JK', '洛丽塔', 'Vintage', '山系户外'
 ]
 
+const DEFAULT_ROLE_BODY = {
+  female: { height: '163', weight: '52', bustWaistHip: '84 / 62 / 88' },
+  male: { height: '175', weight: '68', bustWaistHip: '95 / 80 / 98' }
+}
+
 Page({
   data: {
     statusBarHeight: 20,
-    nickname: '',
-    height: '',
-    weight: '',
-    bustWaistHip: '',
+    gender: 'female',
+    roleNickname: '',
+    roleHeight: '',
+    roleWeight: '',
+    roleBustWaistHip: '',
+    roleBustWaistHipEnabled: false,
+    roleAvatarFemaleUrl: '',
+    roleAvatarMaleUrl: '',
     styleOptions: STYLE_OPTIONS,
-    selectedStyles: [],
-    avatarUrl: '',
-    modelDefaultUrl: ''
+    selectedStyles: []
   },
 
   onLoad(options) {
@@ -27,47 +32,88 @@ Page({
     } catch (e) {
       this.setData({ statusBarHeight: 20 })
     }
-    const gender = options.gender || 'female'
+    const gender = options.gender || getApp().getUserGender() || 'female'
     this.setData({
       gender,
-      avatarUrl: getImageUrl(getModelImagePath(gender)),
-      modelDefaultUrl: getImageUrl(getModelImagePath(gender))
+      roleAvatarFemaleUrl: getImageUrl('/images/role/avatar-female.png'),
+      roleAvatarMaleUrl: getImageUrl('/images/role/avatar-male.png')
     })
     this.loadProfile()
   },
 
+  getRoleProfileKey() {
+    return 'modelProfile_' + (this.data.gender || 'female')
+  },
+
   loadProfile() {
-    const gender = this.data.gender || 'female'
-    const key = 'modelProfile_' + gender
+    const isMale = this.data.gender === 'male'
+    const defaultName = getApp().getDefaultUserDisplayName()
+    const body = DEFAULT_ROLE_BODY[isMale ? 'male' : 'female']
+    const key = this.getRoleProfileKey()
     try {
       const raw = wx.getStorageSync(key)
       const s = (raw?.selectedStyles && Array.isArray(raw.selectedStyles))
         ? raw.selectedStyles
-        : getApp().getStylePreference(gender)
+        : (getApp().getStylePreference ? getApp().getStylePreference(this.data.gender) : [])
+      if (raw && typeof raw === 'object') {
+        const nickname = (raw.nickname && String(raw.nickname).trim()) || defaultName
+        const roleHeight = raw.height !== undefined && raw.height !== '' ? String(raw.height) : body.height
+        const roleWeight = raw.weight !== undefined && raw.weight !== '' ? String(raw.weight) : body.weight
+        const hasBust = raw.bustWaistHip && String(raw.bustWaistHip).trim()
+        this.setData({
+          roleNickname: nickname,
+          roleHeight,
+          roleWeight,
+          roleBustWaistHip: hasBust || body.bustWaistHip,
+          roleBustWaistHipEnabled: !!hasBust,
+          selectedStyles: s || []
+        })
+      } else {
+        this.setData({
+          roleNickname: defaultName,
+          roleHeight: body.height,
+          roleWeight: body.weight,
+          roleBustWaistHip: body.bustWaistHip,
+          roleBustWaistHipEnabled: false,
+          selectedStyles: s || []
+        })
+      }
+    } catch (e) {
       this.setData({
-        nickname: raw?.nickname || '',
-        height: raw?.height !== undefined && raw?.height !== '' ? String(raw.height) : '',
-        weight: raw?.weight !== undefined && raw?.weight !== '' ? String(raw.weight) : '',
-        bustWaistHip: raw?.bustWaistHip || '',
-        selectedStyles: s || []
+        roleNickname: defaultName,
+        roleHeight: body.height,
+        roleWeight: body.weight,
+        roleBustWaistHip: body.bustWaistHip,
+        roleBustWaistHipEnabled: false,
+        selectedStyles: []
       })
-    } catch (e) {}
+    }
   },
 
-  onNicknameInput(e) {
-    this.setData({ nickname: (e.detail && e.detail.value) || '' })
+  onToggleBustWaistHip(e) {
+    const enabled = e.detail && e.detail.value
+    const isMale = this.data.gender === 'male'
+    const body = DEFAULT_ROLE_BODY[isMale ? 'male' : 'female']
+    this.setData({
+      roleBustWaistHipEnabled: enabled,
+      roleBustWaistHip: enabled ? (this.data.roleBustWaistHip || body.bustWaistHip) : ''
+    })
   },
 
-  onHeightInput(e) {
-    this.setData({ height: (e.detail && e.detail.value) || '' })
+  onRoleNicknameInput(e) {
+    this.setData({ roleNickname: (e.detail && e.detail.value) || '' })
   },
 
-  onWeightInput(e) {
-    this.setData({ weight: (e.detail && e.detail.value) || '' })
+  onRoleHeightInput(e) {
+    this.setData({ roleHeight: (e.detail && e.detail.value) || '' })
   },
 
-  onBustWaistHipInput(e) {
-    this.setData({ bustWaistHip: (e.detail && e.detail.value) || '' })
+  onRoleWeightInput(e) {
+    this.setData({ roleWeight: (e.detail && e.detail.value) || '' })
+  },
+
+  onRoleBustWaistHipInput(e) {
+    this.setData({ roleBustWaistHip: (e.detail && e.detail.value) || '' })
   },
 
   toggleStyle(e) {
@@ -89,20 +135,18 @@ Page({
 
   onSave() {
     if (!getApp().requireGuestLoginForSave()) return
-    const { nickname, height, weight, bustWaistHip, selectedStyles, gender } = this.data
+    const { roleNickname, roleHeight, roleWeight, roleBustWaistHip, roleBustWaistHipEnabled, selectedStyles, gender } = this.data
     const profile = {
-      nickname: (nickname || '').trim(),
-      height: (height || '').trim(),
-      weight: (weight || '').trim(),
-      bustWaistHip: (bustWaistHip || '').trim(),
+      nickname: (roleNickname || '').trim(),
+      height: (roleHeight || '').trim(),
+      weight: (roleWeight || '').trim(),
+      bustWaistHip: roleBustWaistHipEnabled ? (roleBustWaistHip || '').trim() : '',
       selectedStyles: selectedStyles || []
     }
     try {
       const g = gender || 'female'
-      const key = 'modelProfile_' + g
-      wx.setStorageSync(key, profile)
-      getApp().saveUserGender(g)
-      getApp().saveStylePreference(selectedStyles)
+      wx.setStorageSync('modelProfile_' + g, profile)
+      if (getApp().saveStylePreference) getApp().saveStylePreference(selectedStyles)
       wx.showToast({ title: '保存成功', icon: 'success' })
       setTimeout(() => wx.navigateBack(), 800)
     } catch (e) {

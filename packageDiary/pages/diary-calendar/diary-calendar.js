@@ -1,7 +1,7 @@
 const { getImageUrl } = require('../../../utils/image.js')
+const homeWeather = require('../../../utils/homeWeather.js')
 
 // 天气日历 - 日记目录页
-const WEATHER_TYPES = ['sunny', 'cloudy', 'overcast', 'rainy', 'haze']
 const STORAGE_KEY = 'diary_pages'
 
 function getWeekDates() {
@@ -30,7 +30,25 @@ Page({
     pickerDate: '',
     calendarDays: [],
     stats: { sunny: 0, cloudy: 0, overcast: 0, rainy: 0, haze: 0 },
-    weekReviewCount: 0
+    weekReviewCount: 0,
+    city: homeWeather.DEFAULT_CITY
+  },
+
+  _homeWeatherSnapshot: '',
+
+  syncFromHomeWeather() {
+    const saved = homeWeather.getHomeWeather()
+    const city = homeWeather.getSyncedCity()
+    const snapshot = homeWeather.homeWeatherSnapshotKey(saved) || ('default|' + city)
+    const cityChanged = city !== this.data.city
+    const snapshotChanged = snapshot !== this._homeWeatherSnapshot
+    if (!cityChanged && !snapshotChanged) return false
+    this._homeWeatherSnapshot = snapshot
+    this._homeWeatherCache = saved
+    this.setData({ city }, () => {
+      this.buildCalendar(this.data.displayYear, this.data.displayMonth)
+    })
+    return true
   },
 
   onLoad(options) {
@@ -52,12 +70,13 @@ Page({
       pickerDate,
       illustUrl: getImageUrl('/packageDiary/images/diary-calendar/illust.png')
     }, () => {
-      this.buildCalendar(displayYear, displayMonth)
+      this.syncFromHomeWeather()
     })
     this.updateWeekReviewCount()
   },
 
   onShow() {
+    this.syncFromHomeWeather()
     this.updateWeekReviewCount()
   },
 
@@ -115,9 +134,9 @@ Page({
   },
 
   getWeatherForDay(year, month, day) {
-    const seed = year * 10000 + month * 100 + day
-    const idx = seed % WEATHER_TYPES.length
-    return WEATHER_TYPES[idx]
+    const city = this.data.city || homeWeather.getSyncedCity()
+    const home = this._homeWeatherCache || homeWeather.getHomeWeather()
+    return homeWeather.getWeatherForDay(year, month, day, city, home)
   },
 
   onPrevMonth() {

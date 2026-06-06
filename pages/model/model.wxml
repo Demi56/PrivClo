@@ -1,27 +1,167 @@
 <!--
   3D 模特全身穿搭展示页面
-  布局：天气胶囊 | 模特区 | 精灵管家 | 右侧操作按钮 | Tab 栏
+  布局：天气胶囊 | 背景切换 | 模特区 | 右侧单品格 | 精灵管家 | Tab 栏
 -->
 <view class="page">
   <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
 
-  <!-- 左上角：天气信息 -->
-  <view class="weather-capsule" style="top: {{headerTop}}px;" bindtap="onWeatherCapsuleTap">
-<view class="weather-icon-wrap">
-    <view class="weather-icon weather-icon-{{weatherIcon || 'sun'}}"></view>
-  </view>
-    <view class="weather-text">
-      <text class="weather-city">{{city}}</text>
-      <text class="weather-detail">{{temp}}℃ {{weather}}</text>
+  <!-- 左上角：天气胶囊 + 背景切换 -->
+  <view class="home-header-left" style="top: {{headerTop}}px;">
+    <view class="weather-capsule" bindtap="onWeatherCapsuleTap">
+      <view class="weather-icon-wrap">
+        <view class="weather-icon weather-icon-{{weatherIcon || 'sun'}}"></view>
+      </view>
+      <view class="weather-text">
+        <text class="weather-city">{{city}}</text>
+        <text class="weather-detail">{{temp}}℃ {{weather}}</text>
+      </view>
+    </view>
+    <view class="bg-mode-group">
+      <view class="bg-mode-item bg-mode-item-solid {{activeBgMode === 'solid' ? 'bg-mode-item-active' : ''}}" bindtap="onBgModeTap" data-mode="solid" hover-class="bg-mode-item-pressed">
+        <view class="bg-mode-circle">
+          <view class="bg-mode-icon bg-mode-icon-solid"></view>
+        </view>
+        <text class="bg-mode-label">纯色背景</text>
+        <view wx:if="{{activeBgMode === 'solid' && showSolidColorPicker}}" class="solid-color-popup" catchtap="onPopupCatch">
+          <view class="solid-color-popup-arrow"></view>
+          <view class="solid-color-popup-panel">
+            <view class="solid-color-popup-head">
+              <text class="solid-color-popup-title">背景色</text>
+              <view class="solid-color-popup-close" catchtap="onCloseSolidColorPicker">×</view>
+            </view>
+            <view class="solid-color-grid">
+              <view
+                wx:for="{{solidColorPresets}}"
+                wx:key="color"
+                class="solid-color-swatch {{solidBgColor === item.color ? 'solid-color-swatch-active' : ''}}"
+                style="background-color: {{item.color}};"
+                catchtap="onSolidColorPick"
+                data-color="{{item.color}}"
+              ></view>
+            </view>
+            <view class="solid-color-custom">
+              <text class="solid-color-custom-title">自定义色盘</text>
+              <view class="solid-sv-wrap">
+                <canvas
+                  type="2d"
+                  id="solidSvCanvas"
+                  class="solid-sv-canvas"
+                  style="height: {{svCanvasHeight}}px;"
+                  disable-scroll="true"
+                  bindtouchstart="onSolidSvTouchStart"
+                  bindtouchmove="onSolidSvTouchMove"
+                  bindtouchend="onSolidSvTouchEnd"
+                ></canvas>
+                <view class="solid-sv-indicator" style="left: {{pickerSat}}%; top: {{pickerValTop}}%;"></view>
+              </view>
+              <view class="solid-hue-wrap">
+                <view class="solid-hue-track"></view>
+                <slider
+                  class="solid-hue-slider"
+                  min="0"
+                  max="360"
+                  step="1"
+                  value="{{pickerHue}}"
+                  block-size="20"
+                  block-color="{{solidBgColor}}"
+                  backgroundColor="rgba(0,0,0,0)"
+                  activeColor="rgba(0,0,0,0)"
+                  bindchanging="onSolidHueChanging"
+                  bindchange="onSolidHueChange"
+                />
+              </view>
+            </view>
+            <view class="solid-color-current">
+              <view class="solid-color-current-dot" style="background-color: {{solidBgColor}};"></view>
+              <input
+                class="solid-color-current-input"
+                type="text"
+                value="{{solidBgColorInput}}"
+                maxlength="7"
+                placeholder="#ece8e2"
+                confirm-type="done"
+                catchtap="onPopupCatch"
+                bindinput="onSolidColorInput"
+                bindblur="onSolidColorInputBlur"
+                bindconfirm="onSolidColorInputConfirm"
+              />
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class="bg-mode-item bg-mode-item-indoor {{activeBgMode === 'indoor' ? 'bg-mode-item-active' : ''}}" bindtap="onBgModeTap" data-mode="indoor" hover-class="bg-mode-item-pressed">
+        <view class="bg-mode-circle">
+          <view class="bg-mode-icon bg-mode-icon-indoor"></view>
+        </view>
+        <text class="bg-mode-label">室内</text>
+        <view wx:if="{{activeBgMode === 'indoor' && showIndoorScenePicker}}" class="scene-picker-popup" catchtap="onPopupCatch">
+          <view class="scene-picker-popup-arrow"></view>
+          <view class="scene-picker-popup-panel">
+            <view class="scene-picker-head">
+              <text class="scene-picker-title">室内场景</text>
+              <view class="scene-picker-close" catchtap="onCloseIndoorScenePicker">×</view>
+            </view>
+            <view class="scene-picker-grid">
+              <view
+                wx:for="{{indoorScenes}}"
+                wx:key="id"
+                class="scene-picker-item {{indoorSceneId === item.id ? 'scene-picker-item-active' : ''}}"
+                catchtap="onIndoorScenePick"
+                data-id="{{item.id}}"
+              >
+                <image class="scene-picker-thumb" src="{{item.image}}" mode="aspectFill" lazy-load="{{true}}" />
+                <text class="scene-picker-name">{{item.name}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class="bg-mode-item bg-mode-item-outdoor {{activeBgMode === 'outdoor' ? 'bg-mode-item-active' : ''}}" bindtap="onBgModeTap" data-mode="outdoor" hover-class="bg-mode-item-pressed">
+        <view class="bg-mode-circle">
+          <view class="bg-mode-icon bg-mode-icon-outdoor"></view>
+        </view>
+        <text class="bg-mode-label">室外</text>
+        <view wx:if="{{activeBgMode === 'outdoor' && showOutdoorScenePicker}}" class="scene-picker-popup scene-picker-popup-outdoor" catchtap="onPopupCatch">
+          <view class="scene-picker-popup-arrow"></view>
+          <view class="scene-picker-popup-panel scene-picker-popup-panel-wide">
+            <view class="scene-picker-head">
+              <text class="scene-picker-title">室外场景</text>
+              <view class="scene-picker-close" catchtap="onCloseOutdoorScenePicker">×</view>
+            </view>
+            <scroll-view class="scene-picker-scroll" scroll-y="{{true}}">
+              <view class="scene-picker-grid">
+                <view
+                  wx:for="{{outdoorScenes}}"
+                  wx:key="id"
+                  class="scene-picker-item {{outdoorSceneId === item.id ? 'scene-picker-item-active' : ''}}"
+                  catchtap="onOutdoorScenePick"
+                  data-id="{{item.id}}"
+                >
+                  <image class="scene-picker-thumb" src="{{item.image}}" mode="aspectFill" lazy-load="{{true}}" />
+                  <text class="scene-picker-name">{{item.name}}</text>
+                </view>
+              </view>
+            </scroll-view>
+          </view>
+        </view>
+      </view>
     </view>
   </view>
 
-  <!-- 主内容区：背景图/渐变 + 天气动画 + 模特 + 精灵 + 操作按钮 -->
+  <!-- 主内容区：背景渐变 + 天气动画 + 模特 + 精灵 -->
   <view class="model-area">
     <!-- 默认渐变背景：底层 -->
-    <view class="model-bg"></view>
-    <!-- 天气动画层：根据 weatherIcon 显示对应动画 -->
-    <view class="weather-animation weather-animation-{{weatherIcon || 'sun'}}" data-weather="{{weatherIcon}}">
+    <view class="model-bg model-bg-{{activeBgMode || 'default'}}" style="{{activeBgMode === 'solid' ? 'background-color:' + solidBgColor + ';' : ''}}"></view>
+    <view wx:if="{{activeBgMode === 'indoor' && indoorSceneImage}}" class="model-bg-scene-wrap">
+      <image class="model-bg-scene-image" src="{{indoorSceneImage}}" mode="aspectFill" lazy-load="{{true}}" />
+      <view class="model-bg-scene-mask"></view>
+    </view>
+    <view wx:if="{{activeBgMode === 'outdoor' && outdoorSceneImage}}" class="model-bg-scene-wrap">
+      <image class="model-bg-scene-image" src="{{outdoorSceneImage}}" mode="aspectFill" lazy-load="{{true}}" />
+      <view class="model-bg-scene-mask"></view>
+    </view>
+    <!-- 天气动画层：仅默认背景时显示 -->
+    <view wx:if="{{!activeBgMode}}" class="weather-animation weather-animation-{{weatherIcon || 'sun'}}" data-weather="{{weatherIcon}}">
       <!-- 晴天：阳光射线 -->
       <view wx:if="{{weatherIcon === 'sun'}}" class="weather-sun-rays"></view>
       <view wx:if="{{weatherIcon === 'sun'}}" class="weather-sun-glow"></view>
@@ -48,13 +188,6 @@
         <view class="rain-drop rain-drop-15"></view>
       </view>
     </view>
-    <!-- 自定义背景图：在默认背景上层，模糊遮罩 -->
-    <view wx:if="{{homeBgImage}}" class="model-bg-wrap">
-      <image class="model-bg-image" src="{{homeBgImage}}" mode="aspectFill" />
-      <view class="model-bg-mask"></view>
-    </view>
-
-    <!-- 3D 模特已暂时禁用：xr-frame 的 Draco 需 WebAssembly，小程序不支持。如需 3D，请使用未压缩 Draco 的 GLB -->
     <!-- 2D 模特图片展示 -->
     <view class="model-wrap model-wrap-fallback" bindtouchstart="onModelTouchStart" bindtouchmove="onModelTouchMove" bindtouchend="onModelTouchEnd">
       <view class="model-placeholder avatar-{{gender || 'female'}}">
@@ -67,35 +200,58 @@
       </view>
     </view>
 
+    <!-- 右侧：单品衣物格（可拖拽隐藏） -->
+    <view
+      class="home-tryon-panel {{homeTryonPanelDragging ? 'is-dragging' : ''}}"
+      style="transform: translateX({{homeTryonPanelTranslateX}}px);"
+    >
+      <view
+        class="home-tryon-handle"
+        catchtouchstart="onHomeTryonHandleTouchStart"
+        catchtouchmove="onHomeTryonHandleTouchMove"
+        catchtouchend="onHomeTryonHandleTouchEnd"
+      >
+        <view class="home-tryon-handle-bar">
+          <view class="home-tryon-handle-body">
+            <view class="home-tryon-handle-arrow {{homeTryonPanelCollapsed ? 'home-tryon-handle-arrow-left' : 'home-tryon-handle-arrow-right'}}"></view>
+            <view class="home-tryon-handle-arrow {{homeTryonPanelCollapsed ? 'home-tryon-handle-arrow-left' : 'home-tryon-handle-arrow-right'}}"></view>
+          </view>
+          <view class="home-tryon-handle-bulge">
+            <view class="home-tryon-handle-arc-wrap">
+              <view class="home-tryon-handle-skin">
+                <image wx:if="{{!wardrobeHandleImgError}}" class="home-tryon-handle-skin-img" src="{{wardrobeHandleImage}}" mode="aspectFit" binderror="onWardrobeHandleImgError" />
+                <view wx:else class="home-tryon-handle-skin-fallback"></view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class="home-tryon-items-col">
+        <view class="home-tryon-favorite-btn {{homeTryonFavorited ? 'favorited' : ''}}" catchtap="onHomeTryonFavorite">{{homeTryonFavorited ? '♥' : '♡'}}</view>
+        <view class="home-tryon-items-dashed">
+          <scroll-view class="home-tryon-items-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+            <view class="home-tryon-items-inner">
+              <view
+                wx:for="{{tryonItemSlots}}"
+                wx:key="index"
+                class="home-tryon-item-slot {{item && selectedTryonSlotIndex === index ? 'slot-selected' : ''}}"
+                catchtap="onHomeSlotTap"
+                data-index="{{index}}"
+              >
+                <image wx:if="{{item}}" class="home-tryon-item-img" src="{{item}}" mode="aspectFit" />
+                <view wx:else class="home-tryon-item-placeholder"></view>
+                <view wx:if="{{item && selectedTryonSlotIndex === index}}" class="home-tryon-item-del" catchtap="onRemoveHomeTryonItem" data-index="{{index}}"></view>
+              </view>
+            </view>
+          </scroll-view>
+        </view>
+      </view>
+    </view>
+
     <!-- 精灵头像占位（点击由 chat-assistant 处理） -->
     <view class="fairy-wrap" bindtap="onOpenChatAssistant">
       <view class="fairy-body">
         <image class="fairy-img" src="{{spriteUrl}}" mode="aspectFit" />
-      </view>
-    </view>
-
-    <!-- 右侧操作按钮列：渐变遮罩 + 按钮 -->
-    <view class="action-btns-mask"></view>
-    <view class="action-btns">
-      <view class="action-btn" bindtap="onAdd">
-        <view class="action-icon action-icon-add"></view>
-        <text class="action-label">添加</text>
-      </view>
-      <view class="action-btn" bindtap="onRecord">
-        <view class="action-icon action-icon-record"></view>
-        <text class="action-label">录入</text>
-      </view>
-      <view class="action-btn" bindtap="onEmoji">
-        <view class="action-icon action-icon-emoji"></view>
-        <text class="action-label">表情</text>
-      </view>
-      <view class="action-btn" bindtap="onBackground">
-        <view class="action-icon action-icon-bg"></view>
-        <text class="action-label">背景</text>
-      </view>
-      <view class="action-btn" bindtap="onSwitch">
-        <view class="action-icon action-icon-switch"></view>
-        <text class="action-label">切换</text>
       </view>
     </view>
   </view>
@@ -117,6 +273,25 @@
     <view class="tab-item" bindtap="onTabMine">
       <view class="tab-icon tab-icon-mine"></view>
       <text class="tab-text">我的</text>
+    </view>
+  </view>
+
+  <!-- 新用户性别选择浮层（老用户已有储存性别则不显示） -->
+  <view wx:if="{{showGenderPicker}}" class="gender-pick-mask">
+    <view class="gender-pick-card">
+      <text class="gender-pick-title">选择您的性别</text>
+      <text class="gender-pick-desc">用于匹配模特与穿搭推荐</text>
+      <view class="gender-pick-row">
+        <view class="gender-pick-item {{genderPick === 'female' ? 'selected' : ''}}" bindtap="onGenderPickSelect" data-value="female">
+          <text class="gender-pick-icon">♀</text>
+          <text class="gender-pick-label">女士</text>
+        </view>
+        <view class="gender-pick-item {{genderPick === 'male' ? 'selected' : ''}}" bindtap="onGenderPickSelect" data-value="male">
+          <text class="gender-pick-icon">♂</text>
+          <text class="gender-pick-label">男士</text>
+        </view>
+      </view>
+      <view class="gender-pick-btn" bindtap="onConfirmGenderPick">确定</view>
     </view>
   </view>
 
@@ -195,6 +370,34 @@
       <view class="city-switch-footer">
         <button class="city-search-btn cancel" bindtap="onCloseCitySearch">关闭</button>
       </view>
+    </view>
+  </view>
+
+  <!-- 首页试穿收藏：编辑标签弹窗 -->
+  <view wx:if="{{showFavoriteTagPopup}}" class="favorite-tag-popup-mask" catchtap="onCloseFavoriteTagPopup"></view>
+  <view wx:if="{{showFavoriteTagPopup}}" class="favorite-tag-popup">
+    <view class="favorite-tag-popup-title">编辑收藏标签</view>
+    <view class="favorite-tag-section">
+      <view class="favorite-tag-label">季节</view>
+      <view class="favorite-tag-options">
+        <view wx:for="{{seasonOptions}}" wx:key="*this" class="favorite-tag-option {{favoriteTagSeasonIndex === index ? 'selected' : ''}}" catchtap="onFavoriteTagSeasonTap" data-index="{{index}}">{{item}}</view>
+      </view>
+    </view>
+    <view class="favorite-tag-section">
+      <view class="favorite-tag-label">场景</view>
+      <view class="favorite-tag-options">
+        <view wx:for="{{sceneOptions}}" wx:key="*this" class="favorite-tag-option {{favoriteTagSceneIndex === index ? 'selected' : ''}}" catchtap="onFavoriteTagSceneTap" data-index="{{index}}">{{item}}</view>
+      </view>
+    </view>
+    <view class="favorite-tag-section">
+      <view class="favorite-tag-label">风格</view>
+      <view class="favorite-tag-options">
+        <view wx:for="{{styleOptions}}" wx:key="*this" class="favorite-tag-option {{favoriteTagStyleIndex === index ? 'selected' : ''}}" catchtap="onFavoriteTagStyleTap" data-index="{{index}}">{{item}}</view>
+      </view>
+    </view>
+    <view class="favorite-tag-popup-btns">
+      <view class="favorite-tag-popup-btn" catchtap="onFavoriteTagConfirm">确定</view>
+      <view class="favorite-tag-popup-btn secondary" catchtap="onFavoriteTagCancel">取消</view>
     </view>
   </view>
 </view>

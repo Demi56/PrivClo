@@ -156,10 +156,12 @@ Page({
   },
 
   afterAuthSuccess() {
+    const app = getApp()
+    if (app.markUserLoggedIn) app.markUserLoggedIn()
     if (this.data.fromSave) {
       wx.navigateBack({ delta: 2 })
     } else {
-      wx.navigateTo({ url: '/pages/preference/preference' })
+      wx.reLaunch({ url: '/pages/model/model' })
     }
   },
 

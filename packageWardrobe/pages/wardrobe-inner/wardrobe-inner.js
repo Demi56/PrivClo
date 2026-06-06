@@ -4,6 +4,8 @@ try {
   if (img && img.getImageUrl) getImageUrl = img.getImageUrl
 } catch (e) { console.warn('[wardrobe-inner] image utils fallback', e) }
 
+const wardrobeNav = require('../../../utils/wardrobeNav.js')
+
 // 从私人衣橱存储中统计各分类的衣物数量
 function getCategoryCountsFromWardrobe() {
   const app = getApp()
@@ -32,7 +34,7 @@ Page({
     scrollAreaTop: 0,
     scrollAreaBottom: 0,
     gender: 'female',
-    favoriteCount: 0,
+    wardrobeNavTab: '',
     categories: [
       { id: 'tops', name: '上衣区', count: 0, unit: '件', cover: '/packageWardrobe/images/categories/tops-cover.png' },
       { id: 'bottoms', name: '下装区', count: 0, unit: '件', cover: '/packageWardrobe/images/categories/bottoms-cover.png' },
@@ -63,8 +65,6 @@ Page({
     const gender = options.gender || 'female'
     const counts = getCategoryCountsFromWardrobe()
     const app = getApp()
-    const favoriteCount = (app.getFavoriteOutfits && app.getFavoriteOutfits()) || []
-    const favoriteCountNum = Array.isArray(favoriteCount) ? favoriteCount.length : 0
     const baseCats = (this.data.categories || []).map(c => ({
       ...c,
       count: counts[c.id] || 0,
@@ -79,13 +79,11 @@ Page({
       cover: null
     }))
     const categories = baseCats.concat(customCats)
-    this.setData({ gender, categories, favoriteCount: favoriteCountNum })
+    this.setData({ gender, categories })
   },
 
   onShow() {
     const app = getApp()
-    const outfits = (app.getFavoriteOutfits && app.getFavoriteOutfits()) || []
-    const favoriteCount = Array.isArray(outfits) ? outfits.length : 0
     const counts = getCategoryCountsFromWardrobe()
     const baseCats = [
       { id: 'tops', name: '上衣区', count: 0, unit: '件', cover: '/packageWardrobe/images/categories/tops-cover.png' },
@@ -109,19 +107,19 @@ Page({
       cover: null
     }))
     const categories = categoriesMapped.concat(customCats)
-    this.setData({ favoriteCount, categories })
+    this.setData({ categories })
   },
 
   onBack() {
     wx.navigateBack()
   },
 
-  onResaleCardTap() {
-    wx.navigateTo({ url: '/packageWardrobe/pages/resale/resale?gender=' + (this.data.gender || 'female') })
-  },
-
-  onFavoriteCardTap() {
-    wx.navigateTo({ url: '/packageWardrobe/pages/favorites-tryon/favorites-tryon?gender=' + (this.data.gender || 'female') })
+  onWardrobeNavTap(e) {
+    const tab = e.currentTarget.dataset.tab
+    wardrobeNav.navigateWardrobeTab(tab, {
+      gender: this.data.gender || 'female',
+      current: this.data.wardrobeNavTab
+    })
   },
 
   onCategoryTap(e) {

@@ -1,4 +1,4 @@
-// 加载过渡页 - 小程序启动或网络缓慢时自动展示
+// 加载过渡页 - 小程序启动后直接进入首页
 const { getImageUrl } = require('../../utils/image.js')
 
 Page({
@@ -34,7 +34,12 @@ Page({
         clearInterval(timer)
         self.setData({ progress: 100 })
         setTimeout(function () {
-          wx.redirectTo({ url: '/pages/index/index' })
+          const app = getApp()
+          const g = app.getUserGender && app.getUserGender()
+          const genderQ = (g === 'male' || g === 'female')
+            ? '?gender=' + encodeURIComponent(g)
+            : ''
+          wx.redirectTo({ url: '/pages/model/model' + genderQ })
         }, 200)
       }
     }, 50)

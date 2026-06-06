@@ -9,12 +9,13 @@ Page({
     gender: 'female',
     avatarFemaleUrl: '',
     avatarMaleUrl: '',
-    roleName: '依依',
+    roleName: '默认用户',
     userId: '8829310',
     points: 1000,
     styledCount: 0,
     diaryCount: 0,
-    favorCount: 0
+    favorCount: 0,
+    showLoginHint: false
   },
 
   onLoad(options) {
@@ -24,22 +25,30 @@ Page({
     } catch (e) {
       this.setData({ statusBarHeight: 20 })
     }
-    const gender = options.gender || 'female'
-    const roleName = getApp().globalData.isGuestMode ? '演示账号' : getApp().getRoleDisplayName(gender)
+    const gender = options.gender || getApp().getUserGender() || 'female'
     this.setData({
       gender,
-      roleName,
       avatarFemaleUrl: getImageUrl('/images/role/avatar-female.png'),
       avatarMaleUrl: getImageUrl('/images/role/avatar-male.png')
     })
+    this._refreshLoginState()
     this._updateStatsFromStorage()
   },
 
   onShow() {
-    const gender = this.data.gender || 'female'
-    const roleName = getApp().globalData.isGuestMode ? '演示账号' : getApp().getRoleDisplayName(gender)
-    this.setData({ roleName })
+    this._refreshLoginState()
     this._updateStatsFromStorage()
+  },
+
+  _refreshLoginState() {
+    const app = getApp()
+    const loggedIn = app.isUserLoggedIn && app.isUserLoggedIn()
+    app.globalData.isGuestMode = !loggedIn
+    const gender = this.data.gender || 'female'
+    this.setData({
+      showLoginHint: !loggedIn,
+      roleName: loggedIn ? app.getRoleDisplayName(gender) : '演示账号'
+    })
   },
 
   _updateStatsFromStorage() {
@@ -48,12 +57,21 @@ Page({
     const diaryCount = (app.getDiaryCount && app.getDiaryCount()) || 0
     const outfits = (app.getFavoriteOutfits && app.getFavoriteOutfits()) || []
     const favorCount = Array.isArray(outfits) ? outfits.length : 0
-    const points = app.globalData.isGuestMode ? 0 : ((app.getPoints && app.getPoints()) || 0)
+    const points = (app.isUserLoggedIn && app.isUserLoggedIn())
+      ? ((app.getPoints && app.getPoints()) || 0)
+      : 0
     this.setData({ styledCount, diaryCount, favorCount, points })
   },
 
   onAvatarTap() {
-    wx.showToast({ title: '头像', icon: 'none' })
+    const app = getApp()
+    if (app.isUserLoggedIn && app.isUserLoggedIn()) {
+      wx.navigateTo({
+        url: '/packageSettings/pages/account-security/account-security?gender=' + (this.data.gender || 'female')
+      })
+      return
+    }
+    app.goWechatLogin({ fromMine: true })
   },
 
   onAvatarError() {
@@ -61,16 +79,17 @@ Page({
   },
 
   onTaskSquare() {
-    wx.navigateTo({ url: '/packagePoints/pages/task-square/task-square?roleName=' + encodeURIComponent(this.data.roleName || '依依') })
+    wx.navigateTo({ url: '/packagePoints/pages/task-square/task-square?roleName=' + encodeURIComponent(this.data.roleName || getApp().getDefaultUserDisplayName()) })
   },
 
   onRoleManage() {
-    // 角色管理 -> 角色切换页，不跳转穿搭回忆
-    wx.navigateTo({ url: '/pages/role/role?gender=' + (this.data.gender || 'female') })
+    wx.navigateTo({
+      url: '/packageSettings/pages/role-manage/role-manage?gender=' + (this.data.gender || 'female')
+    })
   },
 
   onPointsCenter() {
-    wx.navigateTo({ url: '/packagePoints/pages/pointscenter/pointscenter?roleName=' + encodeURIComponent(this.data.roleName || '依依') })
+    wx.navigateTo({ url: '/packagePoints/pages/pointscenter/pointscenter?roleName=' + encodeURIComponent(this.data.roleName || getApp().getDefaultUserDisplayName()) })
   },
 
   onThemeStore() {

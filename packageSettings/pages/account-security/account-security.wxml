@@ -19,7 +19,7 @@
     <view class="setting-row" bindtap="onAvatar">
       <text class="setting-label">用户头像</text>
       <view class="setting-right">
-        <image class="setting-avatar" src="/images/role/avatar-{{gender || 'female'}}.png" mode="aspectFill" binderror="onAvatarError" />
+        <image class="setting-avatar" src="{{avatarUrl}}" mode="aspectFill" binderror="onAvatarError" />
         <view class="row-arrow"></view>
       </view>
     </view>
@@ -37,7 +37,7 @@
     <view class="setting-row" bindtap="onBindPhone">
       <text class="setting-label">绑定手机号</text>
       <view class="setting-right">
-        <text class="setting-value {{phone ? '' : 'value-placeholder'}}">{{phone || '未绑定'}}</text>
+        <text class="setting-value {{phoneBound ? '' : 'value-placeholder'}}">{{phoneDisplay || '未绑定'}}</text>
         <view class="row-arrow"></view>
       </view>
     </view>
@@ -50,6 +50,44 @@
     <!-- 注销账号 -->
     <view class="setting-row setting-row-delete" bindtap="onDeleteAccount">
       <text class="setting-label setting-label-delete">注销账号</text>
+    </view>
+  </view>
+
+  <!-- 绑定/更换手机号弹窗 -->
+  <view wx:if="{{showPhonePopup}}" class="nickname-popup-mask" catchtap="onClosePhonePopup"></view>
+  <view wx:if="{{showPhonePopup}}" class="nickname-popup">
+    <view class="nickname-popup-title">{{phonePopupTitle}}</view>
+    <text class="phone-popup-hint">用于账号安全验证，请填写本人常用手机号</text>
+    <input
+      class="nickname-popup-input"
+      type="number"
+      value="{{editingPhone}}"
+      placeholder="请输入11位手机号"
+      maxlength="11"
+      focus="{{showPhonePopup}}"
+      bindinput="onPhoneInput"
+    />
+    <view class="nickname-popup-btns">
+      <view class="nickname-popup-btn" catchtap="onPhoneConfirm">确定</view>
+      <view class="nickname-popup-btn secondary" catchtap="onClosePhonePopup">取消</view>
+    </view>
+  </view>
+
+  <!-- 修改昵称弹窗 -->
+  <view wx:if="{{showNicknamePopup}}" class="nickname-popup-mask" catchtap="onCloseNicknamePopup"></view>
+  <view wx:if="{{showNicknamePopup}}" class="nickname-popup">
+    <view class="nickname-popup-title">修改昵称</view>
+    <input
+      class="nickname-popup-input"
+      value="{{editingNickname}}"
+      placeholder="请输入昵称"
+      maxlength="20"
+      focus="{{showNicknamePopup}}"
+      bindinput="onNicknameInput"
+    />
+    <view class="nickname-popup-btns">
+      <view class="nickname-popup-btn" catchtap="onNicknameConfirm">确定</view>
+      <view class="nickname-popup-btn secondary" catchtap="onCloseNicknamePopup">取消</view>
     </view>
   </view>
 

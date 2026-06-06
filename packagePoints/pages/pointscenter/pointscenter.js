@@ -2,7 +2,7 @@
 Page({
   data: {
     statusBarHeight: 20,
-    roleName: '依依',
+    roleName: '默认用户',
     totalPoints: 0,
     recordList: []
   },
@@ -30,7 +30,7 @@ Page({
     } catch (e) {
       this.setData({ statusBarHeight: 20 })
     }
-    const roleName = options.roleName ? decodeURIComponent(options.roleName) : '依依'
+    const roleName = options.roleName ? decodeURIComponent(options.roleName) : getApp().getDefaultUserDisplayName()
     this.setData({ roleName })
     this._updatePointsFromStorage()
   },
@@ -42,7 +42,7 @@ Page({
   onShareAppMessage() {
     return {
       title: '我的穿搭小助手 PrivClo，快来一起探索天气穿搭吧！',
-      path: '/pages/index/index'
+      path: '/pages/model/model'
     }
   }
 })

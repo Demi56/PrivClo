@@ -35,8 +35,7 @@
         "pages/pointscenter/pointscenter",
         "pages/task-square/task-square",
         "pages/invite/invite",
-        "pages/points-store/points-store",
-        "pages/background-select/background-select"
+        "pages/points-store/points-store"
       ]
     },
     {
@@ -77,6 +76,7 @@
         "pages/ai-service/ai-service",
         "pages/privacy-terms/privacy-terms",
         "pages/account-security/account-security",
+        "pages/role-manage/role-manage",
         "pages/model-profile/model-profile",
         "pages/outfit-preferences/outfit-preferences"
       ]

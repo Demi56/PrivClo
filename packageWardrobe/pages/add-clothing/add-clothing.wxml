@@ -21,14 +21,23 @@
       <text class="guide-desc">拍照或从相册选择，AI 将自动去除背景</text>
     </view>
     <view class="action-buttons">
-      <view class="action-btn action-btn-primary" bindtap="onTakePhoto">
-        <view class="action-btn-glow"></view>
-        <text class="action-btn-icon">📸</text>
-        <text class="action-btn-text">拍照</text>
+      <view class="action-btn action-btn-camera" bindtap="onTakePhoto">
+        <view class="action-btn-icon-ring">
+          <view class="action-btn-icon-svg action-btn-icon-camera"></view>
+        </view>
+        <view class="action-btn-copy">
+          <text class="action-btn-text">拍照</text>
+          <text class="action-btn-hint">现场拍摄</text>
+        </view>
       </view>
-      <view class="action-btn action-btn-secondary" bindtap="onChooseFromAlbum">
-        <text class="action-btn-icon">🖼</text>
-        <text class="action-btn-text">相册</text>
+      <view class="action-btn action-btn-album" bindtap="onChooseFromAlbum">
+        <view class="action-btn-icon-ring action-btn-icon-ring-album">
+          <view class="action-btn-icon-svg action-btn-icon-album"></view>
+        </view>
+        <view class="action-btn-copy">
+          <text class="action-btn-text">相册</text>
+          <text class="action-btn-hint">从相册选择</text>
+        </view>
       </view>
     </view>
   </view>
@@ -55,7 +64,17 @@
   <view class="step-content" wx:elif="{{step === 'preview'}}">
     <view class="preview-card">
       <view class="preview-badge">{{hasManualRefined ? '✏️ 已微调' : '✨ 智能抠图'}}</view>
-      <view class="preview-img-wrap">
+      <view class="preview-dual" wx:if="{{previewBackUrl}}">
+        <view class="preview-side">
+          <text class="preview-side-label">正面</text>
+          <image class="preview-img preview-img-dual" src="{{previewUrl}}" mode="aspectFit" />
+        </view>
+        <view class="preview-side">
+          <text class="preview-side-label">背面</text>
+          <image class="preview-img preview-img-dual" src="{{previewBackUrl}}" mode="aspectFit" />
+        </view>
+      </view>
+      <view class="preview-img-wrap" wx:else>
         <image wx:if="{{previewUrl}}" class="preview-img" src="{{previewUrl}}" mode="aspectFit" />
         <view wx:else class="preview-placeholder">预览加载中...</view>
       </view>
@@ -77,12 +96,49 @@
     </view>
     <view class="footer-actions">
       <button class="btn-refine" bindtap="onManualRefine">✏️ 手动微调</button>
+      <button
+        wx:if="{{needsBackSide && !backMattedFileID}}"
+        class="btn-back-side"
+        bindtap="onStartBackCapture"
+      >📷 录入背面（3D 推荐）</button>
       <button class="btn-save" bindtap="onSaveToWardrobe">
         <text class="btn-save-icon">✓</text>
         <text>保存到衣橱</text>
       </button>
       <button class="btn-retry" bindtap="onRetry">重新选择</button>
     </view>
+  </view>
+
+  <!-- 背面拍摄 -->
+  <view class="step-content" wx:elif="{{step === 'back_select'}}">
+    <view class="guide-card">
+      <view class="guide-icon-wrap">
+        <text class="guide-icon">🔄</text>
+      </view>
+      <text class="guide-title">录入衣物背面</text>
+      <text class="guide-desc">3D 试穿旋转时可展示背面；平铺或挂拍均可</text>
+    </view>
+    <view class="action-buttons">
+      <view class="action-btn action-btn-camera" bindtap="onTakeBackPhoto">
+        <view class="action-btn-icon-ring">
+          <view class="action-btn-icon-svg action-btn-icon-camera"></view>
+        </view>
+        <view class="action-btn-copy">
+          <text class="action-btn-text">拍背面</text>
+          <text class="action-btn-hint">现场拍摄</text>
+        </view>
+      </view>
+      <view class="action-btn action-btn-album" bindtap="onChooseBackFromAlbum">
+        <view class="action-btn-icon-ring action-btn-icon-ring-album">
+          <view class="action-btn-icon-svg action-btn-icon-album"></view>
+        </view>
+        <view class="action-btn-copy">
+          <text class="action-btn-text">相册</text>
+          <text class="action-btn-hint">选择背面图</text>
+        </view>
+      </view>
+    </view>
+    <button class="btn-retry back-select-cancel" bindtap="onBack">返回预览</button>
   </view>
 
   <!-- 手动微调：基于 AI 结果擦除/复原 -->

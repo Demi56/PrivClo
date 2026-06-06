@@ -21,16 +21,23 @@
             <view class="diary-page">
               <view class="page-paper">
                 <view class="photo-area">
-                  <view class="polaroid-frame">
-                    <image wx:if="{{pages[currentPage].photo}}" class="polaroid-img" src="{{pages[currentPage].photo}}" mode="aspectFill" />
-                    <view wx:else class="polaroid-placeholder" bindtap="onUploadPhoto" data-page-id="{{pages[currentPage].id}}">
+                  <view class="polaroid-frame {{selectedPhoto ? 'polaroid-selected' : ''}}">
+                    <block wx:if="{{pages[currentPage].photo}}">
+                      <view class="polaroid-photo-wrap">
+                        <image class="polaroid-img" src="{{pages[currentPage].photo}}" mode="aspectFill" bindtap="onPhotoTap" />
+                        <view wx:if="{{selectedPhoto}}" class="media-delete-btn" catchtap="onDeletePhoto">
+                          <text class="media-delete-icon">×</text>
+                        </view>
+                      </view>
+                    </block>
+                    <view wx:else class="polaroid-placeholder" catchtap="onUploadPhoto" data-page-id="{{pages[currentPage].id}}">
                       <view class="placeholder-icon">+</view>
                       <text class="placeholder-text">点击添加照片</text>
                     </view>
                   </view>
                 </view>
                 <view class="text-area">
-                  <view class="text-header">
+                  <view class="text-header" catchtap="clearMediaSelection">
                     <view class="date-block">
                       <text class="date-year">{{pages[currentPage].year}}年</text>
                       <text class="date-month-day">{{pages[currentPage].month}}月{{pages[currentPage].day}}日</text>
@@ -42,10 +49,25 @@
                     </view>
                   </view>
                   <view class="text-content">
-                    <text class="content-text">{{pages[currentPage].content || defaultContent}}</text>
+                    <textarea
+                      wx:if="{{contentEditing && !isFlipping}}"
+                      class="content-text content-textarea"
+                      value="{{editingContent}}"
+                      focus="{{contentEditing}}"
+                      maxlength="-1"
+                      auto-height
+                      show-confirm-bar="{{false}}"
+                      adjust-position="{{true}}"
+                      bindinput="onInput"
+                      bindblur="onBlur"
+                    />
+                    <text wx:else class="content-text content-text-tap" catchtap="onContentTap">{{pages[currentPage].content || defaultContent}}</text>
                   </view>
                   <view class="sticker-layer" id="stickerLayer" wx:if="{{pages[currentPage].stickers && pages[currentPage].stickers.length > 0}}">
-                    <view class="paper-sticker" wx:for="{{pages[currentPage].stickers}}" wx:key="sid" data-sid="{{item.sid}}" style="left: {{item.left}}; top: {{item.top}}" bindtouchstart="onStickerTouchStart" catchtouchmove="onStickerTouchMove" bindtouchend="onStickerTouchEnd">
+                    <view class="paper-sticker {{selectedStickerSid === item.sid ? 'paper-sticker-selected' : ''}}" wx:for="{{pages[currentPage].stickers}}" wx:key="sid" data-sid="{{item.sid}}" style="left: {{item.left}}; top: {{item.top}}" bindtap="onStickerTap" bindtouchstart="onStickerTouchStart" catchtouchmove="onStickerTouchMove" bindtouchend="onStickerTouchEnd">
+                      <view wx:if="{{selectedStickerSid === item.sid}}" class="media-delete-btn media-delete-btn-sticker" catchtap="onDeleteSticker" data-sid="{{item.sid}}">
+                        <text class="media-delete-icon">×</text>
+                      </view>
                       <text class="paper-sticker-emoji">{{item.emoji}}</text>
                     </view>
                   </view>
@@ -151,10 +173,6 @@
   </view>
 
   <view class="bottom-bar">
-    <view class="bar-item" bindtap="onFocusInput">
-      <view class="bar-icon bar-icon-edit"></view>
-      <text class="bar-label">文案</text>
-    </view>
     <view class="bar-item" bindtap="onUploadPhoto">
       <view class="bar-icon bar-icon-camera"></view>
       <text class="bar-label">照片</text>
@@ -167,11 +185,6 @@
       <view class="bar-icon bar-icon-save"></view>
       <text class="bar-label">保存</text>
     </view>
-  </view>
-
-  <view class="input-wrap {{inputVisible ? 'input-visible' : ''}}">
-    <textarea class="diary-input" placeholder="写下今天的穿搭心情..." value="{{editingContent}}" bindinput="onInput" bindblur="onBlur" />
-    <view class="input-close" bindtap="onCloseInput">完成</view>
   </view>
 
   <!-- 贴纸素材库 -->

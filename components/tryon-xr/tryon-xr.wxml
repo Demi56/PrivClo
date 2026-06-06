@@ -1,0 +1,51 @@
+<view class="tryon-xr-wrap" style="height: {{sceneHeight}}px;">
+  <xr-scene
+    id="tryon-xr-scene"
+    render-system="alpha:true"
+    bind:ready="onSceneReady"
+    bind:error="onSceneError"
+  >
+    <xr-assets>
+      <xr-asset-load
+        wx:for="{{textureAssets}}"
+        wx:key="id"
+        asset-id="{{item.id}}"
+        src="{{item.src}}"
+        type="texture"
+      />
+      <xr-asset-load
+        asset-id="avatar"
+        src="{{modelUrl}}"
+        type="gltf"
+        options="ignoreError: -1"
+      />
+    </xr-assets>
+
+    <xr-node node-id="scene-root" position="0 0 0">
+      <xr-gltf wx:if="{{modelUrl}}" model="avatar" anim-autoplay="false" />
+      <block wx:for="{{clothMeshes}}" wx:key="id">
+        <xr-mesh
+          geometry="plane"
+          material="standard"
+          uniforms="u_baseColorMap: {{item.texId}}"
+          position="{{item.position}}"
+          rotation="{{item.rotation}}"
+          scale="{{item.scale}}"
+          states="alphaMode: BLEND, cullOn: false, depthWrite: false"
+        />
+      </block>
+    </xr-node>
+
+    <xr-camera
+      node-id="main-camera"
+      position="0 1.28 2.35"
+      target="0 1.02 0"
+      clear-color="0.96 0.94 0.91 1"
+      camera-orbit-control
+    />
+  </xr-scene>
+
+  <view class="tryon-xr-loading" wx:if="{{!sceneReady}}">
+    <text>3D 加载中…</text>
+  </view>
+</view>

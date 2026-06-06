@@ -6,6 +6,8 @@ try {
 
 const { emptyOutfit, applyTabPickToOutfit, removeSrcFromOutfit } = require('../../../utils/tryonOutfitHelpers.js')
 const { getModelImagePath } = require('../../../utils/clothingPositions.js')
+const tryonFavorite = require('../../../utils/tryonFavorite.js')
+const wardrobeNav = require('../../../utils/wardrobeNav.js')
 
 // 分类详情页 - 上衣区等，顶部试穿+底部分类展示+底部扫描
 Page({
@@ -24,7 +26,8 @@ Page({
     modelImgSrc: '',
     categoryId: 'tops',
     activeTab: 'tops',
-    prefitMode: 'official',
+    prefitMode: 'private',
+    wardrobeNavTab: '',
     categoryTabs: [
       { id: 'tops', name: '上衣' },
       { id: 'bottoms', name: '下装' },
@@ -108,12 +111,7 @@ Page({
       app.globalData.tryonItemSlots = tryonItemSlots
     }
     const tryonItems = tryonItemSlots.filter(function (s) { return s })
-    let subCategories = this.getSubCategories(categoryId)
-    if (!categoryId.startsWith('custom_')) {
-      subCategories = this.applySubCategoryOrder(categoryId, subCategories)
-      subCategories = this.mergeUserWardrobeItems(categoryId, subCategories, 'official')
-      subCategories = this.applySubCategoryRenames(categoryId, subCategories)
-    }
+    const subCategories = this.loadSubCategoriesForCategory(categoryId)
     const titleMap = { tops: '上衣区', bottoms: '下装区', sets: '套装区', inner: '内搭区', shoes: '鞋子区', accessories: '其他配饰区' }
     let categoryTitle = titleMap[categoryId]
     if (!categoryTitle && categoryId.startsWith('custom_')) {
@@ -131,15 +129,13 @@ Page({
     }
     const modelDisplaySrc = app.globalData.modelDisplaySrc || ''
     const modelImgSrc = modelDisplaySrc || getImageUrl(getModelImagePath(gender))
-    const prefitMode = categoryId.startsWith('custom_') ? 'private' : this.data.prefitMode
-    scrollAreaBottom = prefitMode === 'private' ? footerHeightPx : 0
     this.setData({
       categoryId,
       categoryTitle,
       categoryTabs: categoryTabs || this.data.categoryTabs,
       activeTab: categoryId,
-      prefitMode,
-      scrollAreaBottom,
+      prefitMode: 'private',
+      scrollAreaBottom: footerHeightPx,
       gender,
       tryonItems,
       tryonItemSlots,
@@ -147,6 +143,14 @@ Page({
       modelDisplaySrc,
       modelImgSrc
     })
+  },
+
+  loadSubCategoriesForCategory(categoryId) {
+    if (!categoryId) return []
+    if (typeof categoryId === 'string' && categoryId.startsWith('custom_')) {
+      return this.getSubCategories(categoryId)
+    }
+    return this.getPrivateSubCategories(categoryId)
   },
 
   _applyCdn(subs) {
@@ -282,7 +286,7 @@ Page({
 
   mergeUserWardrobeItems(categoryId, subCategories, prefitMode) {
     const app = getApp()
-    const mode = prefitMode || this.data.prefitMode || 'official'
+    const mode = prefitMode || this.data.prefitMode || 'private'
     const userItems = app.getUserWardrobeItems ? app.getUserWardrobeItems() : (app.globalData.userWardrobeItems || {})
     return subCategories.map(function (sub) {
       const key = `${categoryId}:${sub.id}`
@@ -455,15 +459,7 @@ Page({
     }
     // 从录入页返回时刷新子分类（含用户新录入的单品）
     const categoryId = this.data.activeTab
-    const prefitMode = this.data.prefitMode || 'official'
-    let subCategories = prefitMode === 'private'
-      ? this.getPrivateSubCategories(categoryId)
-      : (() => {
-          let s = this.getSubCategories(categoryId)
-          s = this.applySubCategoryOrder(categoryId, s)
-          s = this.mergeUserWardrobeItems(categoryId, s, 'official')
-          return this.applySubCategoryRenames(categoryId, s)
-        })()
+    const subCategories = this.loadSubCategoriesForCategory(categoryId)
     this.setData({ subCategories })
     var self = this
     setTimeout(function() {
@@ -492,7 +488,7 @@ Page({
   },
 
   onCloseFavoriteTagPopup() {
-    this.setData({ showFavoriteTagPopup: false })
+    this.setData({ showFavoriteTagPopup: false, tryonFavorited: false })
   },
 
   onFavoriteTagSeasonTap(e) {
@@ -511,57 +507,46 @@ Page({
   },
 
   onFavoriteTagConfirm() {
-    if (!getApp().requireGuestLoginForSave()) return
-    const seasonOptions = this.data.seasonOptions || []
-    const sceneOptions = this.data.sceneOptions || []
-    const styleOptions = this.data.styleOptions || []
-    const si = this.data.favoriteTagSeasonIndex
-    const ci = this.data.favoriteTagSceneIndex
-    const ti = this.data.favoriteTagStyleIndex
-    const tags = [
-      seasonOptions[si],
-      sceneOptions[ci],
-      styleOptions[ti]
-    ].filter(Boolean)
-    this.setData({ showFavoriteTagPopup: false })
+    if (!getApp().requireGuestLoginForSave()) {
+      this.setData({ tryonFavorited: false, showFavoriteTagPopup: false })
+      return
+    }
+    const slots = (this.data.tryonItemSlots || []).filter(function (s) { return s })
+    const image = this.data.modelDisplaySrc || this.data.modelImgSrc || ''
+    const outfit = tryonFavorite.saveTryonFavoriteFromTags({
+      image: image,
+      slots: slots,
+      seasonIndex: this.data.favoriteTagSeasonIndex,
+      sceneIndex: this.data.favoriteTagSceneIndex,
+      styleIndex: this.data.favoriteTagStyleIndex,
+      source: 'tryon'
+    })
+    if (!outfit) {
+      this.setData({ tryonFavorited: false, showFavoriteTagPopup: false })
+      return
+    }
     const app = getApp()
-    if (app.globalData) app.globalData.lastTryonFavoriteTags = tags
-    wx.showToast({ title: '已保存收藏标签', icon: 'none' })
+    if (slots.length) app.globalData.tryonItemSlots = slots.slice()
+    this.setData({ showFavoriteTagPopup: false, tryonFavorited: true })
+    wx.showToast({ title: '已保存到收藏区', icon: 'success' })
   },
 
   onFavoriteTagCancel() {
-    this.setData({ showFavoriteTagPopup: false })
+    this.setData({ showFavoriteTagPopup: false, tryonFavorited: false })
   },
 
-  onPrefitModeTap(e) {
-    const mode = e.currentTarget.dataset.mode
-    if (mode && mode !== this.data.prefitMode) {
-      const scrollAreaBottom = mode === 'private' ? (this.data.footerHeightPx || 120) : 0
-      const categoryId = this.data.activeTab
-      let subCategories = mode === 'private'
-        ? this.getPrivateSubCategories(categoryId)
-        : (() => {
-            let s = this.getSubCategories(categoryId)
-            s = this.applySubCategoryOrder(categoryId, s)
-            s = this.mergeUserWardrobeItems(categoryId, s, 'official')
-            return this.applySubCategoryRenames(categoryId, s)
-          })()
-      this.setData({ prefitMode: mode, scrollAreaBottom, subCategories })
-    }
+  onWardrobeNavTap(e) {
+    const tab = e.currentTarget.dataset.tab
+    wardrobeNav.navigateWardrobeTab(tab, {
+      gender: this.data.gender || 'female',
+      current: this.data.wardrobeNavTab
+    })
   },
 
   onTabTap(e) {
     const id = e.currentTarget.dataset.id
     if (!id) return
-    const prefitMode = this.data.prefitMode || 'official'
-    let subCategories = prefitMode === 'private'
-      ? this.getPrivateSubCategories(id)
-      : (() => {
-          let s = this.getSubCategories(id)
-          s = this.applySubCategoryOrder(id, s)
-          s = this.mergeUserWardrobeItems(id, s, 'official')
-          return this.applySubCategoryRenames(id, s)
-        })()
+    const subCategories = this.loadSubCategoriesForCategory(id)
     const titleMap = { tops: '上衣区', bottoms: '下装区', sets: '套装区', inner: '内搭区', shoes: '鞋子区', accessories: '其他配饰区' }
     wx.setNavigationBarTitle({ title: titleMap[id] || '衣橱' })
     this.setData({ categoryId: id, activeTab: id, subCategories })
@@ -578,7 +563,7 @@ Page({
     app.globalData.tryonItemSlots = (this.data.tryonItemSlots || []).slice()
     app.globalData.tryonLaunchContext = {
       activeTab: this.data.activeTab,
-      prefitMode: this.data.prefitMode,
+      prefitMode: 'private',
       categoryTabs: this.data.categoryTabs,
       categoryId: this.data.categoryId
     }

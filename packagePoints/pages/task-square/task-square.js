@@ -36,7 +36,7 @@ const LIMITED_TASKS = [
 Page({
   data: {
     statusBarHeight: 20,
-    roleName: '依依',
+    roleName: '默认用户',
     totalPoints: 0,
     todayPoints: 0,
     dailyMax: DAILY_MAX,
@@ -81,7 +81,7 @@ Page({
     } catch (e) {
       this.setData({ statusBarHeight: 20 })
     }
-    const roleName = options.roleName ? decodeURIComponent(options.roleName) : '依依'
+    const roleName = options.roleName ? decodeURIComponent(options.roleName) : getApp().getDefaultUserDisplayName()
     this.setData({ roleName })
     this._updatePoints()
   },
@@ -98,11 +98,11 @@ Page({
   },
 
   onPointsTap() {
-    wx.navigateTo({ url: '/packagePoints/pages/pointscenter/pointscenter?roleName=' + encodeURIComponent(this.data.roleName || '依依') })
+    wx.navigateTo({ url: '/packagePoints/pages/pointscenter/pointscenter?roleName=' + encodeURIComponent(this.data.roleName || getApp().getDefaultUserDisplayName()) })
   },
 
   onInviteTap() {
-    wx.navigateTo({ url: '/packagePoints/pages/invite/invite?roleName=' + encodeURIComponent(this.data.roleName || '依依') })
+    wx.navigateTo({ url: '/packagePoints/pages/invite/invite?roleName=' + encodeURIComponent(this.data.roleName || getApp().getDefaultUserDisplayName()) })
   },
 
   onClaim(e) {
@@ -132,7 +132,7 @@ Page({
   onShareAppMessage() {
     return {
       title: '我的穿搭小助手 PrivClo，快来一起探索天气穿搭吧！',
-      path: '/pages/index/index'
+      path: '/pages/model/model'
     }
   }
 })

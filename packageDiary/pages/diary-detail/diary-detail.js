@@ -2,7 +2,7 @@
 const WEEK_NAMES = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
 const WEATHER_TYPES = ['sunny', 'cloudy', 'overcast', 'rainy', 'haze']
 const WEATHER_MAP = { sunny: '晴天', cloudy: '阴天', overcast: '多云', rainy: '雨天', haze: '雾霾' }
-const DEFAULT_CONTENT = '示例文案：今天天气真好，穿了新买的毛衣，感觉整个人都暖洋洋的。去公园散步的时候遇到了一只超级可爱的小狗🐶。\n中午吃了好吃的舒芙蕾，太幸福了～'
+const DEFAULT_CONTENT = '示例文案：今天天气真好，穿了新买的衣服，感觉整个人都暖洋洋的。去公园散步的时候遇到了一只超级可爱的小狗🐶。\n中午吃了好吃的舒芙蕾，太幸福了～'
 
 const FLIP_DURATION = 1200
 const STORAGE_KEY = 'diary_pages'
@@ -76,7 +76,7 @@ Page({
     currentPage: 0,
     pages: [],
     defaultContent: DEFAULT_CONTENT,
-    inputVisible: false,
+    contentEditing: false,
     editingContent: '',
     editingPageId: null,
     isFlipping: false,
@@ -87,7 +87,9 @@ Page({
     stickerVisible: false,
     stickerCategories: STICKER_CATEGORIES,
     stickerCurrentCat: 'weather',
-    stickerList: STICKER_LIBRARY.weather
+    stickerList: STICKER_LIBRARY.weather,
+    selectedPhoto: false,
+    selectedStickerSid: ''
   },
 
   onLoad(options) {
@@ -132,7 +134,56 @@ Page({
     this.setData({ pages: [page] })
   },
 
+  commitContentEdit() {
+    const { editingContent, editingPageId, pages } = this.data
+    if (editingPageId !== null && pages[editingPageId]) {
+      const updated = [...pages]
+      updated[editingPageId] = { ...updated[editingPageId], content: editingContent }
+      this.setData({ pages: updated })
+    }
+  },
+
+  endContentEdit() {
+    this.commitContentEdit()
+    this.setData({ contentEditing: false, editingPageId: null })
+  },
+
+  startContentEdit() {
+    if (this.data.isFlipping) return
+    const { currentPage, pages, defaultContent } = this.data
+    const content = (pages[currentPage] && pages[currentPage].content) ? pages[currentPage].content : defaultContent
+    this.setData({
+      contentEditing: true,
+      editingContent: content,
+      editingPageId: currentPage
+    })
+  },
+
+  onContentTap() {
+    if (this.data.contentEditing) return
+    this.clearMediaSelection()
+    this.startContentEdit()
+  },
+
+  clearMediaSelection() {
+    if (!this.data.selectedPhoto && !this.data.selectedStickerSid) return
+    this.setData({ selectedPhoto: false, selectedStickerSid: '' })
+  },
+
+  onPhotoTap() {
+    if (this.data.isFlipping) return
+    const { currentPage, pages, selectedPhoto } = this.data
+    if (!pages[currentPage]?.photo) return
+    if (selectedPhoto) {
+      this.clearMediaSelection()
+      return
+    }
+    this.setData({ selectedPhoto: true, selectedStickerSid: '' })
+  },
+
   onNextPage() {
+    if (this.data.contentEditing) this.endContentEdit()
+    this.clearMediaSelection()
     if (this.data.isFlipping) return
     const { currentPage, pages } = this.data
     let targetIdx = currentPage + 1
@@ -184,6 +235,8 @@ Page({
   },
 
   onPrevPage() {
+    if (this.data.contentEditing) this.endContentEdit()
+    this.clearMediaSelection()
     if (this.data.isFlipping) return
     const { currentPage, pages } = this.data
     let targetIdx = currentPage - 1
@@ -240,6 +293,8 @@ Page({
   },
 
   onBack() {
+    if (this.data.contentEditing) this.endContentEdit()
+    this.clearMediaSelection()
     wx.navigateBack()
   },
 
@@ -258,7 +313,43 @@ Page({
     }
   },
 
+  onDeletePhoto() {
+    if (this.data.isFlipping) return
+    const { currentPage, pages } = this.data
+    if (!pages[currentPage] || !pages[currentPage].photo) return
+    const updated = [...pages]
+    updated[currentPage] = { ...updated[currentPage], photo: '' }
+    this.setData({ pages: updated, selectedPhoto: false, selectedStickerSid: '' })
+    wx.showToast({ title: '已移除照片', icon: 'none', duration: 1200 })
+  },
+
+  onStickerTap(e) {
+    if (this.data.isFlipping || this._stickerMoved) {
+      this._stickerMoved = false
+      return
+    }
+    const sid = e.currentTarget.dataset.sid
+    if (!sid) return
+    const nextSid = this.data.selectedStickerSid === sid ? '' : sid
+    this.setData({ selectedStickerSid: nextSid, selectedPhoto: false })
+  },
+
+  onDeleteSticker(e) {
+    if (this.data.isFlipping) return
+    const sid = e.currentTarget.dataset.sid
+    if (!sid) return
+    const { currentPage, pages } = this.data
+    if (!pages[currentPage]) return
+    const stickers = (pages[currentPage].stickers || []).filter(s => s.sid !== sid)
+    const updated = [...pages]
+    updated[currentPage] = { ...updated[currentPage], stickers }
+    this.setData({ pages: updated, selectedPhoto: false, selectedStickerSid: '' })
+    this._dragState = null
+    this._stickerTouch = null
+  },
+
   onUploadPhoto() {
+    this.clearMediaSelection()
     wx.chooseImage({
       count: 1,
       sizeType: ['compressed'],
@@ -275,20 +366,8 @@ Page({
     })
   },
 
-  onFocusInput() {
-    const { currentPage, pages, defaultContent } = this.data
-    const content = (pages[currentPage] && pages[currentPage].content) ? pages[currentPage].content : defaultContent
-    this.setData({ inputVisible: true, editingContent: content, editingPageId: currentPage })
-  },
-
   onCloseInput() {
-    const { editingContent, editingPageId, pages } = this.data
-    if (editingPageId !== null && pages[editingPageId]) {
-      const updated = [...pages]
-      updated[editingPageId] = { ...updated[editingPageId], content: editingContent }
-      this.setData({ pages: updated })
-    }
-    this.setData({ inputVisible: false, editingPageId: null })
+    this.endContentEdit()
   },
 
   onInput(e) {
@@ -296,10 +375,12 @@ Page({
   },
 
   onBlur() {
-    this.onCloseInput()
+    this.endContentEdit()
   },
 
   onSticker() {
+    if (this.data.contentEditing) this.endContentEdit()
+    this.clearMediaSelection()
     this.setData({ stickerVisible: true })
   },
 
@@ -337,6 +418,7 @@ Page({
       stickers: [...stickers, newSticker]
     }
     this.setData({ pages: updated })
+    this.clearMediaSelection()
     wx.showToast({ title: '已粘贴', icon: 'success', duration: 800 })
   },
 
@@ -346,34 +428,60 @@ Page({
     const { currentPage, pages } = this.data
     const sticker = (pages[currentPage]?.stickers || []).find(s => s.sid === sid)
     if (!sticker) return
+    this._stickerMoved = false
     const touch = e.touches[0]
-    this._dragState = {
+    this._stickerTouch = {
       sid,
       startX: touch.clientX,
       startY: touch.clientY,
       startLeft: parseFloat(sticker.left) || 10,
       startTop: parseFloat(sticker.top) || 15,
-      rect: null
+      didDrag: false
     }
+    this._dragState = null
     const query = wx.createSelectorQuery().in(this)
     query.select('#stickerLayer').boundingClientRect(rect => {
+      if (this._stickerTouch) this._stickerTouch.rect = rect
       if (this._dragState && rect) this._dragState.rect = rect
     }).exec()
   },
 
   onStickerTouchMove(e) {
-    if (!this._dragState) return
+    const pending = this._stickerTouch
+    if (!pending) return
     const touch = e.touches[0]
+    const dx = touch.clientX - pending.startX
+    const dy = touch.clientY - pending.startY
+    if (!pending.didDrag && (Math.abs(dx) > 16 || Math.abs(dy) > 16)) {
+      pending.didDrag = true
+      this._stickerMoved = true
+      this.setData({ selectedPhoto: false, selectedStickerSid: '' })
+      this._dragState = {
+        sid: pending.sid,
+        startX: touch.clientX,
+        startY: touch.clientY,
+        startLeft: pending.startLeft,
+        startTop: pending.startTop,
+        rect: pending.rect || null
+      }
+      if (!this._dragState.rect) {
+        wx.createSelectorQuery().in(this).select('#stickerLayer').boundingClientRect(rect => {
+          if (rect && this._dragState) this._dragState.rect = rect
+        }).exec()
+      }
+    }
+    if (!pending.didDrag || !this._dragState) return
+    const touch2 = e.touches[0]
     if (!this._dragState.rect) {
       wx.createSelectorQuery().in(this).select('#stickerLayer').boundingClientRect(rect => {
         if (rect && this._dragState) {
           this._dragState.rect = rect
-          this._applyStickerDrag(touch)
+          this._applyStickerDrag(touch2)
         }
       }).exec()
       return
     }
-    this._applyStickerDrag(touch)
+    this._applyStickerDrag(touch2)
   },
 
   _applyStickerDrag(touch) {
@@ -403,6 +511,7 @@ Page({
   },
 
   onStickerTouchEnd() {
+    this._stickerTouch = null
     this._dragState = null
   }
 })

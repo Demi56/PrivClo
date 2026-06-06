@@ -37,7 +37,10 @@ Page({
       bottom: { x: 0, y: 0, scaleX: 1, scaleY: 1 },
       dress: { x: 0, y: 0, scaleX: 1, scaleY: 1 },
       shoes: { x: 0, y: 0, scaleX: 1, scaleY: 1 }
-    }
+    },
+    use3DTryon: true,
+    tryon3DFallback: false,
+    xrSceneHeight: 420
   },
 
   onLoad(options) {
@@ -45,10 +48,50 @@ Page({
     this._genderLockedByLaunch = !!(o.gender != null && String(o.gender).trim() !== '')
     this.initLaunchState(o)
     this.loadUserGender()
+    this.initTryon3DMode()
     var self = this
     setTimeout(function () {
       self.loadWardrobe()
     }, 0)
+  },
+
+  initTryon3DMode() {
+    var can3D = this.checkXrFrameSupport()
+    var h = 420
+    try {
+      var sys = wx.getSystemInfoSync()
+      h = Math.round((sys.windowHeight || 667) * 0.42)
+    } catch (e) {}
+    this.setData({
+      use3DTryon: can3D,
+      tryon3DFallback: !can3D,
+      xrSceneHeight: h
+    })
+  },
+
+  checkXrFrameSupport() {
+    try {
+      var sys = wx.getSystemInfoSync()
+      if (sys.platform === 'devtools') return true
+      var sdk = String(sys.SDKVersion || '0')
+      var parts = sdk.split('.').map(function (n) { return parseInt(n, 10) || 0 })
+      if (parts[0] > 2) return true
+      if (parts[0] === 2 && parts[1] >= 32) return true
+      return false
+    } catch (e) {
+      return false
+    }
+  },
+
+  onTryon3DError() {
+    if (this.data.tryon3DFallback) return
+    this.setData({ tryon3DFallback: true })
+    wx.showToast({ title: '3D 不可用，已切换 2D', icon: 'none' })
+  },
+
+  toggleTryonMode() {
+    if (!this.data.use3DTryon) return
+    this.setData({ tryon3DFallback: !this.data.tryon3DFallback })
   },
 
   onHide() {
@@ -370,6 +413,21 @@ Page({
 
   // 保存穿搭照
   async saveOutfitImage() {
+    if (this.data.use3DTryon && !this.data.tryon3DFallback) {
+      var self = this
+      wx.showModal({
+        title: '保存穿搭照',
+        content: '3D 试穿暂不支持直接导出，是否切换到 2D 后保存？',
+        confirmText: '切换并保存',
+        success: function (res) {
+          if (!res.confirm) return
+          self.setData({ tryon3DFallback: true }, function () {
+            setTimeout(function () { self.saveOutfitImage() }, 400)
+          })
+        }
+      })
+      return
+    }
     var modelComponent = this.selectComponent('#modelTryon');
     if (!modelComponent) {
       wx.showToast({ title: '组件未就绪', icon: 'none' });
@@ -462,7 +520,7 @@ Page({
         wx.reLaunch({
           url: '/pages/wardrobe/wardrobe',
           fail: function () {
-            wx.reLaunch({ url: '/pages/index/index' })
+            wx.reLaunch({ url: '/pages/model/model' })
           }
         })
       },

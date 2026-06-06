@@ -38,8 +38,18 @@ function getImageUrl(localPath) {
   return CDN_BASE + rel
 }
 
+/** 3D 人模 GLB（需上传至云存储 models/ 目录，并经 xr-frame-toolkit 优化、无 Draco） */
+function getModel3dUrl(gender) {
+  const g = gender === 'male' ? 'male' : 'female'
+  const file = g === 'male' ? 'avatar-male.glb' : 'avatar-female.glb'
+  if (USE_CDN) return CDN_ROOT + 'models/' + file
+  return '/models/' + file
+}
+
 module.exports = {
   USE_CDN,
   CDN_BASE,
-  getImageUrl
+  CDN_ROOT,
+  getImageUrl,
+  getModel3dUrl
 }

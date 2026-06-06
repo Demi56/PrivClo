@@ -63,9 +63,12 @@
       </view>
     </view>
 
-    <!-- 本月统计 -->
+    <!-- 本月统计（与首页定位城市同步） -->
     <view class="stats-card">
-      <text class="stats-title">本月统计</text>
+      <view class="stats-head">
+        <text class="stats-title">本月统计</text>
+        <text class="stats-city">{{city}}</text>
+      </view>
       <view class="stats-row">
         <view class="stats-item stats-sunny">
           <view class="stats-icon stats-icon-sunny"></view>

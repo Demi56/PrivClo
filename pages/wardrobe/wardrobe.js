@@ -1,4 +1,5 @@
 const { getImageUrl } = require('../../utils/image.js')
+const wardrobeDisplay = require('../../utils/wardrobeDisplay.js')
 const { MAIN_MODEL, MAIN_DIARY, MAIN_MINE, reLaunchMain } = require('../../utils/mainTabs.js')
 
 // 衣橱页面 - 我的衣橱
@@ -9,7 +10,7 @@ Page({
     wardrobeImgSrc: '',
     wardrobeImgError: false,
     gender: 'female',
-    currentWardrobe: '依依的衣橱',
+    currentWardrobe: '默认用户的衣橱',
     itemCount: 0,
     wardrobeList: [],
     currentIndex: 0,
@@ -48,7 +49,7 @@ Page({
       currentWardrobe: wardrobeName,
       itemCount: 0,
       wardrobeList,
-      wardrobeImgSrc: getImageUrl('/images/wardrobe/wardrobe-closet.png')
+      wardrobeImgSrc: wardrobeDisplay.getWardrobeDisplayImageUrl()
     }, () => this._updateItemCountFromStorage())
   },
 

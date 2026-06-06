@@ -1,12 +1,14 @@
 const { getImageUrl } = require('../../../utils/image.js')
 const { getModelImagePath } = require('../../../utils/clothingPositions.js')
+const tryonFavorite = require('../../../utils/tryonFavorite.js')
+const wardrobeNav = require('../../../utils/wardrobeNav.js')
 
 // 收藏区试穿页 - 顶部实时试穿区不变，中下部为筛选栏 + 搭配卡片网格
 Page({
   data: {
     statusBarHeight: 20,
     headerHeightPx: 48,
-    prefitMode: 'official',
+    wardrobeNavTab: wardrobeNav.TAB.FAVORITES,
     tryonExpanded: true,
     scrollAreaTop: 0,
     scrollAreaBottom: 0,
@@ -91,19 +93,18 @@ Page({
     const tryonItems = tryonItemSlots.filter(function (s) { return s })
     const modelDisplaySrc = app.globalData.modelDisplaySrc || ''
     const modelImgSrc = modelDisplaySrc || getImageUrl(getModelImagePath(gender))
-    const cardsWithImage = this._applyGenderToCards(this.data.outfitCards, gender)
-    const cardsWithFavorited = cardsWithImage.map(function (c) {
-      return Object.assign({}, c, { favorited: true })
-    })
+    const savedFavorites = app.getFavoriteOutfits ? app.getFavoriteOutfits() : []
+    let cards = savedFavorites.length
+      ? this._applyGenderToCards(savedFavorites, gender)
+      : [{ id: '_empty', isEmptyPlaceholder: true }]
     this.setData({
       gender,
       tryonItems,
       tryonItemSlots,
       modelDisplaySrc,
       modelImgSrc,
-      outfitCards: cardsWithFavorited,
-      officialOutfitCards: cardsWithFavorited,
-      allOutfitCards: cardsWithFavorited
+      outfitCards: cards,
+      allOutfitCards: cards
     })
   },
 
@@ -334,12 +335,7 @@ Page({
             const allCards = all.filter(function (c) { return c.id !== id })
             const saved = (app.getFavoriteOutfits ? app.getFavoriteOutfits() : []).filter(function (c) { return c.id !== id })
             if (app.saveFavoriteOutfits) app.saveFavoriteOutfits(saved)
-            if (this.data.prefitMode === 'official') {
-              const official = (this.data.officialOutfitCards || []).filter(function (c) { return c.id !== id })
-              this.setData({ outfitCards: cards, allOutfitCards: allCards, officialOutfitCards: official })
-            } else {
-              this.setData({ outfitCards: cards, allOutfitCards: allCards })
-            }
+            this.setData({ outfitCards: cards, allOutfitCards: allCards })
             wx.showToast({ title: '已取消收藏', icon: 'none' })
           }
         }
@@ -360,12 +356,6 @@ Page({
     const existing = saved.filter(function (c) { return c.id !== id })
     existing.push(toSave)
     if (app.saveFavoriteOutfits) app.saveFavoriteOutfits(existing)
-    if (this.data.prefitMode === 'official') {
-      const official = (this.data.officialOutfitCards || []).map(function (c) {
-        return c.id === id ? Object.assign({}, c, { favorited: true }) : c
-      })
-      this.setData({ officialOutfitCards: official })
-    }
     wx.showToast({ title: '已收藏', icon: 'none' })
   },
 
@@ -378,35 +368,12 @@ Page({
     wx.navigateBack()
   },
 
-  onPrefitModeTap(e) {
-    const mode = e.currentTarget.dataset.mode
-    if (mode && mode !== this.data.prefitMode) {
-      const app = getApp()
-      const gender = this.data.gender || 'female'
-      if (mode === 'private') {
-        const savedFavorites = app.getFavoriteOutfits ? app.getFavoriteOutfits() : []
-        let cards = []
-        if (savedFavorites && savedFavorites.length > 0) {
-          cards = this._applyGenderToCards(savedFavorites, gender)
-        } else {
-          cards = [{ id: '_empty', isEmptyPlaceholder: true }]
-        }
-        this.setData({
-          prefitMode: 'private',
-          outfitCards: cards,
-          allOutfitCards: cards,
-          filterActive: 'all'
-        })
-      } else {
-        const official = this.data.officialOutfitCards || []
-        this.setData({
-          prefitMode: 'official',
-          outfitCards: official,
-          allOutfitCards: official,
-          filterActive: 'all'
-        })
-      }
-    }
+  onWardrobeNavTap(e) {
+    const tab = e.currentTarget.dataset.tab
+    wardrobeNav.navigateWardrobeTab(tab, {
+      gender: this.data.gender || 'female',
+      current: this.data.wardrobeNavTab
+    })
   },
 
   onTryonToggleTap() {
@@ -437,12 +404,12 @@ Page({
       const tryonItems = tryonItemSlots.filter(function (s) { return s })
       this.setData({ tryonItemSlots, tryonItems })
     }
-    if (newGender !== this.data.gender) {
-      const all = this.data.allOutfitCards || []
-      const updatedAll = this._applyGenderToCards(all, newGender)
-      const filtered = this._getFilteredOutfitCards(updatedAll, this.data.filterActive)
-      this.setData({ gender: newGender, allOutfitCards: updatedAll, outfitCards: filtered })
-    }
+    const savedFavorites = app.getFavoriteOutfits ? app.getFavoriteOutfits() : []
+    let cards = savedFavorites.length
+      ? this._applyGenderToCards(savedFavorites, newGender)
+      : [{ id: '_empty', isEmptyPlaceholder: true }]
+    const filtered = this._getFilteredOutfitCards(cards, this.data.filterActive)
+    this.setData({ gender: newGender, allOutfitCards: cards, outfitCards: filtered })
   },
 
   onModelTap() {
@@ -466,7 +433,7 @@ Page({
   },
 
   onCloseFavoriteTagPopup() {
-    this.setData({ showFavoriteTagPopup: false })
+    this.setData({ showFavoriteTagPopup: false, tryonFavorited: false })
   },
 
   onFavoriteTagSeasonTap(e) {
@@ -485,26 +452,38 @@ Page({
   },
 
   onFavoriteTagConfirm() {
-    if (!getApp().requireGuestLoginForSave()) return
-    const seasonOptions = this.data.seasonOptions || []
-    const sceneOptions = this.data.sceneOptions || []
-    const styleOptions = this.data.styleOptions || []
-    const si = this.data.favoriteTagSeasonIndex
-    const ci = this.data.favoriteTagSceneIndex
-    const ti = this.data.favoriteTagStyleIndex
-    const tags = [
-      seasonOptions[si],
-      sceneOptions[ci],
-      styleOptions[ti]
-    ].filter(Boolean)
-    this.setData({ showFavoriteTagPopup: false })
+    if (!getApp().requireGuestLoginForSave()) {
+      this.setData({ tryonFavorited: false, showFavoriteTagPopup: false })
+      return
+    }
+    const slots = (this.data.tryonItemSlots || []).filter(function (s) { return s })
+    const image = this.data.modelDisplaySrc || this.data.modelImgSrc || ''
+    const outfit = tryonFavorite.saveTryonFavoriteFromTags({
+      image: image,
+      slots: slots,
+      seasonIndex: this.data.favoriteTagSeasonIndex,
+      sceneIndex: this.data.favoriteTagSceneIndex,
+      styleIndex: this.data.favoriteTagStyleIndex,
+      source: 'tryon'
+    })
+    if (!outfit) {
+      this.setData({ tryonFavorited: false, showFavoriteTagPopup: false })
+      return
+    }
     const app = getApp()
-    if (app.globalData) app.globalData.lastTryonFavoriteTags = tags
-    wx.showToast({ title: '已保存收藏标签', icon: 'none' })
+    if (slots.length) app.globalData.favoritesTryonItemSlots = slots.slice()
+    this.setData({ showFavoriteTagPopup: false, tryonFavorited: true })
+    const gender = this.data.gender || 'female'
+    const savedFavorites = tryonFavorite.getFavoriteOutfits()
+    let cards = savedFavorites.length
+      ? this._applyGenderToCards(savedFavorites, gender)
+      : [{ id: '_empty', isEmptyPlaceholder: true }]
+    this.setData({ outfitCards: cards, allOutfitCards: cards, filterActive: 'all' })
+    wx.showToast({ title: '已保存到收藏区', icon: 'success' })
   },
 
   onFavoriteTagCancel() {
-    this.setData({ showFavoriteTagPopup: false })
+    this.setData({ showFavoriteTagPopup: false, tryonFavorited: false })
   },
 
   onTryOn() {

@@ -10,6 +10,9 @@ const USER_POINTS_KEY = 'privclo_user_points'
 const USER_POINTS_RECORDS_KEY = 'privclo_user_points_records'
 const REGISTRATION_REWARD_GIVEN_KEY = 'privclo_registration_reward_given'
 const USER_GENDER_KEY = 'privclo_user_gender'
+const USER_LOGGED_IN_KEY = 'privclo_user_logged_in'
+const USER_PHONE_KEY = 'privclo_user_phone'
+const DEFAULT_USER_DISPLAY_NAME = '默认用户'
 const OUTFIT_PREFERENCES_KEY = 'privclo_outfit_preferences'
 const CHAT_FEEDBACK_KEY = 'privclo_chat_feedback'
 
@@ -24,14 +27,22 @@ App({
     } catch (e) {
       this.globalData.userWardrobeItems = {}
     }
+    try {
+      const hw = wx.getStorageSync('privclo_home_weather')
+      if (hw && typeof hw === 'object' && hw.city) {
+        this.globalData.homeWeather = hw
+      }
+    } catch (e) {}
+    this.globalData.isGuestMode = !this.isUserLoggedIn()
   },
   globalData: {
+    homeWeather: null,     // 首页定位城市与天气，与天气日历本月统计同步
     tryonItemSlots: null,  // 单品格数据，用于衣橱内页与分类详情页同步
     modelDisplaySrc: null, // 首页模特展示图，用于实时试穿区左侧同步
     modelGender: 'female', // 首页模特角色性别，与 modelDisplaySrc 保持一致
     subCategoryOrder: {},  // 各分类的子分类卡片排序 { tops: ['id1','id2',...], bottoms: [...], ... }
     userWardrobeItems: {},  // 用户录入的单品 { 'tops:sweater': [{ src: '...' }], ... }
-    isGuestMode: false,    // 是否通过「游客浏览」进入，我的页显示「演示账号」
+    isGuestMode: false,    // 未登录时为 true，我的页显示「演示账号」
     favoritesTryonItemSlots: null,  // 收藏区试穿页单品格，与分类详情页 tryonItemSlots 独立
     tryonInitialOutfit: null, // 进入 pages/tryon/tryon 时的初始槽位数据 { inner, top, bottom, shoes, suit }
     tryonLaunchContext: null // 从分类详情进入试穿全屏时携带的 activeTab / prefitMode / categoryTabs
@@ -47,11 +58,25 @@ App({
     }
   },
 
-  // 添加用户录入的单品并持久化
-  addUserWardrobeItem(typeId, categoryId, src) {
+  // 添加用户录入的单品并持久化（支持 { src, srcFront, srcBack } 或 cloud:// 字符串）
+  addUserWardrobeItem(typeId, categoryId, srcOrPayload) {
     const key = `${typeId}:${categoryId}`
     if (!this.globalData.userWardrobeItems[key]) this.globalData.userWardrobeItems[key] = []
-    this.globalData.userWardrobeItems[key].push({ src })
+    let item
+    if (srcOrPayload && typeof srcOrPayload === 'object') {
+      const front = (srcOrPayload.srcFront || srcOrPayload.src || '').trim()
+      const back = (srcOrPayload.srcBack || '').trim()
+      item = {
+        src: (srcOrPayload.src || front || '').trim(),
+        srcFront: front,
+        srcBack: back
+      }
+    } else {
+      const src = (srcOrPayload || '').trim()
+      item = { src, srcFront: src, srcBack: '' }
+    }
+    if (!item.src && !item.srcFront) return
+    this.globalData.userWardrobeItems[key].push(item)
     try {
       wx.setStorageSync(USER_WARDROBE_KEY, this.globalData.userWardrobeItems)
     } catch (e) {
@@ -64,7 +89,11 @@ App({
     const key = `${typeId}:${categoryId}`
     const arr = this.globalData.userWardrobeItems[key]
     if (!arr || !Array.isArray(arr)) return false
-    const i = arr.findIndex(function (e) { return (e && e.src) === src || e === src })
+    const i = arr.findIndex(function (e) {
+      if (e === src) return true
+      if (!e || typeof e !== 'object') return false
+      return e.src === src || e.srcFront === src
+    })
     if (i < 0) return false
     arr.splice(i, 1)
     if (arr.length === 0) delete this.globalData.userWardrobeItems[key]
@@ -100,17 +129,21 @@ App({
     }
   },
 
-  /** 获取穿搭偏好（不喜欢/喜欢的单品，供精灵小助手记忆） */
+  /** 获取穿搭偏好（不喜欢/喜欢的单品 + 年龄/风格，供精灵小助手记忆） */
   getOutfitPreferences() {
     try {
       const raw = wx.getStorageSync(OUTFIT_PREFERENCES_KEY)
       const o = raw && typeof raw === 'object' ? raw : {}
+      const ageRaw = o.age
+      const age = ageRaw != null && ageRaw !== '' ? parseInt(ageRaw, 10) : null
       return {
         avoidItems: Array.isArray(o.avoidItems) ? o.avoidItems : [],
-        preferItems: Array.isArray(o.preferItems) ? o.preferItems : []
+        preferItems: Array.isArray(o.preferItems) ? o.preferItems : [],
+        age: Number.isFinite(age) ? age : null,
+        styleTags: Array.isArray(o.styleTags) ? o.styleTags : []
       }
     } catch (e) {
-      return { avoidItems: [], preferItems: [] }
+      return { avoidItems: [], preferItems: [], age: null, styleTags: [] }
     }
   },
 
@@ -119,11 +152,18 @@ App({
     if (!prefs || typeof prefs !== 'object') return
     try {
       const current = this.getOutfitPreferences()
+      const ageRaw = prefs.age != null ? prefs.age : current.age
+      const ageParsed = ageRaw != null && ageRaw !== '' ? parseInt(ageRaw, 10) : null
       const merged = {
         avoidItems: Array.isArray(prefs.avoidItems) ? prefs.avoidItems : current.avoidItems,
-        preferItems: Array.isArray(prefs.preferItems) ? prefs.preferItems : current.preferItems
+        preferItems: Array.isArray(prefs.preferItems) ? prefs.preferItems : current.preferItems,
+        age: Number.isFinite(ageParsed) ? ageParsed : current.age,
+        styleTags: Array.isArray(prefs.styleTags) ? prefs.styleTags : current.styleTags
       }
       wx.setStorageSync(OUTFIT_PREFERENCES_KEY, merged)
+      if (Array.isArray(prefs.styleTags)) {
+        this.saveStylePreference(prefs.styleTags)
+      }
     } catch (e) {
       console.error('save outfit preferences failed', e)
     }
@@ -194,7 +234,11 @@ App({
     const profile = this.getRoleProfile(gender)
     const name = (profile.nickname && String(profile.nickname).trim()) || ''
     if (name) return name
-    return gender === 'male' ? '阳阳' : '依依'
+    return DEFAULT_USER_DISPLAY_NAME
+  },
+
+  getDefaultUserDisplayName() {
+    return DEFAULT_USER_DISPLAY_NAME
   },
 
   getPrivateSubConfig() {
@@ -332,17 +376,95 @@ App({
     }
   },
 
-  /** 游客浏览（未登录）时保存前需登录：若为游客则弹窗引导，返回 false；否则返回 true 可继续保存 */
+  /** 是否已完成登录（微信授权或账号登录） */
+  isUserLoggedIn() {
+    try {
+      return wx.getStorageSync(USER_LOGGED_IN_KEY) === true
+    } catch (e) {
+      return false
+    }
+  },
+
+  markUserLoggedIn() {
+    try {
+      wx.setStorageSync(USER_LOGGED_IN_KEY, true)
+    } catch (e) {
+      console.error('mark user logged in failed', e)
+    }
+    this.globalData.isGuestMode = false
+  },
+
+  clearUserLoggedIn() {
+    try {
+      wx.removeStorageSync(USER_LOGGED_IN_KEY)
+    } catch (e) {
+      console.error('clear user logged in failed', e)
+    }
+    this.globalData.isGuestMode = true
+  },
+
+  /** 获取已绑定的手机号（11 位数字） */
+  getUserPhone() {
+    try {
+      const raw = wx.getStorageSync(USER_PHONE_KEY)
+      const phone = raw != null ? String(raw).trim() : ''
+      return /^1\d{10}$/.test(phone) ? phone : ''
+    } catch (e) {
+      return ''
+    }
+  },
+
+  /** 保存绑定手机号 */
+  saveUserPhone(phone) {
+    const p = phone != null ? String(phone).trim() : ''
+    if (!/^1\d{10}$/.test(p)) return false
+    try {
+      wx.setStorageSync(USER_PHONE_KEY, p)
+      return true
+    } catch (e) {
+      console.error('save user phone failed', e)
+      return false
+    }
+  },
+
+  /** 解绑手机号 */
+  clearUserPhone() {
+    try {
+      wx.removeStorageSync(USER_PHONE_KEY)
+    } catch (e) {
+      console.error('clear user phone failed', e)
+    }
+  },
+
+  /** 手机号脱敏展示：138****8000 */
+  maskUserPhone(phone) {
+    const p = phone != null ? String(phone).trim() : ''
+    if (!/^1\d{10}$/.test(p)) return ''
+    return p.slice(0, 3) + '****' + p.slice(7)
+  },
+
+  /** 跳转微信授权登录（隐藏原登录引导页后的统一入口） */
+  goWechatLogin(options) {
+    const opt = options || {}
+    const q = []
+    if (opt.fromSave) q.push('fromSave=1')
+    if (opt.fromMine) q.push('fromMine=1')
+    const query = q.length ? '?' + q.join('&') : ''
+    wx.navigateTo({ url: '/pages/wechatauth/wechatauth' + query })
+  },
+
+  /** 游客（未登录）时保存前需登录：弹窗引导微信授权，返回 false；否则返回 true */
   requireGuestLoginForSave() {
-    if (!this.globalData.isGuestMode) return true
+    if (this.isUserLoggedIn()) return true
+    this.globalData.isGuestMode = true
     wx.showModal({
       title: '登录提示',
-      content: '保存内容需要先登录/注册，是否前往登录？',
+      content: '保存内容需要先登录，是否前往微信授权登录？',
       confirmText: '去登录',
       cancelText: '取消',
       success: (res) => {
         if (res.confirm) {
-          wx.navigateTo({ url: '/pages/login/login?fromSave=1' })
+          this.goWechatLogin({ fromSave: true })
         }
       }
     })

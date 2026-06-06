@@ -47,37 +47,41 @@
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23333333'%3E%3Cpath d='M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z'/%3E%3C/svg%3E") center/contain no-repeat;
 }
 .header-title { font-size: 34rpx; font-weight: bold; color: #333333; }
-.header-placeholder { width: 72rpx; height: 72rpx; }
+.header-placeholder { width: 72rpx; height: 72rpx; flex-shrink: 0; }
 
-/* 标题栏中的智选衣橱｜私人衣橱按钮 */
-.header-prefit-mode-btn {
+/* 标题栏：闲置区｜收藏区 */
+.header-wardrobe-nav {
+  flex: 0 0 auto;
   display: flex;
   flex-direction: row;
   align-items: stretch;
   height: 56rpx;
+  margin: 0 auto;
   background: rgba(255, 255, 255, 0.9);
   border-radius: 28rpx;
   overflow: hidden;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
 }
 
-.header-prefit-half {
+.header-nav-item {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 20rpx;
-  font-size: 24rpx;
+  padding: 0 12rpx;
+  font-size: 22rpx;
   font-weight: 500;
   color: #666666;
-  min-width: 80rpx;
+  text-align: center;
+  line-height: 1.2;
 }
 
-.header-prefit-half.header-prefit-active {
+.header-nav-item.header-nav-active {
   background: #6EC5D9;
   color: #FFFFFF;
 }
 
-.header-prefit-divider {
+.header-nav-divider {
   width: 1rpx;
   background: rgba(0, 0, 0, 0.12);
   flex-shrink: 0;

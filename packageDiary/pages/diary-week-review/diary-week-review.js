@@ -14,15 +14,51 @@ function getWeekDates() {
   for (let i = 0; i < 7; i++) {
     const d = new Date(monday)
     d.setDate(monday.getDate() + i)
+    const weekday = d.getDay()
     dates.push({
       year: d.getFullYear(),
       month: d.getMonth() + 1,
       day: d.getDate(),
-      week: WEEK_NAMES[d.getDay()],
+      weekday,
+      week: WEEK_NAMES[weekday],
       dateStr: d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate()
     })
   }
   return dates
+}
+
+/** 按星期几（0=周日…4=周四…5=周五）取默认卡片文案，避免与「周一起算」的下标错位 */
+const DEFAULT_DESC_BY_WEEKDAY = {
+  0: '慵懒的周末',
+  1: '轻松的工作日穿搭',
+  2: '咖啡馆的午后时光',
+  3: '阳光明媚, 心情大好!',
+  4: 'Happy Thursday!',
+  5: 'Happy Friday!',
+  6: '运动日打卡'
+}
+
+const DEFAULT_TEMP_BY_WEEKDAY = {
+  0: '24', 1: '22', 2: '23', 3: '25', 4: '21', 5: '19', 6: '26'
+}
+
+const DEFAULT_WEATHER_BY_WEEKDAY = {
+  0: 'sunny', 1: 'cloudy', 2: 'cloudy', 3: 'sunny', 4: 'cloudy', 5: 'rainy', 6: 'sunny'
+}
+
+const DEFAULT_IMG_BG_BY_WEEKDAY = {
+  0: '#E1D5C4', 1: '#A8D5E5', 2: '#D4C4A8', 3: '#E8E8E8', 4: '#5C7C6B', 5: '#7BA3B8', 6: '#9BC4B8'
+}
+
+function getDefaultDesc(weekday) {
+  return DEFAULT_DESC_BY_WEEKDAY[weekday] || ''
+}
+
+function summarizeDiaryContent(content) {
+  if (!content || typeof content !== 'string') return ''
+  const text = content.trim()
+  if (!text) return ''
+  return text.slice(0, 14) + (text.length > 14 ? '...' : '')
 }
 
 function getWeatherForDay(year, month, day) {
@@ -57,10 +93,6 @@ Page({
 
   buildMomentCards() {
     const weekDates = getWeekDates()
-    const descs = ['轻松的工作日穿搭', '咖啡馆的午后时光', '阳光明媚, 心情大好!', 'Happy Friday!', '', '运动日打卡', '慵懒的周末']
-    const temps = ['22', '23', '25', '21', '19', '26', '24']
-    const weathers = ['cloudy', 'cloudy', 'sunny', 'cloudy', 'rainy', 'sunny', 'sunny']
-    const imgBgs = ['#A8D5E5', '#D4C4A8', '#E8E8E8', '#5C7C6B', '#7BA3B8', '#9BC4B8', '#E1D5C4']
     let momentCards = []
     try {
       const cached = wx.getStorageSync(STORAGE_KEY)
@@ -74,34 +106,39 @@ Page({
       momentCards = weekDates.map((d, idx) => {
         const key = d.year + '-' + d.month + '-' + d.day
         const page = pageMap[key]
+        const wd = d.weekday
+        const diarySnippet = summarizeDiaryContent(page?.content)
         return {
           id: key,
           month: d.month,
           day: d.day,
           week: d.week,
-          desc: page?.content ? (page.content.slice(0, 14) + (page.content.length > 14 ? '...' : '')) : descs[idx % 7],
-          weather: page ? getWeatherForDay(d.year, d.month, d.day) : weathers[idx % 7],
-          temp: temps[idx % 7],
+          desc: diarySnippet || getDefaultDesc(wd),
+          weather: page ? getWeatherForDay(d.year, d.month, d.day) : DEFAULT_WEATHER_BY_WEEKDAY[wd],
+          temp: DEFAULT_TEMP_BY_WEEKDAY[wd],
           photo: page?.photo || '',
-          isBest: idx === 2,
+          isBest: wd === 3,
           year: d.year,
-          imgBg: imgBgs[idx % 7]
+          imgBg: DEFAULT_IMG_BG_BY_WEEKDAY[wd]
         }
       })
     } catch (e) {
-      momentCards = weekDates.map((d, idx) => ({
-        id: d.year + '-' + d.month + '-' + d.day,
-        month: d.month,
-        day: d.day,
-        week: d.week,
-        desc: descs[idx % 7],
-        weather: weathers[idx % 7],
-        temp: temps[idx % 7],
-        photo: '',
-        isBest: idx === 2,
-        year: d.year,
-        imgBg: imgBgs[idx % 7]
-      }))
+      momentCards = weekDates.map((d, idx) => {
+        const wd = d.weekday
+        return {
+          id: d.year + '-' + d.month + '-' + d.day,
+          month: d.month,
+          day: d.day,
+          week: d.week,
+          desc: getDefaultDesc(wd),
+          weather: DEFAULT_WEATHER_BY_WEEKDAY[wd],
+          temp: DEFAULT_TEMP_BY_WEEKDAY[wd],
+          photo: '',
+          isBest: wd === 3,
+          year: d.year,
+          imgBg: DEFAULT_IMG_BG_BY_WEEKDAY[wd]
+        }
+      })
     }
     this.setData({ momentCards })
   },

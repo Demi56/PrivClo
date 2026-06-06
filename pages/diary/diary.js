@@ -10,7 +10,7 @@ Page({
     diaryImgSrc: '',
     diaryImgError: false,
     gender: 'female',
-    currentDiary: '依依的穿搭日记',
+    currentDiary: '默认用户的穿搭日记',
     pageCount: 1,
     showSampleHint: true,
     diaryList: [],

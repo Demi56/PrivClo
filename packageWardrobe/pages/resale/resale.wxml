@@ -9,7 +9,19 @@
     <view class="header-back" bindtap="onBack">
       <view class="header-back-arrow"></view>
     </view>
-    <text class="header-title">闲置转卖</text>
+    <view class="header-wardrobe-nav">
+      <view
+        class="header-nav-item {{wardrobeNavTab === 'resale' ? 'header-nav-active' : ''}}"
+        catchtap="onWardrobeNavTap"
+        data-tab="resale"
+      >闲置区</view>
+      <view class="header-nav-divider"></view>
+      <view
+        class="header-nav-item {{wardrobeNavTab === 'favorites' ? 'header-nav-active' : ''}}"
+        catchtap="onWardrobeNavTap"
+        data-tab="favorites"
+      >收藏区</view>
+    </view>
     <view class="header-placeholder"></view>
   </view>
 

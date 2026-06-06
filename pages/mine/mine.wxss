@@ -107,6 +107,13 @@
   border-radius: 16rpx;
 }
 
+.profile-login-hint {
+  font-size: 24rpx;
+  color: #4DD0E1;
+  margin-bottom: 8rpx;
+  text-align: center;
+}
+
 .profile-nickname {
   font-size: 38rpx;
   font-weight: 600;

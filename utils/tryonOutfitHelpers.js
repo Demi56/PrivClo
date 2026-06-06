@@ -21,7 +21,7 @@ function emptyOutfit() {
 function getItemSrc(item) {
   if (!item) return ''
   if (typeof item === 'string') return item.trim()
-  return (item.src || item.base || item.imageUrl || item.url || '').trim()
+  return (item.srcFront || item.src || item.base || item.imageUrl || item.url || '').trim()
 }
 
 /**
@@ -36,7 +36,7 @@ function applyTabPickToOutfit(outfit, tabId, item) {
   if (!key) return o
   const hasValue = typeof item === 'string'
     ? !!item.trim()
-    : !!(item && (item.src || item.attachment || item.base || item.imageUrl || item.url))
+    : !!(item && (item.src || item.srcFront || item.attachment || item.base || item.imageUrl || item.url))
   if (!hasValue) return o
   const value = item
   if (key === 'suit') {

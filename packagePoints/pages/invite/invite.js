@@ -5,7 +5,7 @@ Page({
   data: {
     statusBarHeight: 20,
     spriteUrl: '',
-    roleName: '依依',
+    roleName: '默认用户',
     inviteCode: 'WB-8829',
     invitedList: [
       { id: 1, name: '小甜甜', time: '2分钟前', avatar: '' },
@@ -21,7 +21,7 @@ Page({
     } catch (e) {
       this.setData({ statusBarHeight: 20 })
     }
-    const roleName = options.roleName || '依依'
+    const roleName = options.roleName || getApp().getDefaultUserDisplayName()
     this.setData({
       roleName,
       spriteUrl: getImageUrl('/images/sprite.png')
@@ -66,7 +66,7 @@ Page({
   onShareAppMessage() {
     return {
       title: '邀请你加入 PrivClo 穿搭小助手，注册即得1000积分！',
-      path: '/pages/index/index?inviteCode=' + this.data.inviteCode
+      path: '/pages/model/model?inviteCode=' + this.data.inviteCode
     }
   }
 })

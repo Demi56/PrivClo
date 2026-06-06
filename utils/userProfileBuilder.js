@@ -115,7 +115,9 @@ function aggregateForRecommend(app, opts) {
   )
 
   const roleProfile = app.getRoleProfile ? app.getRoleProfile(profile.gender) : {}
-  if (roleProfile.age) profile.age = roleProfile.age
+  const outfitPrefs = app.getOutfitPreferences ? app.getOutfitPreferences() : {}
+  if (outfitPrefs.age) profile.age = outfitPrefs.age
+  else if (roleProfile.age) profile.age = roleProfile.age
   if (roleProfile.bodyType) profile.bodyType = roleProfile.bodyType
 
   return { profile, wardrobe }

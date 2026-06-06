@@ -162,20 +162,36 @@
 }
 
 .polaroid-frame {
+  position: relative;
   width: 280rpx;
   height: 300rpx;
   background: #FFFFFF;
   padding: 16rpx 16rpx 48rpx;
+  box-sizing: border-box;
   box-shadow:
     0 2rpx 8rpx rgba(0, 0, 0, 0.08),
     0 8rpx 24rpx rgba(93, 78, 55, 0.1);
   transform: rotate(-1deg);
 }
 
+.polaroid-photo-wrap {
+  position: relative;
+  width: 100%;
+  height: 236rpx;
+}
+
 .polaroid-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
+}
+
+.polaroid-selected {
+  box-shadow:
+    0 2rpx 8rpx rgba(0, 0, 0, 0.08),
+    0 8rpx 24rpx rgba(93, 78, 55, 0.1),
+    0 0 0 4rpx rgba(77, 208, 225, 0.45);
 }
 
 .polaroid-placeholder {
@@ -306,6 +322,21 @@
   white-space: pre-wrap;
 }
 
+.content-text-tap {
+  display: block;
+  width: 100%;
+}
+
+.content-textarea {
+  width: 100%;
+  min-height: 120rpx;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: none;
+  box-sizing: border-box;
+}
+
 /* 贴纸层：覆盖文案区，用于展示已粘贴的贴纸 */
 .sticker-layer {
   position: absolute;
@@ -326,6 +357,39 @@
   border-radius: 12rpx;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
   pointer-events: auto;
+}
+
+.paper-sticker-selected {
+  box-shadow: 0 0 0 4rpx rgba(77, 208, 225, 0.45), 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
+}
+
+/* 照片 / 贴纸右上角删除 */
+.media-delete-btn {
+  position: absolute;
+  top: -10rpx;
+  right: -10rpx;
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.2);
+}
+
+.media-delete-btn-sticker {
+  top: -14rpx;
+  right: -14rpx;
+}
+
+.media-delete-icon {
+  font-size: 32rpx;
+  line-height: 1;
+  color: #FFFFFF;
+  font-weight: 300;
+  margin-top: -2rpx;
 }
 
 .paper-sticker-emoji {

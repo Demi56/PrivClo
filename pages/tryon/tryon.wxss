@@ -47,6 +47,21 @@
   width: 120rpx;
 }
 
+.mode-toggle {
+  min-width: 120rpx;
+  padding: 12rpx 20rpx;
+  text-align: center;
+  background: #eef3ff;
+  border-radius: 40rpx;
+  font-size: 24rpx;
+  color: #2a6df4;
+}
+
+.tryon-stage {
+  width: 100%;
+  margin-bottom: 8rpx;
+}
+
 /* 试穿页顶栏：上衣 / 下装 / 套装（小号胶囊） */
 .tryon-top-tabs {
   display: flex;

@@ -1,26 +1,27 @@
 # 3D 模型文件
 
-请将 3D 数字人模型放入此目录。
+请将经 **xr-frame-toolkit** 预处理的人模 GLB 放入云存储或本地目录。
 
 ## 文件要求
 
-- **格式**：`.glb`（推荐）或 `.gltf`
+- **格式**：`.glb`（单文件，**禁用 Draco 压缩**）
 - **命名**：
-  - `avatar-female.glb`：女生模特
-  - `avatar-male.glb`：男生模特
-  - 或统一使用 `avatar.glb`（不区分性别）
+  - `avatar-female.glb`：女生人模
+  - `avatar-male.glb`：男生人模
 
-## 模型来源
+## 部署方式（推荐 CDN）
 
-1. [GLB下载网](https://glbxz.com/) - 人物 / 角色
-2. [Sketchfab](https://sketchfab.com/) - 筛选 downloadable + glTF
-3. [CGMOL](https://www.cgmol.com/) - 动画角色
-4. [Mixamo](https://www.mixamo.com/) - 导出为 FBX 后用工具转 glb
+1. 用 [xr-frame-toolkit](https://developers.weixin.qq.com/miniprogram/dev/component/xr-frame/tools/toolkit.html) 做 GLTF 优化
+2. 上传至云存储 `models/` 目录（与 `config/cdn.js` 中 `CDN_ROOT` 一致）
+3. 在微信公众平台配置 **downloadFile 合法域名**（含 CDN 域名）
+4. 真机调试基础库 **≥ 2.32.0**
 
-## 规格建议
+本地开发可放入项目 `models/` 目录，并将 `config/cdn.js` 的 `USE_CDN` 设为 `false`。
 
-- 面数：3 万以内
-- 单文件：建议 < 5MB
-- 需支持骨骼/蒙皮（若需动画）
+## 试穿集成
 
-放入后，3D 模特页将自动加载并展示。
+- 3D 试穿组件：`components/tryon-xr/`
+- 挂点配置：`utils/tryon3dAnchors.js`
+- 试穿页默认 3D，失败或未支持时自动降级 2D Canvas
+
+详见 `docs/试穿3D方案.md`。

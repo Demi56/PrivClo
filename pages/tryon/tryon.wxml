@@ -7,7 +7,10 @@
       <text>返回</text>
     </view>
     <text class="nav-title">实时试穿</text>
-    <view class="placeholder"></view>
+    <view class="mode-toggle" wx:if="{{use3DTryon}}" bindtap="toggleTryonMode">
+      <text>{{tryon3DFallback ? '切 3D' : '切 2D'}}</text>
+    </view>
+    <view class="placeholder" wx:else></view>
   </view>
 
   <!-- 顶部编辑对象：上衣 / 下装 / 套装（与下方手动调整、衣橱分类联动） -->
@@ -17,20 +20,31 @@
     <view class="tryon-top-tab {{adjustSlot === 'dress' ? 'active' : ''}}" bindtap="selectTryonTopTab" data-tab="suit">套装</view>
   </view>
 
-  <!-- 试穿组件 -->
-  <model-tryon 
-    id="modelTryon"
-    gender="{{gender}}" 
-    outfit="{{outfit}}"
-    editingSlot="{{adjustSlot}}"
-    manualAdjustments="{{manualAdjustments}}"
-    bindadjustmentchange="onAdjustmentsChange"
-    bindmeshinit="onMeshInit"
-    bindmeshdragend="onMeshDragEnd"
-    bindslotswitch="onSlotSwitch"
-  />
+  <!-- 试穿区：优先 3D，失败或未支持时降级 2D Canvas -->
+  <view class="tryon-stage" style="min-height: {{xrSceneHeight}}px;">
+    <tryon-xr
+      wx:if="{{use3DTryon && !tryon3DFallback}}"
+      id="tryonXr"
+      gender="{{gender}}"
+      outfit="{{outfit}}"
+      scene-height="{{xrSceneHeight}}"
+      binderror="onTryon3DError"
+    />
+    <model-tryon
+      wx:else
+      id="modelTryon"
+      gender="{{gender}}"
+      outfit="{{outfit}}"
+      editingSlot="{{adjustSlot}}"
+      manualAdjustments="{{manualAdjustments}}"
+      bindadjustmentchange="onAdjustmentsChange"
+      bindmeshinit="onMeshInit"
+      bindmeshdragend="onMeshDragEnd"
+      bindslotswitch="onSlotSwitch"
+    />
+  </view>
 
-  <view class="adjust-panel">
+  <view class="adjust-panel" wx:if="{{tryon3DFallback || !use3DTryon}}">
     <view class="adjust-title">手动调整位置</view>
     <view class="adjust-slot-tabs">
       <view class="adjust-slot-item {{adjustSlot === 'top' ? 'active' : ''}}" data-slot="top" bindtap="selectAdjustSlot">上衣</view>

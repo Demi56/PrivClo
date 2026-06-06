@@ -93,12 +93,14 @@ function getDrawUrl(val) {
   if (!val) return ''
   if (typeof val === 'string') return val.trim()
   var o = val
-  return (o.src || o.base || o.imageUrl || o.url || o.tempFileURL || '').trim()
+  return (o.srcFront || o.src || o.base || o.imageUrl || o.url || o.tempFileURL || '').trim()
 }
 
 /** 是否有有效衣物（字符串非空或对象有 src/base） */
 function hasClothing(val) {
-  return !!getDrawUrl(val)
+  if (!val) return false
+  if (typeof val === 'string') return !!val.trim()
+  return !!(getDrawUrl(val))
 }
 
 /**

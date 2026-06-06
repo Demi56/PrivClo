@@ -6,18 +6,18 @@
       <view class="header-back" catchtap="onBack">
         <view class="header-back-arrow"></view>
       </view>
-      <view class="header-prefit-mode-btn">
+      <view class="header-wardrobe-nav">
         <view
-          class="header-prefit-half {{prefitMode === 'official' ? 'header-prefit-active' : ''}}"
-          catchtap="onPrefitModeTap"
-          data-mode="official"
-        >智选衣橱</view>
-        <view class="header-prefit-divider"></view>
+          class="header-nav-item {{wardrobeNavTab === 'resale' ? 'header-nav-active' : ''}}"
+          catchtap="onWardrobeNavTap"
+          data-tab="resale"
+        >闲置区</view>
+        <view class="header-nav-divider"></view>
         <view
-          class="header-prefit-half {{prefitMode === 'private' ? 'header-prefit-active' : ''}}"
-          catchtap="onPrefitModeTap"
-          data-mode="private"
-        >私人衣橱</view>
+          class="header-nav-item {{wardrobeNavTab === 'favorites' ? 'header-nav-active' : ''}}"
+          catchtap="onWardrobeNavTap"
+          data-tab="favorites"
+        >收藏区</view>
       </view>
       <view class="header-placeholder"></view>
     </view>
