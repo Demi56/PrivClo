@@ -1,5 +1,5 @@
 <!--
-  登录页 - 私橱小助
+  登录页 - 衣橱管家
   布局：状态栏 | 顶部图标+名称 | 登录卡片 | 底部协议
 -->
 <view class="page">
@@ -18,7 +18,7 @@
       <view class="app-icon-wrap">
         <view class="app-icon"></view>
       </view>
-      <text class="app-name">私橱小助</text>
+      <text class="app-name">衣橱管家</text>
     </view>
 
     <!-- 登录卡片 -->

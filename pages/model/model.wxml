@@ -18,10 +18,9 @@
     </view>
     <view class="bg-mode-group">
       <view class="bg-mode-item bg-mode-item-solid {{activeBgMode === 'solid' ? 'bg-mode-item-active' : ''}}" bindtap="onBgModeTap" data-mode="solid" hover-class="bg-mode-item-pressed">
-        <view class="bg-mode-circle">
-          <view class="bg-mode-icon bg-mode-icon-solid"></view>
+        <view class="bg-mode-chip bg-mode-chip-solid">
+          <view class="bg-mode-icon"></view>
         </view>
-        <text class="bg-mode-label">纯色背景</text>
         <view wx:if="{{activeBgMode === 'solid' && showSolidColorPicker}}" class="solid-color-popup" catchtap="onPopupCatch">
           <view class="solid-color-popup-arrow"></view>
           <view class="solid-color-popup-panel">
@@ -90,10 +89,9 @@
         </view>
       </view>
       <view class="bg-mode-item bg-mode-item-indoor {{activeBgMode === 'indoor' ? 'bg-mode-item-active' : ''}}" bindtap="onBgModeTap" data-mode="indoor" hover-class="bg-mode-item-pressed">
-        <view class="bg-mode-circle">
-          <view class="bg-mode-icon bg-mode-icon-indoor"></view>
+        <view class="bg-mode-chip bg-mode-chip-indoor">
+          <view class="bg-mode-icon"></view>
         </view>
-        <text class="bg-mode-label">室内</text>
         <view wx:if="{{activeBgMode === 'indoor' && showIndoorScenePicker}}" class="scene-picker-popup" catchtap="onPopupCatch">
           <view class="scene-picker-popup-arrow"></view>
           <view class="scene-picker-popup-panel">
@@ -117,10 +115,9 @@
         </view>
       </view>
       <view class="bg-mode-item bg-mode-item-outdoor {{activeBgMode === 'outdoor' ? 'bg-mode-item-active' : ''}}" bindtap="onBgModeTap" data-mode="outdoor" hover-class="bg-mode-item-pressed">
-        <view class="bg-mode-circle">
-          <view class="bg-mode-icon bg-mode-icon-outdoor"></view>
+        <view class="bg-mode-chip bg-mode-chip-outdoor">
+          <view class="bg-mode-icon"></view>
         </view>
-        <text class="bg-mode-label">室外</text>
         <view wx:if="{{activeBgMode === 'outdoor' && showOutdoorScenePicker}}" class="scene-picker-popup scene-picker-popup-outdoor" catchtap="onPopupCatch">
           <view class="scene-picker-popup-arrow"></view>
           <view class="scene-picker-popup-panel scene-picker-popup-panel-wide">

@@ -76,6 +76,8 @@
         "pages/ai-service/ai-service",
         "pages/privacy-terms/privacy-terms",
         "pages/account-security/account-security",
+        "pages/notification-settings/notification-settings",
+        "pages/faq/faq",
         "pages/role-manage/role-manage",
         "pages/model-profile/model-profile",
         "pages/outfit-preferences/outfit-preferences"
@@ -104,7 +106,8 @@
     "pages/mine/mine": {
       "network": "all",
       "packages": [
-        "memoir"
+        "memoir",
+        "settings"
       ]
     }
   },

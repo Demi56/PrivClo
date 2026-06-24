@@ -3,26 +3,18 @@
  * 调用 chatWithAssistant 云函数，使用云开发 AI 扩展混元模型
  */
 const { getImageUrl } = require('../../utils/image.js')
+const { decorateMessagesWithTimeLabels } = require('../../utils/chatTime.js')
 
 Component({
   properties: {
-    // 精灵头像 URL（折叠态 + 助手消息气泡前）
     avatarUrl: { type: String, value: '' },
-    // 用户头像 URL（用户消息气泡前）
     userAvatarUrl: { type: String, value: '' },
-    // 天气数据 { city, temp, weather }
     weather: { type: Object, value: {} },
-    // 衣橱数据 { 'tops:sweater': [{ src }], ... }
     wardrobe: { type: Object, value: {} },
-    // 用户风格偏好 { nickname, height, weight, selectedStyles, age, ... }
     profile: { type: Object, value: {} },
-    // 角色信息：性别 'female'/'male'
     gender: { type: String, value: '' },
-    // 角色类型（可选）：'male-child'/'female-child'/'elder-male'/'elder-female'，用于 男童/女童/老年 差异化推荐
     roleType: { type: String, value: '' },
-    // 年龄（可选）
     age: { type: Number, value: null },
-    // 由父级控制展开（页面级浮层模式），为 true 时始终展示面板，关闭时触发 close 事件
     expanded: { type: Boolean, value: false }
   },
 
@@ -46,6 +38,9 @@ Component({
       if (userAvatarUrl) updates.userAvatar = userAvatarUrl
       else updates.userAvatar = getImageUrl('/images/role/avatar-female.png')
       this.setData(updates)
+    },
+    expanded: function (expanded) {
+      if (expanded) this._scrollToLatest()
     }
   },
 
@@ -53,24 +48,48 @@ Component({
     attached() {
       const avatarUrl = this.properties.avatarUrl
       const userAvatarUrl = this.properties.userAvatarUrl
+      const messages = decorateMessagesWithTimeLabels(getApp().getChatHistory())
+      const last = messages.length ? messages[messages.length - 1] : null
       this.setData({
         spriteAvatar: avatarUrl || getImageUrl('/images/sprite.png'),
-        userAvatar: userAvatarUrl || getImageUrl('/images/role/avatar-female.png')
+        userAvatar: userAvatarUrl || getImageUrl('/images/role/avatar-female.png'),
+        messages,
+        scrollToId: last ? 'msg-' + last.id : ''
       })
     }
   },
 
   methods: {
-    onToggleExpand() {
+    _setMessages(messages, extra) {
+      const decorated = decorateMessagesWithTimeLabels(messages)
+      this.setData({ messages: decorated, ...(extra || {}) })
+      return decorated
+    },
+
+    _persistMessages(messages) {
+      getApp().saveChatHistory(messages || this.data.messages)
+    },
+
+    _scrollToLatest() {
+      const messages = this.data.messages || []
+      const last = messages[messages.length - 1]
+      if (last && last.id) {
+        this.setData({ scrollToId: 'msg-' + last.id })
+      }
+    },
+
+    onOpenPanel() {
+      this.setData({ internalExpanded: true, unreadCount: 0 })
+      this._scrollToLatest()
+    },
+
+    onClosePanel() {
+      this._persistMessages(this.data.messages)
       if (this.properties.expanded) {
         this.triggerEvent('close')
         return
       }
-      const v = !this.data.internalExpanded
-      this.setData({
-        internalExpanded: v,
-        unreadCount: v ? 0 : this.data.unreadCount
-      })
+      this.setData({ internalExpanded: false })
     },
 
     onInput(e) {
@@ -86,7 +105,8 @@ Component({
       if (!id) return
       const msg = this.data.messages.find(m => m.id === id)
       const messages = this.data.messages.map(m => (m.id === id ? { ...m, feedback: 'up' } : m))
-      this.setData({ messages })
+      this._setMessages(messages)
+      this._persistMessages(messages)
       getApp().saveChatFeedback(id, msg?.userMsg || '', msg?.content || '', 'up')
     },
 
@@ -95,7 +115,8 @@ Component({
       if (!id) return
       const msg = this.data.messages.find(m => m.id === id)
       const messages = this.data.messages.map(m => (m.id === id ? { ...m, feedback: 'down' } : m))
-      this.setData({ messages })
+      this._setMessages(messages)
+      this._persistMessages(messages)
       getApp().saveChatFeedback(id, msg?.userMsg || '', msg?.content || '', 'down')
     },
 
@@ -103,14 +124,15 @@ Component({
       const input = (this.data.inputText || '').trim()
       if (!input || this.data.loading) return
 
-      const userMsg = { id: 'u' + Date.now(), role: 'user', content: input }
+      const now = Date.now()
+      const userMsg = { id: 'u' + now, role: 'user', content: input, time: now }
       const newMessages = [...this.data.messages, userMsg]
-      this.setData({
+      this._setMessages(newMessages, {
         inputText: '',
-        messages: newMessages,
         loading: true,
         scrollToId: 'msg-' + userMsg.id
       })
+      this._persistMessages(newMessages)
 
       const history = newMessages.map(m => ({ role: m.role, content: m.content }))
       const profile = this.properties.profile || {}
@@ -145,27 +167,41 @@ Component({
         const errMsg = result.errMsg
         const content = reply || errMsg || '小助手信号不太好，稍等一下哦～ 😅'
         const lastUser = newMessages.filter(m => m.role === 'user').pop()
-        const assistantMsg = { id: 'a' + Date.now(), role: 'assistant', content, userMsg: lastUser ? lastUser.content : '' }
+        const assistantMsg = {
+          id: 'a' + Date.now(),
+          role: 'assistant',
+          content,
+          userMsg: lastUser ? lastUser.content : '',
+          time: Date.now()
+        }
         if (result.data && result.data.extractedPreferences) {
           getApp().mergeOutfitPreferencesFromChat(result.data.extractedPreferences)
         }
-        this.setData({
-          messages: [...newMessages, assistantMsg],
+        const merged = [...newMessages, assistantMsg]
+        this._setMessages(merged, {
           loading: false,
           scrollToId: 'msg-' + assistantMsg.id
         })
+        this._persistMessages(merged)
       } catch (err) {
         console.error('发送失败', err)
         const errorMsg = err.message === 'timeout'
           ? '思考时间有点长，再试一次吧～ 🤔'
           : '小助手信号不太好，稍等一下哦～ 😅'
         const lastUser = newMessages.filter(m => m.role === 'user').pop()
-        const assistantMsg = { id: 'e' + Date.now(), role: 'assistant', content: errorMsg, userMsg: lastUser ? lastUser.content : '' }
-        this.setData({
-          messages: [...newMessages, assistantMsg],
+        const assistantMsg = {
+          id: 'e' + Date.now(),
+          role: 'assistant',
+          content: errorMsg,
+          userMsg: lastUser ? lastUser.content : '',
+          time: Date.now()
+        }
+        const merged = [...newMessages, assistantMsg]
+        this._setMessages(merged, {
           loading: false,
           scrollToId: 'msg-' + assistantMsg.id
         })
+        this._persistMessages(merged)
       }
     }
   }

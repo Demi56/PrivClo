@@ -17,7 +17,7 @@
   right: 24rpx;
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
+  align-items: center;
   gap: 12rpx;
   z-index: 10;
 }
@@ -81,12 +81,12 @@
   color: #555555;
 }
 
-/* 背景模式：圆形图标，默认半透明，选中后加深 */
+/* 背景模式：磨砂圆钮 + 线性图标 */
 .bg-mode-group {
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
-  gap: 10rpx;
+  align-items: center;
+  gap: 14rpx;
   flex-shrink: 1;
   min-width: 0;
 }
@@ -95,68 +95,71 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6rpx;
-  width: 78rpx;
+  width: 92rpx;
   position: relative;
 }
 
-.bg-mode-circle {
-  width: 64rpx;
-  height: 64rpx;
+.bg-mode-chip {
+  width: 92rpx;
+  height: 92rpx;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.28);
-  transition: background 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  background: rgba(255, 255, 255, 0.42);
+  border: 2rpx solid rgba(255, 255, 255, 0.72);
+  box-shadow: 0 4rpx 14rpx rgba(0, 0, 0, 0.06);
+  opacity: 0.58;
+  transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
 }
 
-.bg-mode-item-active .bg-mode-circle,
-.bg-mode-item-pressed .bg-mode-circle {
-  background: rgba(255, 255, 255, 0.78);
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+.bg-mode-item-active .bg-mode-chip,
+.bg-mode-item-pressed .bg-mode-chip {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.96);
+  border-color: #4DD0E1;
+  transform: scale(1.05);
+  box-shadow: 0 8rpx 20rpx rgba(77, 208, 225, 0.22), 0 0 0 4rpx rgba(77, 208, 225, 0.12);
 }
 
 .bg-mode-icon {
-  width: 32rpx;
-  height: 32rpx;
-  opacity: 0.42;
+  width: 46rpx;
+  height: 46rpx;
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
-  transition: opacity 0.2s ease;
+  flex-shrink: 0;
 }
 
-.bg-mode-item-active .bg-mode-icon,
-.bg-mode-item-pressed .bg-mode-icon {
-  opacity: 0.92;
+/* 纯色：色块填充 */
+.bg-mode-chip-solid .bg-mode-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Crect x='5' y='5' width='14' height='14' rx='3' fill='rgba(102,102,102,0.14)' stroke='%23666666' stroke-width='1.7'/%3E%3Cpath d='M8 16l3-3.5 2 2 3-4' stroke='%23666666' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
-.bg-mode-icon-solid {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23333333'%3E%3Crect x='4' y='4' width='16' height='16' rx='2'/%3E%3C/svg%3E");
+.bg-mode-item-active .bg-mode-chip-solid .bg-mode-icon,
+.bg-mode-item-pressed .bg-mode-chip-solid .bg-mode-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Crect x='5' y='5' width='14' height='14' rx='3' fill='rgba(77,208,225,0.16)' stroke='%234DD0E1' stroke-width='1.8'/%3E%3Cpath d='M8 16l3-3.5 2 2 3-4' stroke='%2326C6DA' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
-.bg-mode-icon-indoor {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333333' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1v-9.5z'/%3E%3C/svg%3E");
+/* 室内：房屋 */
+.bg-mode-chip-indoor .bg-mode-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M4.5 10.8L12 5l7.5 5.8V18a1.2 1.2 0 01-1.2 1.2H15v-5.2H9V19.2H5.7A1.2 1.2 0 014.5 18v-7.2z' fill='rgba(102,102,102,0.1)' stroke='%23666666' stroke-width='1.7' stroke-linejoin='round'/%3E%3Crect x='10.2' y='13.2' width='3.6' height='3.6' rx='0.6' stroke='%23666666' stroke-width='1.4'/%3E%3C/svg%3E");
 }
 
-.bg-mode-icon-outdoor {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333333' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='17' cy='7' r='3'/%3E%3Cpath d='M3 20l6.5-8 4 4.5L15 12l6 8'/%3E%3C/svg%3E");
+.bg-mode-item-active .bg-mode-chip-indoor .bg-mode-icon,
+.bg-mode-item-pressed .bg-mode-chip-indoor .bg-mode-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M4.5 10.8L12 5l7.5 5.8V18a1.2 1.2 0 01-1.2 1.2H15v-5.2H9V19.2H5.7A1.2 1.2 0 014.5 18v-7.2z' fill='rgba(77,208,225,0.14)' stroke='%234DD0E1' stroke-width='1.8' stroke-linejoin='round'/%3E%3Crect x='10.2' y='13.2' width='3.6' height='3.6' rx='0.6' stroke='%2326C6DA' stroke-width='1.5'/%3E%3C/svg%3E");
 }
 
-.bg-mode-label {
-  font-size: 18rpx;
-  line-height: 1.2;
-  text-align: center;
-  color: rgba(51, 51, 51, 0.42);
-  white-space: nowrap;
-  transition: color 0.2s ease;
+/* 室外：日照远山 */
+.bg-mode-chip-outdoor .bg-mode-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Ccircle cx='17.2' cy='7.2' r='2.4' fill='rgba(102,102,102,0.18)' stroke='%23666666' stroke-width='1.6'/%3E%3Cpath d='M3.5 17.5l5.2-5.8 3.2 2.8L14.8 11l6.2 6.5' stroke='%23666666' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M3 18.5h18' stroke='%23666666' stroke-width='1.5' stroke-linecap='round' opacity='0.45'/%3E%3C/svg%3E");
 }
 
-.bg-mode-item-active .bg-mode-label,
-.bg-mode-item-pressed .bg-mode-label {
-  color: #333333;
-  font-weight: 500;
+.bg-mode-item-active .bg-mode-chip-outdoor .bg-mode-icon,
+.bg-mode-item-pressed .bg-mode-chip-outdoor .bg-mode-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Ccircle cx='17.2' cy='7.2' r='2.4' fill='rgba(77,208,225,0.2)' stroke='%234DD0E1' stroke-width='1.7'/%3E%3Cpath d='M3.5 17.5l5.2-5.8 3.2 2.8L14.8 11l6.2 6.5' stroke='%2326C6DA' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M3 18.5h18' stroke='%234DD0E1' stroke-width='1.5' stroke-linecap='round' opacity='0.35'/%3E%3C/svg%3E");
 }
 
 /* 纯色背景：色值小弹窗（图标下方） */
@@ -809,34 +812,16 @@
   z-index: 2;
 }
 
-/* 左右对称绿色半圆弧包边 */
+/* 完整青色圆环描边（避免左右半弧拼接产生缺口） */
 .home-tryon-handle-arc-wrap::before {
   content: '';
   position: absolute;
   left: 0;
-  top: 50%;
-  width: 36rpx;
-  height: 68rpx;
-  transform: translateY(-50%);
+  top: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
   border: 3rpx solid #6EC5D9;
-  border-right: none;
-  border-radius: 100% 0 0 100% / 50% 0 0 50%;
-  box-sizing: border-box;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.home-tryon-handle-arc-wrap::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  top: 50%;
-  width: 36rpx;
-  height: 68rpx;
-  transform: translateY(-50%);
-  border: 3rpx solid #6EC5D9;
-  border-left: none;
-  border-radius: 0 100% 100% 0 / 0 50% 50% 0;
   box-sizing: border-box;
   z-index: 2;
   pointer-events: none;
@@ -906,7 +891,7 @@
 }
 
 .home-tryon-items-col {
-  width: 120rpx;
+  width: 140rpx;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -934,10 +919,11 @@
 .home-tryon-items-dashed {
   border: 2rpx dashed #C4C0B8;
   border-radius: 16rpx;
-  padding: 12rpx 8rpx;
+  padding: 12rpx 10rpx;
   background: rgba(250, 248, 245, 0.88);
   backdrop-filter: blur(8rpx);
   box-sizing: border-box;
+  width: 100%;
 }
 
 /* 6 格高度：6×112rpx + 5×12rpx 间距 + 8rpx 底距 = 740rpx */
@@ -955,7 +941,7 @@
 }
 
 .home-tryon-item-slot {
-  width: 88rpx;
+  width: 104rpx;
   height: 112rpx;
   flex-shrink: 0;
   background: #F0EDE8;

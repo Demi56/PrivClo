@@ -1,0 +1,47 @@
+<view class="page">
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+
+  <view class="header">
+    <view class="header-back" bindtap="onBack">
+      <view class="header-back-arrow"></view>
+    </view>
+    <text class="header-title">通知设置</text>
+    <view class="header-placeholder"></view>
+  </view>
+
+  <view class="main">
+    <text class="section-tip">管理小程序消息提醒，关闭后将不再收到对应通知</text>
+
+    <view class="setting-card">
+      <view class="setting-row setting-row-master">
+        <view class="setting-text">
+          <text class="setting-label">接收通知</text>
+          <text class="setting-desc">总开关，关闭后所有通知均不推送</text>
+        </view>
+        <switch
+          class="setting-switch"
+          checked="{{enabled}}"
+          bindchange="onToggleMaster"
+          color="#4DD0E1"
+        />
+      </view>
+
+      <view class="setting-group {{enabled ? '' : 'setting-group-disabled'}}">
+        <view class="setting-row setting-row-item" wx:for="{{items}}" wx:key="key">
+          <view class="setting-text">
+            <text class="setting-label {{enabled ? '' : 'setting-label-muted'}}">{{item.title}}</text>
+            <text class="setting-desc">{{item.desc}}</text>
+          </view>
+          <switch
+            class="setting-switch"
+            checked="{{item.checked}}"
+            disabled="{{itemsDisabled}}"
+            data-key="{{item.key}}"
+            bindchange="onToggleItem"
+            color="#4DD0E1"
+          />
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

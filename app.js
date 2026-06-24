@@ -14,7 +14,9 @@ const USER_LOGGED_IN_KEY = 'privclo_user_logged_in'
 const USER_PHONE_KEY = 'privclo_user_phone'
 const DEFAULT_USER_DISPLAY_NAME = '默认用户'
 const OUTFIT_PREFERENCES_KEY = 'privclo_outfit_preferences'
+const NOTIFICATION_SETTINGS_KEY = 'privclo_notification_settings'
 const CHAT_FEEDBACK_KEY = 'privclo_chat_feedback'
+const CHAT_HISTORY_KEY = 'privclo_chat_history'
 
 App({
   onLaunch() {
@@ -109,7 +111,7 @@ App({
     return src && typeof src === 'string' && !src.startsWith('/images/')
   },
 
-  /** 获取用户性别（注册/偏好页选择，用于精灵小助手推荐） */
+  /** 获取用户性别（注册/偏好页选择，用于精灵小管家推荐） */
   getUserGender() {
     try {
       const g = wx.getStorageSync(USER_GENDER_KEY)
@@ -129,7 +131,7 @@ App({
     }
   },
 
-  /** 获取穿搭偏好（不喜欢/喜欢的单品 + 年龄/风格，供精灵小助手记忆） */
+  /** 获取穿搭偏好（不喜欢/喜欢的单品 + 年龄/风格，供精灵小管家记忆） */
   getOutfitPreferences() {
     try {
       const raw = wx.getStorageSync(OUTFIT_PREFERENCES_KEY)
@@ -140,10 +142,11 @@ App({
         avoidItems: Array.isArray(o.avoidItems) ? o.avoidItems : [],
         preferItems: Array.isArray(o.preferItems) ? o.preferItems : [],
         age: Number.isFinite(age) ? age : null,
-        styleTags: Array.isArray(o.styleTags) ? o.styleTags : []
+        styleTags: Array.isArray(o.styleTags) ? o.styleTags : [],
+        customStyleTags: Array.isArray(o.customStyleTags) ? o.customStyleTags : []
       }
     } catch (e) {
-      return { avoidItems: [], preferItems: [], age: null, styleTags: [] }
+      return { avoidItems: [], preferItems: [], age: null, styleTags: [], customStyleTags: [] }
     }
   },
 
@@ -158,7 +161,8 @@ App({
         avoidItems: Array.isArray(prefs.avoidItems) ? prefs.avoidItems : current.avoidItems,
         preferItems: Array.isArray(prefs.preferItems) ? prefs.preferItems : current.preferItems,
         age: Number.isFinite(ageParsed) ? ageParsed : current.age,
-        styleTags: Array.isArray(prefs.styleTags) ? prefs.styleTags : current.styleTags
+        styleTags: Array.isArray(prefs.styleTags) ? prefs.styleTags : current.styleTags,
+        customStyleTags: Array.isArray(prefs.customStyleTags) ? prefs.customStyleTags : current.customStyleTags
       }
       wx.setStorageSync(OUTFIT_PREFERENCES_KEY, merged)
       if (Array.isArray(prefs.styleTags)) {
@@ -192,6 +196,36 @@ App({
       wx.setStorageSync(CHAT_FEEDBACK_KEY, list.slice(0, 100))
     } catch (e) {
       console.error('save chat feedback failed', e)
+    }
+  },
+
+  /** 获取精灵小管家对话历史 */
+  getChatHistory() {
+    try {
+      const raw = wx.getStorageSync(CHAT_HISTORY_KEY)
+      return Array.isArray(raw) ? raw : []
+    } catch (e) {
+      return []
+    }
+  },
+
+  /** 保存精灵小管家对话历史 */
+  saveChatHistory(messages) {
+    if (!Array.isArray(messages)) return
+    try {
+      const sanitized = messages
+        .filter((m) => m && (m.role === 'user' || m.role === 'assistant') && m.content)
+        .map((m) => ({
+          id: m.id,
+          role: m.role,
+          content: m.content,
+          time: m.time != null ? m.time : undefined,
+          feedback: m.feedback || '',
+          userMsg: m.userMsg || ''
+        }))
+      wx.setStorageSync(CHAT_HISTORY_KEY, sanitized.slice(-100))
+    } catch (e) {
+      console.error('save chat history failed', e)
     }
   },
 
@@ -451,6 +485,44 @@ App({
     if (opt.fromMine) q.push('fromMine=1')
     const query = q.length ? '?' + q.join('&') : ''
     wx.navigateTo({ url: '/pages/wechatauth/wechatauth' + query })
+  },
+
+  /** 获取通知设置 */
+  getNotificationSettings() {
+    const defaults = {
+      enabled: true,
+      outfitRecommend: true,
+      weatherAlert: true,
+      diaryReminder: true,
+      pointsActivity: true,
+      systemMessage: true
+    }
+    try {
+      const raw = wx.getStorageSync(NOTIFICATION_SETTINGS_KEY)
+      const o = raw && typeof raw === 'object' ? raw : {}
+      return {
+        enabled: o.enabled !== false,
+        outfitRecommend: o.outfitRecommend !== false,
+        weatherAlert: o.weatherAlert !== false,
+        diaryReminder: o.diaryReminder !== false,
+        pointsActivity: o.pointsActivity !== false,
+        systemMessage: o.systemMessage !== false
+      }
+    } catch (e) {
+      return { ...defaults }
+    }
+  },
+
+  /** 保存通知设置，返回合并后的完整配置 */
+  saveNotificationSettings(prefs) {
+    const current = this.getNotificationSettings()
+    const merged = { ...current, ...(prefs && typeof prefs === 'object' ? prefs : {}) }
+    try {
+      wx.setStorageSync(NOTIFICATION_SETTINGS_KEY, merged)
+    } catch (e) {
+      console.error('save notification settings failed', e)
+    }
+    return merged
   },
 
   /** 游客（未登录）时保存前需登录：弹窗引导微信授权，返回 false；否则返回 true */

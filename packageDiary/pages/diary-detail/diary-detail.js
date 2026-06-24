@@ -2,7 +2,6 @@
 const WEEK_NAMES = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
 const WEATHER_TYPES = ['sunny', 'cloudy', 'overcast', 'rainy', 'haze']
 const WEATHER_MAP = { sunny: '晴天', cloudy: '阴天', overcast: '多云', rainy: '雨天', haze: '雾霾' }
-const DEFAULT_CONTENT = '示例文案：今天天气真好，穿了新买的衣服，感觉整个人都暖洋洋的。去公园散步的时候遇到了一只超级可爱的小狗🐶。\n中午吃了好吃的舒芙蕾，太幸福了～'
 
 const FLIP_DURATION = 1200
 const STORAGE_KEY = 'diary_pages'
@@ -75,7 +74,6 @@ Page({
     swiperHeight: 600,
     currentPage: 0,
     pages: [],
-    defaultContent: DEFAULT_CONTENT,
     contentEditing: false,
     editingContent: '',
     editingPageId: null,
@@ -127,7 +125,7 @@ Page({
     const page = {
       id: 'p' + Date.now(),
       year, month, day, week, weather, weatherText,
-      content: DEFAULT_CONTENT,
+      content: '',
       photo: '',
       stickers: []
     }
@@ -150,8 +148,8 @@ Page({
 
   startContentEdit() {
     if (this.data.isFlipping) return
-    const { currentPage, pages, defaultContent } = this.data
-    const content = (pages[currentPage] && pages[currentPage].content) ? pages[currentPage].content : defaultContent
+    const { currentPage, pages } = this.data
+    const content = (pages[currentPage] && pages[currentPage].content) ? pages[currentPage].content : ''
     this.setData({
       contentEditing: true,
       editingContent: content,
@@ -205,7 +203,7 @@ Page({
         week: WEEK_NAMES[d.getDay()],
         weather,
         weatherText: WEATHER_MAP[weather] || '晴天',
-        content: DEFAULT_CONTENT,
+        content: '',
         photo: '',
         stickers: []
       }
@@ -261,7 +259,7 @@ Page({
         week: WEEK_NAMES[d.getDay()],
         weather,
         weatherText: WEATHER_MAP[weather] || '晴天',
-        content: DEFAULT_CONTENT,
+        content: '',
         photo: '',
         stickers: []
       }

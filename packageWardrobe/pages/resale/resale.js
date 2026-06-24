@@ -1,5 +1,5 @@
 const { getImageUrl } = require('../../../utils/image.js')
-const wardrobeNav = require('../../../utils/wardrobeNav.js')
+const wardrobeNav = require('../../utils/wardrobeNav.js')
 
 // 闲置转卖 - 精灵管家 + 对话气泡 + 闲置统计
 Page({

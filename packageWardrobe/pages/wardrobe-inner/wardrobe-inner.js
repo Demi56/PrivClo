@@ -4,7 +4,7 @@ try {
   if (img && img.getImageUrl) getImageUrl = img.getImageUrl
 } catch (e) { console.warn('[wardrobe-inner] image utils fallback', e) }
 
-const wardrobeNav = require('../../../utils/wardrobeNav.js')
+const wardrobeNav = require('../../utils/wardrobeNav.js')
 
 // 从私人衣橱存储中统计各分类的衣物数量
 function getCategoryCountsFromWardrobe() {

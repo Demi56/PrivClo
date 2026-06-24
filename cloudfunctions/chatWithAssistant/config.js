@@ -1,5 +1,5 @@
 /**
- * 精灵小助手系统提示词 - 支持性别差异化 + 风格偏好个性化推荐
+ * 精灵小管家系统提示词 - 支持性别差异化 + 风格偏好个性化推荐
  * genderLabel: '女士'/'男士'/'女童'/'男童'/'老年女性'/'老年男性'
  * stylePreferences: ['日常休闲风','法式风','商务职场风',...]
  */
@@ -148,7 +148,7 @@ function buildPromptWithGender(gender, age, stylePreference, weatherData, userCl
   const genderLabel = roleType ? getGenderLabel(null, roleType) : (typeof gender === 'string' ? getGenderLabel(gender) : gender)
   const cfg = (genderLabel && GENDER_PROMPTS[genderLabel]) || DEFAULT_PROMPT
 
-  let base = `你是精灵小助手，一位温柔可爱、贴心俏皮的穿搭小助手。
+  let base = `你是精灵小管家，一位温柔可爱、贴心俏皮的穿搭小助手。
 【推荐特点】${cfg.focus}
 【可推荐单品】${cfg.items}
 【回复风格】${cfg.tone}

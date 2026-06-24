@@ -1,18 +1,26 @@
-// 穿搭偏好 - 不喜欢/喜欢的单品 + 年龄/风格偏好
-const STYLE_OPTIONS_MAIN = [
-  '日常休闲风', '法式风', '商务职场风', '运动风', '极简风', '复古风', '街头潮酷', '新中式'
+// 穿搭偏好 - 不喜欢/喜欢的单品 + 风格偏好
+const BUILTIN_STYLE_OPTIONS = [
+  '日常休闲风', '法式风', '商务职场风', '运动风', '极简风', '复古风', '街头潮酷', '新中式',
+  '汉服', 'JK', '洛丽塔', 'Vintage', '山系户外'
 ]
-const STYLE_OPTIONS_MORE = ['汉服', 'JK', '洛丽塔', 'Vintage', '山系户外']
+
+function buildStyleDisplayOptions(customStyleTags) {
+  const custom = (customStyleTags || []).filter(function (name) {
+    return name && BUILTIN_STYLE_OPTIONS.indexOf(name) < 0
+  })
+  return BUILTIN_STYLE_OPTIONS.concat(custom)
+}
 
 Page({
   data: {
     statusBarHeight: 20,
     avoidItems: '',
     preferItems: '',
-    age: 24,
     styleTags: ['日常休闲风'],
-    showMoreStyles: false,
-    moreStylesBtnText: '探索更多小众风格>'
+    styleDisplayOptions: BUILTIN_STYLE_OPTIONS.slice(),
+    customStyleTags: [],
+    showStyleAddPopup: false,
+    editingStyleName: ''
   },
 
   onLoad() {
@@ -28,11 +36,13 @@ Page({
       ? prefs.styleTags.slice()
       : (app.getStylePreference ? app.getStylePreference() : [])
     if (!styles || !styles.length) styles = ['日常休闲风']
+    const customStyleTags = Array.isArray(prefs.customStyleTags) ? prefs.customStyleTags.slice() : []
     this.setData({
       avoidItems: (prefs.avoidItems || []).join('、'),
       preferItems: (prefs.preferItems || []).join('、'),
-      age: prefs.age != null ? prefs.age : 24,
-      styleTags: styles
+      styleTags: styles,
+      customStyleTags,
+      styleDisplayOptions: buildStyleDisplayOptions(customStyleTags)
     })
   },
 
@@ -48,10 +58,6 @@ Page({
     this.setData({ preferItems: (e.detail && e.detail.value) || '' })
   },
 
-  onAgeChange(e) {
-    this.setData({ age: parseInt(e.detail.value, 10) })
-  },
-
   toggleStyle(e) {
     const id = e.currentTarget.dataset.id
     if (!id) return
@@ -65,11 +71,41 @@ Page({
     this.setData({ styleTags: list })
   },
 
-  toggleMoreStyles() {
-    const next = !this.data.showMoreStyles
+  onAddCustomStyle() {
+    this.setData({ showStyleAddPopup: true, editingStyleName: '' })
+  },
+
+  onStyleNameInput(e) {
+    this.setData({ editingStyleName: (e.detail && e.detail.value) || '' })
+  },
+
+  onCloseStyleAddPopup() {
+    this.setData({ showStyleAddPopup: false, editingStyleName: '' })
+  },
+
+  onConfirmCustomStyle() {
+    const name = (this.data.editingStyleName || '').trim()
+    if (!name) {
+      wx.showToast({ title: '请输入风格名称', icon: 'none' })
+      return
+    }
+    if (name.length > 12) {
+      wx.showToast({ title: '风格名称最多12字', icon: 'none' })
+      return
+    }
+    const display = this.data.styleDisplayOptions || []
+    if (display.indexOf(name) >= 0) {
+      wx.showToast({ title: '该风格已存在', icon: 'none' })
+      return
+    }
+    const customStyleTags = (this.data.customStyleTags || []).concat([name])
+    const styleTags = (this.data.styleTags || []).concat([name])
     this.setData({
-      showMoreStyles: next,
-      moreStylesBtnText: next ? '收起' : '探索更多小众风格>'
+      customStyleTags,
+      styleDisplayOptions: buildStyleDisplayOptions(customStyleTags),
+      styleTags,
+      showStyleAddPopup: false,
+      editingStyleName: ''
     })
   },
 
@@ -85,11 +121,13 @@ Page({
     const styleTags = (this.data.styleTags && this.data.styleTags.length)
       ? this.data.styleTags.slice()
       : ['日常休闲风']
+    const current = getApp().getOutfitPreferences()
     getApp().saveOutfitPreferences({
       avoidItems,
       preferItems,
-      age: this.data.age || 24,
-      styleTags
+      age: current.age,
+      styleTags,
+      customStyleTags: this.data.customStyleTags || []
     })
     wx.showToast({ title: '已保存', icon: 'success' })
     setTimeout(() => wx.navigateBack(), 800)

@@ -7,7 +7,7 @@ try {
 const { emptyOutfit, applyTabPickToOutfit, removeSrcFromOutfit } = require('../../../utils/tryonOutfitHelpers.js')
 const { getModelImagePath } = require('../../../utils/clothingPositions.js')
 const tryonFavorite = require('../../../utils/tryonFavorite.js')
-const wardrobeNav = require('../../../utils/wardrobeNav.js')
+const wardrobeNav = require('../../utils/wardrobeNav.js')
 
 // 分类详情页 - 上衣区等，顶部试穿+底部分类展示+底部扫描
 Page({

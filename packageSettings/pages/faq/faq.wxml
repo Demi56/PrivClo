@@ -1,0 +1,66 @@
+<view class="page">
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+
+  <view class="header">
+    <view class="header-back" bindtap="onBack">
+      <view class="header-back-arrow"></view>
+    </view>
+    <text class="header-title">常见问题</text>
+    <view class="header-placeholder"></view>
+  </view>
+
+  <view class="illust-area">
+    <view class="bubble-wrap">
+      <view class="bubble">
+        <text class="bubble-text">有疑问？精灵小管家为你解答～</text>
+      </view>
+    </view>
+    <view class="sprite-wrap">
+      <image class="sprite-img" src="{{spriteUrl}}" mode="aspectFit" binderror="onSpriteError" />
+    </view>
+  </view>
+
+  <scroll-view class="category-scroll" scroll-x enable-flex show-scrollbar="{{false}}">
+    <view class="category-bar">
+      <view
+        wx:for="{{categories}}"
+        wx:key="id"
+        class="category-item {{activeCategory === item.id ? 'category-active' : ''}}"
+        data-id="{{item.id}}"
+        bindtap="onCategoryTap"
+      >{{item.name}}</view>
+    </view>
+  </scroll-view>
+
+  <scroll-view class="content-scroll" scroll-y show-scrollbar="{{false}}">
+    <view class="content-inner">
+      <view
+        wx:for="{{displayFaq}}"
+        wx:key="id"
+        class="faq-card {{item.expanded ? 'faq-card-expanded' : ''}}"
+      >
+        <view class="faq-question" data-id="{{item.id}}" bindtap="onToggleFaq">
+          <text class="faq-q-text">{{item.question}}</text>
+          <view class="faq-arrow {{item.expanded ? 'faq-arrow-up' : ''}}"></view>
+        </view>
+        <view wx:if="{{item.expanded}}" class="faq-answer">
+          <text class="faq-a-text">{{item.answer}}</text>
+        </view>
+      </view>
+
+      <view wx:if="{{displayFaq.length === 0}}" class="faq-empty">
+        <text class="faq-empty-text">该分类暂无问题，试试切换其他分类</text>
+      </view>
+
+      <view class="help-card">
+        <text class="help-title">没有找到答案？</text>
+        <text class="help-desc">可查看 AI 服务说明与隐私协议，或通过以下方式联系我们</text>
+        <view class="help-links">
+          <view class="help-link" bindtap="onOpenAiService">AI 服务说明</view>
+          <view class="help-link" bindtap="onOpenPrivacy">隐私协议</view>
+        </view>
+        <text class="help-contact">客服邮箱：service@privclo.com\n工作时间：工作日 9:00–18:00</text>
+      </view>
+    </view>
+  </scroll-view>
+</view>

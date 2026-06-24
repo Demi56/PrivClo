@@ -52,6 +52,30 @@
               />
             </view>
           </view>
+          <view class="role-field role-field-age">
+            <view class="role-label-row">
+              <text class="role-label">年龄</text>
+              <text class="role-age-value">{{age}}岁</text>
+            </view>
+            <view class="role-slider-wrap">
+              <slider
+                class="role-slider"
+                min="12"
+                max="100"
+                value="{{age}}"
+                activeColor="#5DB8A8"
+                backgroundColor="#E8E8E8"
+                block-size="24"
+                block-color="#FFFFFF"
+                show-value="{{false}}"
+                bindchange="onAgeChange"
+              />
+            </view>
+            <view class="role-slider-labels">
+              <text class="role-slider-label">12</text>
+              <text class="role-slider-label">100</text>
+            </view>
+          </view>
           <view class="role-field">
             <view class="role-label-row">
               <text class="role-label {{roleBustWaistHipEnabled ? '' : 'role-label-muted'}}">三围 (胸/腰/臀)</text>
@@ -69,19 +93,6 @@
               value="{{roleBustWaistHip}}"
               bindinput="onRoleBustWaistHipInput"
             />
-          </view>
-        </view>
-
-        <view class="style-section">
-          <text class="role-label">喜欢的风格</text>
-          <view class="tags">
-            <view
-              wx:for="{{styleOptions}}"
-              wx:key="*this"
-              class="tag {{selectedStyles.indexOf(item) >= 0 ? 'selected' : ''}}"
-              data-name="{{item}}"
-              bindtap="toggleStyle"
-            >{{item}}</view>
           </view>
         </view>
 

@@ -16,17 +16,6 @@
 
   <!-- 主内容区 -->
   <view class="main">
-    <view class="pill-card" bindtap="onOutfitPreferences">
-      <view class="pill-icon pill-icon-heart">
-        <view class="pill-icon-inner icon-heart"></view>
-      </view>
-      <view class="pill-content">
-        <text class="pill-title">穿搭偏好</text>
-        <text class="pill-desc">不喜欢/喜欢的单品，精灵小助手会记住</text>
-      </view>
-      <view class="pill-arrow"></view>
-    </view>
-
     <view class="pill-card" bindtap="onAccountSecurity">
       <view class="pill-icon pill-icon-shield">
         <view class="pill-icon-inner icon-shield"></view>

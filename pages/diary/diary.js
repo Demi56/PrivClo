@@ -12,7 +12,6 @@ Page({
     gender: 'female',
     currentDiary: '默认用户的穿搭日记',
     pageCount: 1,
-    showSampleHint: true,
     diaryList: [],
     currentIndex: 0,
     magicActive: false
@@ -28,15 +27,15 @@ Page({
         const list = this.data.diaryList || []
         const idx = this.data.currentIndex || 0
         const nextList = list.length ? list.map((item, i) => i === idx ? { ...item, pages: count } : item) : [{ id: 1, name: this.data.currentDiary, pages: count }]
-        this.setData({ pageCount: count, showSampleHint: false, diaryList: nextList })
+        this.setData({ pageCount: count, diaryList: nextList })
       } else {
         const list = this.data.diaryList || []
         const idx = this.data.currentIndex || 0
         const nextList = list.length ? list.map((item, i) => i === idx ? { ...item, pages: 1 } : item) : [{ id: 1, name: this.data.currentDiary, pages: 1 }]
-        this.setData({ pageCount: 1, showSampleHint: true, diaryList: nextList })
+        this.setData({ pageCount: 1, diaryList: nextList })
       }
     } catch (e) {
-      this.setData({ pageCount: 1, showSampleHint: true })
+      this.setData({ pageCount: 1 })
     }
   },
 

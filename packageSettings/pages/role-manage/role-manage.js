@@ -2,7 +2,8 @@
 Page({
   data: {
     statusBarHeight: 20,
-    gender: 'female'
+    gender: 'female',
+    showRoleSwitch: false
   },
 
   onLoad(options) {
@@ -30,5 +31,9 @@ Page({
     wx.navigateTo({
       url: '/packageSettings/pages/model-profile/model-profile?gender=' + encodeURIComponent(g)
     })
+  },
+
+  onOutfitPreferences() {
+    wx.navigateTo({ url: '/packageSettings/pages/outfit-preferences/outfit-preferences' })
   }
 })

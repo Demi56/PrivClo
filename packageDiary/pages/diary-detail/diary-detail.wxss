@@ -327,6 +327,10 @@
   width: 100%;
 }
 
+.content-text-empty {
+  color: #BBBBBB;
+}
+
 .content-textarea {
   width: 100%;
   min-height: 120rpx;

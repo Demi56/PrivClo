@@ -53,6 +53,7 @@
                       wx:if="{{contentEditing && !isFlipping}}"
                       class="content-text content-textarea"
                       value="{{editingContent}}"
+                      placeholder="记录今天的心情与穿搭..."
                       focus="{{contentEditing}}"
                       maxlength="-1"
                       auto-height
@@ -61,7 +62,8 @@
                       bindinput="onInput"
                       bindblur="onBlur"
                     />
-                    <text wx:else class="content-text content-text-tap" catchtap="onContentTap">{{pages[currentPage].content || defaultContent}}</text>
+                    <text wx:elif="{{!pages[currentPage].content}}" class="content-text content-text-tap content-text-empty" catchtap="onContentTap">点击输入今日心情</text>
+                    <text wx:else class="content-text content-text-tap" catchtap="onContentTap">{{pages[currentPage].content}}</text>
                   </view>
                   <view class="sticker-layer" id="stickerLayer" wx:if="{{pages[currentPage].stickers && pages[currentPage].stickers.length > 0}}">
                     <view class="paper-sticker {{selectedStickerSid === item.sid ? 'paper-sticker-selected' : ''}}" wx:for="{{pages[currentPage].stickers}}" wx:key="sid" data-sid="{{item.sid}}" style="left: {{item.left}}; top: {{item.top}}" bindtap="onStickerTap" bindtouchstart="onStickerTouchStart" catchtouchmove="onStickerTouchMove" bindtouchend="onStickerTouchEnd">
@@ -104,7 +106,7 @@
                     </view>
                   </view>
                   <view class="text-content">
-                    <text class="content-text">{{pages[flipTargetIndex].content || defaultContent}}</text>
+                    <text class="content-text">{{pages[flipTargetIndex].content}}</text>
                   </view>
                   <view class="sticker-layer" wx:if="{{pages[flipTargetIndex].stickers && pages[flipTargetIndex].stickers.length > 0}}">
                     <view class="paper-sticker" wx:for="{{pages[flipTargetIndex].stickers}}" wx:key="sid" style="left: {{item.left}}; top: {{item.top}}">
@@ -141,7 +143,7 @@
                       </view>
                     </view>
                     <view class="text-content">
-                      <text class="content-text">{{pages[flipFromIndex].content || defaultContent}}</text>
+                      <text class="content-text">{{pages[flipFromIndex].content}}</text>
                     </view>
                     <view class="sticker-layer" wx:if="{{pages[flipFromIndex].stickers && pages[flipFromIndex].stickers.length > 0}}">
                       <view class="paper-sticker" wx:for="{{pages[flipFromIndex].stickers}}" wx:key="sid" style="left: {{item.left}}; top: {{item.top}}">

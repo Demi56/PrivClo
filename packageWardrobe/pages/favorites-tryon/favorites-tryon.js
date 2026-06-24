@@ -1,7 +1,7 @@
 const { getImageUrl } = require('../../../utils/image.js')
 const { getModelImagePath } = require('../../../utils/clothingPositions.js')
 const tryonFavorite = require('../../../utils/tryonFavorite.js')
-const wardrobeNav = require('../../../utils/wardrobeNav.js')
+const wardrobeNav = require('../../utils/wardrobeNav.js')
 
 // 收藏区试穿页 - 顶部实时试穿区不变，中下部为筛选栏 + 搭配卡片网格
 Page({

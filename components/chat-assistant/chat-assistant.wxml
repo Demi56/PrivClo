@@ -1,21 +1,21 @@
 <!--
   精灵小管家 - 可折叠聊天助手组件
-  点击头像展开/收起，消息列表、输入框、发送、正在输入状态
-  expanded 为 true 时由父级控制，仅展示面板
+  点击头像展开；仅右上角删除按钮可关闭；对话历史本地持久化
 -->
 <view class="chat-assistant">
   <!-- 折叠态：浮动头像，点击展开（expanded 由父级传入时不显示） -->
-  <view wx:if="{{!expanded && !internalExpanded}}" class="chat-avatar-wrap" bindtap="onToggleExpand">
+  <view wx:if="{{!expanded && !internalExpanded}}" class="chat-avatar-wrap" bindtap="onOpenPanel">
     <image class="chat-avatar-img" src="{{avatarUrl}}" mode="aspectFit" />
     <view wx:if="{{unreadCount > 0}}" class="chat-avatar-badge">{{unreadCount > 9 ? '9+' : unreadCount}}</view>
   </view>
 
-  <!-- 展开态：聊天面板（expanded 由父级传入或 internalExpanded 为 true 时显示） -->
+  <!-- 展开态：聊天面板 -->
   <view wx:elif="{{expanded || internalExpanded}}" class="chat-panel-wrap">
+    <view class="chat-panel-mask"></view>
     <view class="chat-panel">
       <view class="chat-header">
-        <text class="chat-title">精灵小助手</text>
-        <view class="chat-close" bindtap="onToggleExpand">×</view>
+        <text class="chat-title">精灵小管家</text>
+        <view class="chat-close-btn" bindtap="onClosePanel">×</view>
       </view>
       <scroll-view
         class="chat-messages"
@@ -24,18 +24,23 @@
         scroll-with-animation
         bindscrolltolower="onScrollToLower"
       >
-        <view wx:for="{{messages}}" wx:key="id" id="msg-{{item.id}}" class="chat-msg {{item.role === 'user' ? 'chat-msg-user' : 'chat-msg-assistant'}}">
-          <image class="chat-msg-avatar" src="{{item.role === 'user' ? userAvatar : spriteAvatar}}" mode="aspectFill" />
-          <view class="chat-msg-bubble-wrap">
-            <view class="chat-msg-bubble">
-              <text class="chat-msg-text">{{item.content}}</text>
-            </view>
-            <view wx:if="{{item.role === 'assistant' && item.id}}" class="chat-msg-feedback">
-              <view class="chat-feedback-btn {{item.feedback === 'up' ? 'active' : ''}}" bindtap="onFeedbackUp" data-id="{{item.id}}">👍</view>
-              <view class="chat-feedback-btn {{item.feedback === 'down' ? 'active' : ''}}" bindtap="onFeedbackDown" data-id="{{item.id}}">👎</view>
+        <block wx:for="{{messages}}" wx:key="id">
+          <view wx:if="{{item.showTimeLabel}}" class="chat-time-label">
+            <text class="chat-time-text">{{item.timeLabel}}</text>
+          </view>
+          <view id="msg-{{item.id}}" class="chat-msg {{item.role === 'user' ? 'chat-msg-user' : 'chat-msg-assistant'}}">
+            <image class="chat-msg-avatar" src="{{item.role === 'user' ? userAvatar : spriteAvatar}}" mode="aspectFill" />
+            <view class="chat-msg-bubble-wrap">
+              <view class="chat-msg-bubble">
+                <text class="chat-msg-text">{{item.content}}</text>
+              </view>
+              <view wx:if="{{item.role === 'assistant' && item.id}}" class="chat-msg-feedback">
+                <view class="chat-feedback-btn {{item.feedback === 'up' ? 'active' : ''}}" bindtap="onFeedbackUp" data-id="{{item.id}}">👍</view>
+                <view class="chat-feedback-btn {{item.feedback === 'down' ? 'active' : ''}}" bindtap="onFeedbackDown" data-id="{{item.id}}">👎</view>
+              </view>
             </view>
           </view>
-        </view>
+        </block>
         <view wx:if="{{loading}}" class="chat-msg chat-msg-assistant">
           <image class="chat-msg-avatar" src="{{spriteAvatar}}" mode="aspectFill" />
           <view class="chat-msg-bubble-wrap">
@@ -58,6 +63,5 @@
         <view class="chat-send-btn {{inputText ? '' : 'chat-send-disabled'}}" bindtap="onSend">发送</view>
       </view>
     </view>
-    <view class="chat-panel-mask" catchtap="onToggleExpand"></view>
   </view>
 </view>

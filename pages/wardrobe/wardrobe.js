@@ -108,10 +108,13 @@ Page({
   },
 
   onOpenWardrobe() {
+    const gender = this.data.gender || 'female'
     this.setData({ magicActive: true })
     setTimeout(() => {
       this.setData({ magicActive: false })
-      wx.navigateTo({ url: '/packageWardrobe/pages/wardrobe-inner/wardrobe-inner?gender=' + (this.data.gender || 'female') })
+      wx.navigateTo({
+        url: '/packageWardrobe/pages/category-detail/category-detail?category=tops&gender=' + encodeURIComponent(gender)
+      })
     }, 1000)
   },
 

@@ -25,7 +25,6 @@
     <view class="diary-pages-badge">
       <view class="diary-pages-wrap">
         <text class="diary-pages-text">({{pageCount}}页)</text>
-        <text wx:if="{{showSampleHint}}" class="diary-pages-sample">*示例</text>
       </view>
     </view>
 

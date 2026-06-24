@@ -55,6 +55,7 @@
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.4);
+  z-index: 0;
 }
 
 .chat-panel {
@@ -83,7 +84,7 @@
   color: #333;
 }
 
-.chat-close {
+.chat-close-btn {
   width: 56rpx;
   height: 56rpx;
   border-radius: 50%;
@@ -99,6 +100,21 @@
   height: 400rpx;
   padding: 24rpx;
   box-sizing: border-box;
+}
+
+.chat-time-label {
+  display: flex;
+  justify-content: center;
+  margin: 4rpx 0 20rpx;
+}
+
+.chat-time-text {
+  font-size: 22rpx;
+  color: #999999;
+  line-height: 1.4;
+  padding: 6rpx 18rpx;
+  border-radius: 8rpx;
+  background: rgba(0, 0, 0, 0.04);
 }
 
 .chat-msg {

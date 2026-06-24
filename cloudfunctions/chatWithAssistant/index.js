@@ -1,5 +1,5 @@
 /**
- * 精灵小助手 AI 对话云函数
+ * 精灵小管家 AI 对话云函数
  * 优先使用 cloud.extend.AI（成长计划免费额度），失败时回退到 HTTP API
  */
 const cloud = require('wx-server-sdk')

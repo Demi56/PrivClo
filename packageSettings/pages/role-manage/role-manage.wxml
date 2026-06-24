@@ -13,7 +13,7 @@
   </view>
 
   <view class="main">
-    <view class="pill-card" bindtap="onRoleSwitch">
+    <view class="pill-card" wx:if="{{showRoleSwitch}}" bindtap="onRoleSwitch">
       <view class="pill-icon pill-icon-switch">
         <view class="pill-icon-inner icon-switch"></view>
       </view>
@@ -30,7 +30,18 @@
       </view>
       <view class="pill-content">
         <text class="pill-title">信息录入</text>
-        <text class="pill-desc">昵称、身高体重、三围与风格标签</text>
+        <text class="pill-desc">昵称、身高体重、年龄与三围</text>
+      </view>
+      <view class="pill-arrow"></view>
+    </view>
+
+    <view class="pill-card" bindtap="onOutfitPreferences">
+      <view class="pill-icon pill-icon-heart">
+        <view class="pill-icon-inner icon-heart"></view>
+      </view>
+      <view class="pill-content">
+        <text class="pill-title">穿搭偏好</text>
+        <text class="pill-desc">不喜欢/喜欢的单品，精灵小管家会记住</text>
       </view>
       <view class="pill-arrow"></view>
     </view>

@@ -97,8 +97,9 @@ Page({
   },
 
   onFashionAdventure() {
-    // 穿搭回顾 -> 穿搭回忆报告角色选择页
-    wx.navigateTo({ url: '/packageMemoir/pages/memoir-select/memoir-select?gender=' + (this.data.gender || 'female') })
+    const gender = this.data.gender || getApp().getUserGender() || 'female'
+    // 暂时跳过「生成穿搭回忆报告」角色选择过渡页，直达报告内容
+    wx.navigateTo({ url: '/packageMemoir/pages/memoir/memoir?gender=' + gender })
   },
 
   onMoreSettings() {
