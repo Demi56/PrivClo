@@ -46,22 +46,35 @@
       <view class="pill-arrow"></view>
     </view>
 
+    <view class="pill-card" bindtap="onFeedback">
+      <view class="pill-icon pill-icon-mail">
+        <view class="pill-icon-inner icon-mail"></view>
+      </view>
+      <view class="pill-content">
+        <text class="pill-title">意见反馈</text>
+        <text class="pill-desc">问题建议与 AI 内容投诉</text>
+      </view>
+      <view class="pill-arrow"></view>
+    </view>
+
     <view class="pill-card" bindtap="onPrivacy">
       <view class="pill-icon pill-icon-lock">
         <view class="pill-icon-inner icon-lock"></view>
       </view>
       <view class="pill-content">
-        <text class="pill-title">隐私协议与服务条款</text>
+        <text class="pill-title">隐私政策与用户协议</text>
+        <text class="pill-desc">含隐私政策与用户协议</text>
       </view>
       <view class="pill-arrow"></view>
     </view>
 
-    <view class="pill-card" bindtap="onTerms">
+    <view class="pill-card" bindtap="onAiService">
       <view class="pill-icon pill-icon-doc">
         <view class="pill-icon-inner icon-doc"></view>
       </view>
       <view class="pill-content">
-        <text class="pill-title">AI服务说明</text>
+        <text class="pill-title">AI 服务说明</text>
+        <text class="pill-desc">生成式 AI 规则与标识说明</text>
       </view>
       <view class="pill-arrow"></view>
     </view>

@@ -1,4 +1,6 @@
 // PrivClo v2.0 - 小程序入口
+const { CLOUD_ENV_ID } = require('./config/cloud.js')
+const { patchSystemDialogs } = require('./utils/systemDialog.js')
 const USER_WARDROBE_KEY = 'privclo_user_wardrobe_items'
 const STYLE_PREFERENCE_KEY = 'privclo_style_preference'
 const PRIVATE_SUB_CONFIG_KEY = 'privclo_private_sub_config'
@@ -20,8 +22,9 @@ const CHAT_HISTORY_KEY = 'privclo_chat_history'
 
 App({
   onLaunch() {
+    patchSystemDialogs()
     if (wx.cloud) {
-      wx.cloud.init({ traceUser: true })
+      wx.cloud.init({ env: CLOUD_ENV_ID, traceUser: true })
     }
     try {
       const raw = wx.getStorageSync(USER_WARDROBE_KEY)
@@ -84,6 +87,10 @@ App({
     } catch (e) {
       console.error('save user wardrobe failed', e)
     }
+    try {
+      const { recordDailyAction } = require('./utils/taskSquare.js')
+      recordDailyAction('clothes')
+    } catch (err) {}
   },
 
   // 移除用户录入的单品（用于子分类卡片中的删除）

@@ -92,11 +92,13 @@ function aggregateForRecommend(app, opts) {
   const gender = (o.gender && String(o.gender).trim())
     ? String(o.gender).trim()
     : (app.getUserGender ? app.getUserGender() : 'female')
+  const { mergeStylePreferences } = require('./assistantProfile.js')
+  const outfitPrefs = app.getOutfitPreferences ? app.getOutfitPreferences() : {}
   const profile = buildUserProfile({
     gender: gender,
-    stylePreferences: app.getStylePreference ? app.getStylePreference() : [],
-    avoidItems: (app.getOutfitPreferences ? app.getOutfitPreferences() : {}).avoidItems || [],
-    preferItems: (app.getOutfitPreferences ? app.getOutfitPreferences() : {}).preferItems || []
+    stylePreferences: mergeStylePreferences(app, gender),
+    avoidItems: outfitPrefs.avoidItems || [],
+    preferItems: outfitPrefs.preferItems || []
   })
 
   const ws = require('./wardrobeSubCategories.js')
@@ -115,10 +117,12 @@ function aggregateForRecommend(app, opts) {
   )
 
   const roleProfile = app.getRoleProfile ? app.getRoleProfile(profile.gender) : {}
-  const outfitPrefs = app.getOutfitPreferences ? app.getOutfitPreferences() : {}
   if (outfitPrefs.age) profile.age = outfitPrefs.age
   else if (roleProfile.age) profile.age = roleProfile.age
   if (roleProfile.bodyType) profile.bodyType = roleProfile.bodyType
+  if (roleProfile.height) profile.height = String(roleProfile.height)
+  if (roleProfile.weight) profile.weight = String(roleProfile.weight)
+  if (roleProfile.bustWaistHip) profile.bustWaistHip = String(roleProfile.bustWaistHip)
 
   return { profile, wardrobe }
 }

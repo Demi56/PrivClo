@@ -1,8 +1,8 @@
-/* 通知设置 - 沿用设置/账号与安全界面风格 */
+/* 通知设置 - 冰蓝主题 */
 
 .page {
   min-height: 100vh;
-  background: linear-gradient(180deg, #FFF8E7 0%, #F5F0E8 40%, #E8F4F8 100%);
+  background: var(--theme-gradient-soft, linear-gradient(180deg, #FFFFFF 0%, #EFF6FC 40%, #D4EDFA 100%));
   display: flex;
   flex-direction: column;
   padding-bottom: env(safe-area-inset-bottom);
@@ -23,8 +23,8 @@
   width: 72rpx;
   height: 72rpx;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.85);
-  box-shadow: 4rpx 4rpx 12rpx rgba(0, 0, 0, 0.06), -2rpx -2rpx 8rpx rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 4rpx 4rpx 12rpx rgba(125, 211, 252, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -33,13 +33,13 @@
 .header-back-arrow {
   width: 24rpx;
   height: 24rpx;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234DD0E1'%3E%3Cpath d='M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z'/%3E%3C/svg%3E") center/contain no-repeat;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230EA5E9'%3E%3Cpath d='M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z'/%3E%3C/svg%3E") center/contain no-repeat;
 }
 
 .header-title {
   font-size: 34rpx;
   font-weight: bold;
-  color: #333333;
+  color: var(--theme-text, #1F2937);
 }
 
 .header-placeholder {
@@ -58,7 +58,7 @@
 .section-tip {
   width: 100%;
   font-size: 24rpx;
-  color: #999999;
+  color: var(--theme-text-secondary, #4B5563);
   line-height: 1.6;
   margin-bottom: 28rpx;
   padding: 0 8rpx;
@@ -66,10 +66,10 @@
 
 .setting-card {
   width: 100%;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 48rpx;
   overflow: hidden;
-  box-shadow: 4rpx 4rpx 16rpx rgba(0, 0, 0, 0.06), -2rpx -2rpx 12rpx rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8rpx 32rpx rgba(125, 211, 252, 0.12), 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
 }
 
 .setting-row {
@@ -83,7 +83,7 @@
 }
 
 .setting-row-master {
-  border-bottom: 1rpx solid rgba(0, 0, 0, 0.06);
+  border-bottom: 1rpx solid var(--theme-border-soft, #D4EDFA);
 }
 
 .setting-group {
@@ -91,7 +91,7 @@
 }
 
 .setting-row-item:not(:last-child) {
-  border-bottom: 1rpx solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1rpx solid var(--theme-border-soft, #D4EDFA);
 }
 
 .setting-group-disabled .setting-desc {
@@ -108,17 +108,17 @@
 .setting-label {
   font-size: 30rpx;
   font-weight: 600;
-  color: #333333;
+  color: var(--theme-text, #1F2937);
   margin-bottom: 8rpx;
 }
 
 .setting-label-muted {
-  color: #B0B0B0;
+  color: var(--theme-text-muted, rgba(75, 85, 99, 0.55));
 }
 
 .setting-desc {
   font-size: 24rpx;
-  color: #999999;
+  color: var(--theme-text-secondary, #4B5563);
   line-height: 1.5;
 }
 

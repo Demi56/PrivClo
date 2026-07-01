@@ -1,7 +1,7 @@
 {
   "navigationBarTitleText": "实时试穿",
   "navigationStyle": "custom",
-  "navigationBarBackgroundColor": "#F5F0E8",
+  "navigationBarBackgroundColor": "#EFF6FC",
   "usingComponents": {
     "model-tryon": "/components/model-tryon/model-tryon"
   }

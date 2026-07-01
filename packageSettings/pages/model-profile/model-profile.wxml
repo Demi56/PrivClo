@@ -63,8 +63,8 @@
                 min="12"
                 max="100"
                 value="{{age}}"
-                activeColor="#5DB8A8"
-                backgroundColor="#E8E8E8"
+                activeColor="#38BDF8"
+                backgroundColor="#D4EDFA"
                 block-size="24"
                 block-color="#FFFFFF"
                 show-value="{{false}}"
@@ -83,7 +83,7 @@
                 class="role-switch"
                 checked="{{roleBustWaistHipEnabled}}"
                 bindchange="onToggleBustWaistHip"
-                color="#4DD0E1"
+                color="#0EA5E9"
               />
             </view>
             <input

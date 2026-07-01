@@ -3,7 +3,9 @@
  * 调用 chatWithAssistant 云函数，使用云开发 AI 扩展混元模型
  */
 const { getImageUrl } = require('../../utils/image.js')
+const { getSpriteImageUrl } = require('../../utils/spriteImage.js')
 const { decorateMessagesWithTimeLabels } = require('../../utils/chatTime.js')
+const { buildAssistantProfile } = require('../../utils/assistantProfile.js')
 
 Component({
   properties: {
@@ -34,7 +36,7 @@ Component({
     'avatarUrl, userAvatarUrl': function (avatarUrl, userAvatarUrl) {
       const updates = {}
       if (avatarUrl) updates.spriteAvatar = avatarUrl
-      else updates.spriteAvatar = getImageUrl('/images/sprite.png')
+      else updates.spriteAvatar = getSpriteImageUrl()
       if (userAvatarUrl) updates.userAvatar = userAvatarUrl
       else updates.userAvatar = getImageUrl('/images/role/avatar-female.png')
       this.setData(updates)
@@ -51,7 +53,7 @@ Component({
       const messages = decorateMessagesWithTimeLabels(getApp().getChatHistory())
       const last = messages.length ? messages[messages.length - 1] : null
       this.setData({
-        spriteAvatar: avatarUrl || getImageUrl('/images/sprite.png'),
+        spriteAvatar: avatarUrl || getSpriteImageUrl(),
         userAvatar: userAvatarUrl || getImageUrl('/images/role/avatar-female.png'),
         messages,
         scrollToId: last ? 'msg-' + last.id : ''
@@ -135,21 +137,31 @@ Component({
       this._persistMessages(newMessages)
 
       const history = newMessages.map(m => ({ role: m.role, content: m.content }))
-      const profile = this.properties.profile || {}
+      const app = getApp()
       const weather = this.properties.weather || {}
-      const outfitPrefs = (profile && profile.outfitPreferences) || getApp().getOutfitPreferences()
+      const gender = this.properties.gender || app.getUserGender() || 'female'
+      const profile = buildAssistantProfile(app, { gender, weather })
+      const outfitPrefs = profile.outfitPreferences || app.getOutfitPreferences()
+      const stylePreference = profile.stylePreference
+        || (profile.selectedStyles && profile.selectedStyles.length ? profile.selectedStyles : null)
+        || outfitPrefs.styleTags
+        || []
       const context = {
         city: weather.city,
         temp: weather.temp,
         weather: weather.weather,
         forecast: weather.forecast || [],
-        wardrobe: this.properties.wardrobe,
+        wardrobe: this.properties.wardrobe || app.getUserWardrobeItems(),
         profile,
         outfitPreferences: outfitPrefs,
-        gender: this.properties.gender || profile.gender,
+        learningLibrary: profile.learningLibrary || null,
+        userDataLibrary: profile.userDataLibrary || null,
+        userDataSummary: profile.userDataSummary || '',
+        isGuestMode: profile.isGuestMode === true,
+        gender: profile.gender || gender,
         roleType: this.properties.roleType || profile.roleType,
-        age: this.properties.age ?? profile.age,
-        stylePreference: profile.selectedStyles || []
+        age: profile.age ?? this.properties.age,
+        stylePreference
       }
 
       const timeoutPromise = new Promise((_, reject) => {
@@ -165,7 +177,7 @@ Component({
         const result = res.result || {}
         const reply = (result.data && result.data.reply) || result.reply
         const errMsg = result.errMsg
-        const content = reply || errMsg || '小助手信号不太好，稍等一下哦～ 😅'
+        const content = reply || errMsg || '精灵小管家信号不太好，稍等一下哦～ 😅'
         const lastUser = newMessages.filter(m => m.role === 'user').pop()
         const assistantMsg = {
           id: 'a' + Date.now(),
@@ -187,7 +199,7 @@ Component({
         console.error('发送失败', err)
         const errorMsg = err.message === 'timeout'
           ? '思考时间有点长，再试一次吧～ 🤔'
-          : '小助手信号不太好，稍等一下哦～ 😅'
+          : '精灵小管家信号不太好，稍等一下哦～ 😅'
         const lastUser = newMessages.filter(m => m.role === 'user').pop()
         const assistantMsg = {
           id: 'e' + Date.now(),

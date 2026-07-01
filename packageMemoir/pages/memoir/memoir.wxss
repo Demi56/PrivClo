@@ -2,7 +2,7 @@
 
 .page {
   min-height: 100vh;
-  background: #F5F5F5;
+  background: var(--theme-gradient-soft, linear-gradient(180deg, #FFFFFF 0%, #EFF6FC 40%, #D4EDFA 100%));
   display: flex;
   flex-direction: column;
 }
@@ -31,18 +31,18 @@
 .icon-back {
   width: 36rpx;
   height: 36rpx;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23000000'%3E%3Cpath d='M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z'/%3E%3C/svg%3E") center/contain no-repeat;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230EA5E9'%3E%3Cpath d='M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z'/%3E%3C/svg%3E") center/contain no-repeat;
 }
 
 .nav-title {
   font-size: 34rpx;
   font-weight: 600;
-  color: #000000;
+  color: var(--theme-text, #1F2937);
 }
 
 .nav-save {
   font-size: 30rpx;
-  color: #4DD0E1;
+  color: var(--theme-deep-blue, #0EA5E9);
 }
 
 /* ========== 主内容 ========== */
@@ -53,7 +53,7 @@
 
 /* ========== 头部区域 ========== */
 .header-section {
-  background: linear-gradient(180deg, #E8F7F9 0%, #FFEEE8 50%, #FFFFFF 100%);
+  background: var(--theme-gradient-soft, linear-gradient(180deg, #FFFFFF 0%, #EFF6FC 40%, #D4EDFA 100%));
   padding: 48rpx 48rpx 80rpx;
   margin-bottom: 40rpx;
   display: flex;
@@ -63,7 +63,7 @@
 
 .header-subtitle {
   font-size: 24rpx;
-  color: #FFB74D;
+  color: var(--theme-primary-dark, #38BDF8);
   letter-spacing: 2rpx;
   margin-bottom: 16rpx;
 }
@@ -71,20 +71,20 @@
 .header-year {
   font-size: 64rpx;
   font-weight: 700;
-  color: #4DD0E1;
+  color: var(--theme-deep-blue, #0EA5E9);
   margin-bottom: 8rpx;
 }
 
 .header-title {
   font-size: 34rpx;
   font-weight: bold;
-  color: #000000;
+  color: var(--theme-text, #1F2937);
   margin-bottom: 20rpx;
 }
 
 .header-desc {
   font-size: 28rpx;
-  color: #999999;
+  color: var(--theme-text-secondary, #4B5563);
   margin-bottom: 40rpx;
 }
 
@@ -124,11 +124,11 @@
 }
 
 .card-icon-leaf {
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234DD0E1'%3E%3Cpath d='M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1.89-6.01C9.59 14.95 12 12 17 8zM14 2l2.5 2.5-7.5 7.5L7 10l7-7z'/%3E%3C/svg%3E") center/contain no-repeat;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230EA5E9'%3E%3Cpath d='M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1.89-6.01C9.59 14.95 12 12 17 8zM14 2l2.5 2.5-7.5 7.5L7 10l7-7z'/%3E%3C/svg%3E") center/contain no-repeat;
 }
 
 .card-icon-fingerprint {
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234DD0E1'%3E%3Cpath d='M17.81 4.16c-.43-.18-.94-.06-1.21.3-.27.36-.21.86.12 1.16 2.28 2.05 3.53 5 3.53 8.38H20c0-3.72-1.39-7.1-3.68-9.58-.38-.41-.96-.53-1.51-.26zm-3.73 2.14c-.29-.22-.68-.21-.96.04-.29.25-.34.64-.13.94 1.77 2.32 2.74 5.28 2.74 8.52h2c0-3.72-.97-7.2-2.65-9.5zM4.31 8.94c-.28-.25-.67-.25-.95 0-.28.25-.28.66 0 .91 2.67 2.39 4.14 5.68 4.14 9.15h2c0-3.89-1.62-7.49-4.19-10.06zM2 18h2c0-1.66.34-3.24.96-4.69-.35-.02-.7-.03-1.04-.03-1.65 0-3.21.32-4.66.9-.19.08-.34.25-.4.45-.06.2-.02.41.11.57.59.71 1 1.54 1.21 2.39.22.85.29 1.72.2 2.59zm10.96-4.99c-.49-.05-1 .04-1.47.27-.47.23-.86.58-1.12 1.02-.27.44-.39.93-.36 1.43.03.5.17.97.42 1.39.25.41.59.76 1 1.02.41.26.86.42 1.33.47.47.05.96.01 1.44-.13.48-.14.92-.4 1.29-.77.37-.37.62-.81.76-1.29.14-.48.17-.98.09-1.46-.08-.49-.29-.95-.62-1.35-.33-.4-.76-.71-1.26-.93-.5-.21-1.04-.31-1.58-.28z'/%3E%3C/svg%3E") center/contain no-repeat;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230EA5E9'%3E%3Cpath d='M17.81 4.16c-.43-.18-.94-.06-1.21.3-.27.36-.21.86.12 1.16 2.28 2.05 3.53 5 3.53 8.38H20c0-3.72-1.39-7.1-3.68-9.58-.38-.41-.96-.53-1.51-.26zm-3.73 2.14c-.29-.22-.68-.21-.96.04-.29.25-.34.64-.13.94 1.77 2.32 2.74 5.28 2.74 8.52h2c0-3.72-.97-7.2-2.65-9.5zM4.31 8.94c-.28-.25-.67-.25-.95 0-.28.25-.28.66 0 .91 2.67 2.39 4.14 5.68 4.14 9.15h2c0-3.89-1.62-7.49-4.19-10.06zM2 18h2c0-1.66.34-3.24.96-4.69-.35-.02-.7-.03-1.04-.03-1.65 0-3.21.32-4.66.9-.19.08-.34.25-.4.45-.06.2-.02.41.11.57.59.71 1 1.54 1.21 2.39.22.85.29 1.72.2 2.59zm10.96-4.99c-.49-.05-1 .04-1.47.27-.47.23-.86.58-1.12 1.02-.27.44-.39.93-.36 1.43.03.5.17.97.42 1.39.25.41.59.76 1 1.02.41.26.86.42 1.33.47.47.05.96.01 1.44-.13.48-.14.92-.4 1.29-.77.37-.37.62-.81.76-1.29.14-.48.17-.98.09-1.46-.08-.49-.29-.95-.62-1.35-.33-.4-.76-.71-1.26-.93-.5-.21-1.04-.31-1.58-.28z'/%3E%3C/svg%3E") center/contain no-repeat;
 }
 
 .card-icon-palette {
@@ -136,13 +136,13 @@
 }
 
 .card-icon-person {
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234DD0E1'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E") center/contain no-repeat;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230EA5E9'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E") center/contain no-repeat;
 }
 
 .card-title {
   font-size: 32rpx;
   font-weight: 600;
-  color: #000000;
+  color: var(--theme-text, #1F2937);
 }
 
 /* 我的时尚基因 */
@@ -212,13 +212,13 @@
 .gene-name {
   font-size: 28rpx;
   font-weight: 600;
-  color: #000000;
+  color: var(--theme-text, #1F2937);
   margin-bottom: 6rpx;
 }
 
 .gene-rank {
   font-size: 22rpx;
-  color: #999999;
+  color: var(--theme-text-secondary, #4B5563);
 }
 
 /* 天气心情 */
@@ -233,7 +233,7 @@
   height: 64rpx;
   margin-right: 24rpx;
   flex-shrink: 0;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234DD0E1'%3E%3Cpath d='M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5V8H2v2.5h2zm16 0V8h-2v2.5h2zM17.24 4.84l1.79 1.79 1.41-1.41-1.79-1.79-1.41 1.41zM11 21.5v2h2v-2h-2zm-4.5-12.5c0 2.49 2.01 4.5 4.5 4.5s4.5-2.01 4.5-4.5-2.01-4.5-4.5-4.5-4.5 2.01-4.5 4.5zm9 0c0 2.49 2.01 4.5 4.5 4.5s4.5-2.01 4.5-4.5-2.01-4.5-4.5-4.5-4.5 2.01-4.5 4.5zM12 19c-2.49 0-4.5-2.01-4.5-4.5S9.51 10 12 10s4.5 2.01 4.5 4.5S14.49 19 12 19z'/%3E%3C/svg%3E") center/contain no-repeat;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230EA5E9'%3E%3Cpath d='M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5V8H2v2.5h2zm16 0V8h-2v2.5h2zM17.24 4.84l1.79 1.79 1.41-1.41-1.79-1.79-1.41 1.41zM11 21.5v2h2v-2h-2zm-4.5-12.5c0 2.49 2.01 4.5 4.5 4.5s4.5-2.01 4.5-4.5-2.01-4.5-4.5-4.5-4.5 2.01-4.5 4.5zm9 0c0 2.49 2.01 4.5 4.5 4.5s4.5-2.01 4.5-4.5-2.01-4.5-4.5-4.5-4.5 2.01-4.5 4.5zM12 19c-2.49 0-4.5-2.01-4.5-4.5S9.51 10 12 10s4.5 2.01 4.5 4.5S14.49 19 12 19z'/%3E%3C/svg%3E") center/contain no-repeat;
 }
 
 .weather-content {
@@ -244,20 +244,20 @@
 
 .weather-title {
   font-size: 30rpx;
-  color: #4DD0E1;
+  color: var(--theme-deep-blue, #0EA5E9);
   font-weight: 600;
   margin-bottom: 12rpx;
 }
 
 .weather-desc {
   font-size: 28rpx;
-  color: #333333;
+  color: var(--theme-text, #1F2937);
   line-height: 1.5;
 }
 
 .weather-num {
   font-weight: 700;
-  color: #1976D2;
+  color: var(--theme-deep-blue, #0EA5E9);
 }
 
 /* OUTFIT OF THE YEAR */
@@ -267,7 +267,7 @@
 }
 
 .outfit-banner {
-  background: #FFB74D;
+  background: var(--theme-primary-dark, #38BDF8);
   color: #FFFFFF;
   font-size: 22rpx;
   font-weight: 600;
@@ -313,7 +313,7 @@
 .outfit-name {
   font-size: 28rpx;
   font-weight: 600;
-  color: #000000;
+  color: var(--theme-text, #1F2937);
 }
 
 .outfit-like {
@@ -331,7 +331,7 @@
 
 .like-num {
   font-size: 26rpx;
-  color: #999999;
+  color: var(--theme-text-secondary, #4B5563);
 }
 
 /* 年度主题色 */
@@ -341,7 +341,7 @@
 }
 
 .card-color .card-title {
-  color: #333333;
+  color: var(--theme-text, #1F2937);
 }
 
 .color-header {
@@ -389,7 +389,7 @@
 
 .color-desc {
   font-size: 26rpx;
-  color: #A0A0A0;
+  color: var(--theme-text-secondary, #4B5563);
   line-height: 1.4;
   text-align: right;
   margin-top: auto;
@@ -414,8 +414,8 @@
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.06);
 }
 
-.stats-blue { background: #E3F2FD; }
-.stats-purple { background: #F3E5F5; }
+.stats-blue { background: var(--theme-bg-subtle, #EFF6FC); }
+.stats-purple { background: var(--theme-primary-soft, #D4EDFA); }
 
 .stats-icon {
   width: 56rpx;
@@ -424,7 +424,7 @@
 }
 
 .stats-icon-hourglass {
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234DD0E1'%3E%3Cpath d='M6 2v6h.01L6 8.01 10 12l-4 4 .01.01V22h12v-5.99h-.01L18 16l-4-4 4-3.99-.01-.01V2H6zm16 14.5V20H8v-3.5l4-4 4 4zm-4-5l-4-4V4h8v3.5l-4 4z'/%3E%3C/svg%3E") center/contain no-repeat;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230EA5E9'%3E%3Cpath d='M6 2v6h.01L6 8.01 10 12l-4 4 .01.01V22h12v-5.99h-.01L18 16l-4-4 4-3.99-.01-.01V2H6zm16 14.5V20H8v-3.5l4-4 4 4zm-4-5l-4-4V4h8v3.5l-4 4z'/%3E%3C/svg%3E") center/contain no-repeat;
 }
 
 .stats-icon-globe {
@@ -434,7 +434,7 @@
 .stats-title {
   font-size: 28rpx;
   font-weight: 600;
-  color: #000000;
+  color: var(--theme-text, #1F2937);
   margin-bottom: 12rpx;
 }
 
@@ -448,22 +448,22 @@
 .stats-num {
   font-size: 48rpx;
   font-weight: 700;
-  color: #1976D2;
+  color: var(--theme-deep-blue, #0EA5E9);
   margin-right: 6rpx;
 }
 
 .stats-purple .stats-num {
-  color: #7B1FA2;
+  color: var(--theme-primary-dark, #38BDF8);
 }
 
 .stats-unit {
   font-size: 24rpx;
-  color: #666666;
+  color: var(--theme-text-secondary, #4B5563);
 }
 
 .stats-desc {
   font-size: 24rpx;
-  color: #999999;
+  color: var(--theme-text-secondary, #4B5563);
   line-height: 1.4;
 }
 
@@ -481,9 +481,9 @@
   border-radius: 24rpx;
   font-size: 28rpx;
   font-weight: 600;
-  color: #34B3D4;
+  color: var(--theme-deep-blue, #0EA5E9);
   margin-bottom: 24rpx;
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4rpx 20rpx rgba(125, 211, 252, 0.15);
   position: relative;
 }
 
@@ -510,7 +510,7 @@
   height: 100%;
 }
 
-/* 衣橱小助 */
+/* 衣橱管家 */
 .card-qr {
   display: flex;
   flex-direction: row;
@@ -532,7 +532,7 @@
 
 .qr-desc {
   font-size: 26rpx;
-  color: #999999;
+  color: var(--theme-text-secondary, #4B5563);
   margin-top: 8rpx;
 }
 
@@ -554,7 +554,7 @@
   justify-content: center;
   gap: 12rpx;
   border-radius: 48rpx;
-  border: 2rpx solid #4DD0E1;
+  border: 2rpx solid var(--theme-primary-dark, #38BDF8);
 }
 
 .btn-save {
@@ -562,14 +562,15 @@
 }
 
 .btn-share {
-  background: #4DD0E1;
-  border-color: #4DD0E1;
+  background: var(--theme-primary-dark, #38BDF8);
+  border-color: var(--theme-primary-dark, #38BDF8);
+  box-shadow: 0 8rpx 24rpx rgba(56, 189, 248, 0.35);
 }
 
 .btn-save-icon {
   width: 36rpx;
   height: 36rpx;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234DD0E1'%3E%3Cpath d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'/%3E%3C/svg%3E") center/contain no-repeat;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2338BDF8'%3E%3Cpath d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'/%3E%3C/svg%3E") center/contain no-repeat;
 }
 
 .btn-share-icon {
@@ -580,7 +581,7 @@
 
 .btn-save-text {
   font-size: 30rpx;
-  color: #4DD0E1;
+  color: var(--theme-primary-dark, #38BDF8);
 }
 
 .btn-share-text {

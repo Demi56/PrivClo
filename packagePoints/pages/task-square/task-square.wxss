@@ -2,7 +2,7 @@
 
 .page {
   min-height: 100vh;
-  background: linear-gradient(180deg, #FFF8E7 0%, #F5F0E8 35%, #E8F4F8 100%);
+  background: linear-gradient(180deg, #FFFFFF 0%, #EFF6FC 35%, #D4EDFA 100%);
   display: flex;
   flex-direction: column;
   padding-bottom: env(safe-area-inset-bottom);
@@ -40,15 +40,7 @@
 .header-title-wrap {
   display: flex;
   align-items: center;
-  gap: 12rpx;
-}
-
-.header-title-icon {
-  width: 36rpx;
-  height: 36rpx;
-  background: linear-gradient(135deg, #D4A574 0%, #C4956A 100%);
-  border-radius: 8rpx;
-  box-shadow: 0 2rpx 8rpx rgba(196, 149, 106, 0.4);
+  justify-content: center;
 }
 
 .header-title {

@@ -128,7 +128,7 @@
 }
 
 .prefit-card:nth-child(2) .prefit-card-bg {
-  background: linear-gradient(135deg, #6EC5D9 0%, #8DD4E4 100%);
+  background: linear-gradient(135deg, #7DD3FC 0%, #8DD4E4 100%);
 }
 
 .prefit-card:nth-child(3) .prefit-card-bg {

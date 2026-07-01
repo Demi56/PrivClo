@@ -2,7 +2,7 @@
 
 .page {
   min-height: 100vh;
-  background: #F5F0E8;
+  background: #EFF6FC;
   padding-bottom: env(safe-area-inset-bottom);
   position: relative;
 }
@@ -14,7 +14,7 @@
   left: 0;
   right: 0;
   z-index: 30;
-  background: #F5F0E8;
+  background: #EFF6FC;
   display: flex;
   flex-direction: column;
 }
@@ -30,7 +30,7 @@
   justify-content: space-between;
   padding: 24rpx 32rpx;
   padding-top: calc(24rpx + env(safe-area-inset-top));
-  background: #F5F0E8;
+  background: #EFF6FC;
 }
 .header-back {
   width: 72rpx;
@@ -77,7 +77,7 @@
 }
 
 .header-nav-item.header-nav-active {
-  background: #6EC5D9;
+  background: #7DD3FC;
   color: #FFFFFF;
 }
 
@@ -96,7 +96,7 @@
   z-index: 20;
   /* 底边不宜过大，否则折叠条与下方 Tab 之间会出现整块留白；对齐仍以 JS 实测为准 */
   padding: 20rpx 32rpx 12rpx;
-  background: #F5F0E8;
+  background: #EFF6FC;
   box-sizing: border-box;
 }
 
@@ -151,7 +151,7 @@
 
 .tryon-toggle-icon {
   font-size: 24rpx;
-  color: #6EC5D9;
+  color: #7DD3FC;
 }
 
 .tryon-toggle-text {
@@ -307,7 +307,7 @@
   height: 74rpx;
   line-height: 74rpx;
   padding: 0;
-  background: #6EC5D9;
+  background: #7DD3FC;
   color: #FFFFFF;
   font-size: 34rpx;
   font-weight: 500;
@@ -330,7 +330,7 @@
   left: 0;
   right: 0;
   z-index: 16;
-  background: #F5F0E8;
+  background: #EFF6FC;
   display: flex;
   flex-direction: column;
 }
@@ -338,7 +338,7 @@
 /* 顶部分类按钮（同层内垫高 z-index；父级 detail-main 仍低于 tryon-header，裁剪模特溢出区才能根本避免压住 Tab） */
 .category-tabs-wrap {
   flex-shrink: 0;
-  background: #F5F0E8;
+  background: #EFF6FC;
   width: 100%;
   position: relative;
   z-index: 2;
@@ -377,7 +377,7 @@
 }
 
 .prefit-mode-half.prefit-mode-active {
-  background: #6EC5D9;
+  background: #7DD3FC;
   color: #FFFFFF;
 }
 
@@ -398,7 +398,7 @@
 }
 
 .tab-active {
-  background: #6EC5D9;
+  background: #7DD3FC;
   color: #FFFFFF;
 }
 
@@ -410,7 +410,7 @@
 .detail-scroll {
   flex: 1;
   height: 0;
-  background: #F5F0E8;
+  background: #EFF6FC;
 }
 
 .detail-inner {
@@ -481,7 +481,7 @@
   font-size: 24rpx;
   font-weight: 600;
   color: #FFFFFF;
-  background: linear-gradient(135deg, #5BB5C9 0%, #6EC5D9 50%, #4DA8BE 100%);
+  background: linear-gradient(135deg, #38BDF8 0%, #7DD3FC 50%, #38BDF8 100%);
   transform-origin: left center;
   transform: rotate(-12deg);
   border-radius: 6rpx;
@@ -497,7 +497,7 @@
   width: 88rpx;
   height: 88rpx;
   border-radius: 50%;
-  background: #6EC5D9;
+  background: #7DD3FC;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -572,13 +572,13 @@
   z-index: 21;
   padding: 24rpx 32rpx;
   padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
-  background: #F5F0E8;
+  background: #EFF6FC;
 }
 
 .scan-btn {
   width: 100%;
   height: 88rpx;
-  background: #6EC5D9;
+  background: #7DD3FC;
   border-radius: 44rpx;
   display: flex;
   flex-direction: row;
@@ -685,7 +685,7 @@
   font-size: 28rpx;
   font-weight: 500;
   color: #FFFFFF;
-  background: #6EC5D9;
+  background: #7DD3FC;
   border-radius: 36rpx;
 }
 
@@ -754,12 +754,12 @@
   font-size: 26rpx;
   color: #333333;
   padding: 16rpx 24rpx;
-  background: #F5F0E8;
+  background: #EFF6FC;
   border-radius: 32rpx;
 }
 
 .favorite-tag-option.selected {
-  background: #6EC5D9;
+  background: #7DD3FC;
   color: #FFFFFF;
 }
 
@@ -777,7 +777,7 @@
   text-align: center;
   font-size: 28rpx;
   color: #FFFFFF;
-  background: #6EC5D9;
+  background: #7DD3FC;
   border-radius: 36rpx;
 }
 

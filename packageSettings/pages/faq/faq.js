@@ -1,4 +1,5 @@
 const { getImageUrl } = require('../../../utils/image.js')
+const { openPrivacyPolicy, openUserAgreement } = require('../../../utils/legalPages.js')
 
 const FAQ_CATEGORIES = [
   { id: 'all', name: '全部' },
@@ -30,7 +31,7 @@ const FAQ_LIST = [
     id: 'o1',
     category: 'outfit',
     question: 'AI 穿搭推荐是如何工作的？',
-    answer: '衣橱小助会结合实时天气、你的衣橱单品、风格偏好与历史记录，由 AI 模型生成穿搭建议。推荐结果标注「AI 推荐」，仅供参考。'
+    answer: '衣橱管家会结合实时天气、你的衣橱单品、风格偏好与历史记录，由腾讯混元等 AI 模型生成穿搭建议。推荐结果会标注「✨ AI推荐 · 仅供参考」，不构成专业建议。'
   },
   {
     id: 'o2',
@@ -84,7 +85,19 @@ const FAQ_LIST = [
     id: 'a5',
     category: 'account',
     question: '如何注销账号？',
-    answer: '在「账号与安全」页面底部选择「注销账号」，按提示确认后我们将删除与你账号相关的数据。注销后无法恢复，请谨慎操作。'
+    answer: '在「设置 → 账号与安全」页面底部选择「注销账号」，按提示确认后我们将删除与你账号相关的数据。注销后无法恢复，请谨慎操作。'
+  },
+  {
+    id: 'a6',
+    category: 'account',
+    question: '我的数据会用于 AI 训练吗？',
+    answer: '在符合法律法规及《隐私政策》的前提下，经去标识化或匿名化处理后的偏好、标签、对话反馈等数据，可能用于衣橱管家相关算法的优化与模型训练。您可通过注销账号终止后续新增数据的训练使用。详见「设置 → AI 服务说明」。'
+  },
+  {
+    id: 'a7',
+    category: 'account',
+    question: '如何提交意见反馈？',
+    answer: '进入「设置 → 意见反馈」填写内容并提交；也可发送邮件至 service@privclo.com。对精灵回复可使用 👍 / 👎 进行反馈。'
   }
 ]
 
@@ -162,6 +175,14 @@ Page({
   },
 
   onOpenPrivacy() {
-    wx.navigateTo({ url: '/packageSettings/pages/privacy-terms/privacy-terms?tab=0' })
+    openPrivacyPolicy()
+  },
+
+  onOpenTerms() {
+    openUserAgreement()
+  },
+
+  onOpenFeedback() {
+    wx.navigateTo({ url: '/packageSettings/pages/feedback/feedback' })
   }
 })

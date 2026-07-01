@@ -2,6 +2,7 @@
   3D 模特全身穿搭展示页面
   布局：天气胶囊 | 背景切换 | 模特区 | 右侧单品格 | 精灵管家 | Tab 栏
 -->
+<wxs src="../../utils/weatherIcon.wxs" module="wxWeatherIcon" />
 <view class="page">
   <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
 
@@ -9,14 +10,19 @@
   <view class="home-header-left" style="top: {{headerTop}}px;">
     <view class="weather-capsule" bindtap="onWeatherCapsuleTap">
       <view class="weather-icon-wrap">
-        <view class="weather-icon weather-icon-{{weatherIcon || 'sun'}}"></view>
+        <image
+          class="weather-icon-img"
+          src="{{wxWeatherIcon.safeSrc(weatherIconUrl)}}"
+          mode="aspectFit"
+          binderror="onWeatherCapsuleIconError"
+        />
       </view>
       <view class="weather-text">
         <text class="weather-city">{{city}}</text>
         <text class="weather-detail">{{temp}}℃ {{weather}}</text>
       </view>
     </view>
-    <view class="bg-mode-group">
+    <view wx:if="{{showBgModeSwitcher}}" class="bg-mode-group">
       <view class="bg-mode-item bg-mode-item-solid {{activeBgMode === 'solid' ? 'bg-mode-item-active' : ''}}" bindtap="onBgModeTap" data-mode="solid" hover-class="bg-mode-item-pressed">
         <view class="bg-mode-chip bg-mode-chip-solid">
           <view class="bg-mode-icon"></view>
@@ -184,6 +190,45 @@
         <view class="rain-drop rain-drop-14"></view>
         <view class="rain-drop rain-drop-15"></view>
       </view>
+      <!-- 雪天：雪花飘落 -->
+      <view wx:if="{{weatherIcon === 'snow'}}" class="weather-snow">
+        <view class="snow-flake snow-flake-1"></view>
+        <view class="snow-flake snow-flake-2"></view>
+        <view class="snow-flake snow-flake-3"></view>
+        <view class="snow-flake snow-flake-4"></view>
+        <view class="snow-flake snow-flake-5"></view>
+        <view class="snow-flake snow-flake-6"></view>
+        <view class="snow-flake snow-flake-7"></view>
+        <view class="snow-flake snow-flake-8"></view>
+        <view class="snow-flake snow-flake-9"></view>
+        <view class="snow-flake snow-flake-10"></view>
+        <view class="snow-flake snow-flake-11"></view>
+        <view class="snow-flake snow-flake-12"></view>
+      </view>
+      <!-- 雾/霾：雾气飘动 -->
+      <view wx:if="{{weatherIcon === 'fog'}}" class="weather-fog">
+        <view class="fog-layer fog-layer-1"></view>
+        <view class="fog-layer fog-layer-2"></view>
+        <view class="fog-layer fog-layer-3"></view>
+      </view>
+      <!-- 雷雨：暗色 + 闪电 + 大雨 -->
+      <view wx:if="{{weatherIcon === 'thunder'}}" class="weather-thunder">
+        <view class="weather-lightning-flash"></view>
+        <view class="weather-rain weather-rain-heavy">
+          <view class="rain-drop rain-drop-1"></view>
+          <view class="rain-drop rain-drop-2"></view>
+          <view class="rain-drop rain-drop-3"></view>
+          <view class="rain-drop rain-drop-4"></view>
+          <view class="rain-drop rain-drop-5"></view>
+          <view class="rain-drop rain-drop-6"></view>
+          <view class="rain-drop rain-drop-7"></view>
+          <view class="rain-drop rain-drop-8"></view>
+          <view class="rain-drop rain-drop-9"></view>
+          <view class="rain-drop rain-drop-10"></view>
+          <view class="rain-drop rain-drop-11"></view>
+          <view class="rain-drop rain-drop-12"></view>
+        </view>
+      </view>
     </view>
     <!-- 2D 模特图片展示 -->
     <view class="model-wrap model-wrap-fallback" bindtouchstart="onModelTouchStart" bindtouchmove="onModelTouchMove" bindtouchend="onModelTouchEnd">
@@ -247,8 +292,12 @@
 
     <!-- 精灵头像占位（点击由 chat-assistant 处理） -->
     <view class="fairy-wrap" bindtap="onOpenChatAssistant">
+      <view wx:if="{{!showChatAssistant}}" class="fairy-hint-bubble">
+        <text class="fairy-hint-text">点我可以进行聊天对话</text>
+        <view class="fairy-hint-tail"></view>
+      </view>
       <view class="fairy-body">
-        <image class="fairy-img" src="{{spriteUrl}}" mode="aspectFit" />
+        <image class="fairy-img" src="{{spriteUrl}}" mode="aspectFit" binderror="onSpriteImgError" />
       </view>
     </view>
   </view>
@@ -357,6 +406,9 @@
       </view>
       <view class="city-input-wrap">
         <input class="city-search-input" placeholder="搜索中国城市名称" bindinput="onCitySearchInput" />
+      </view>
+      <view class="city-locate-row">
+        <button class="city-search-btn locate" bindtap="onRelocateFromCitySearch">使用当前定位</button>
       </view>
       <scroll-view class="city-list-scroll" scroll-y>
         <view class="city-list-inner">

@@ -1,0 +1,43 @@
+<view class="page">
+  <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+
+  <view class="header">
+    <view class="header-back" bindtap="onBack">
+      <view class="header-back-arrow"></view>
+    </view>
+    <text class="header-title">意见反馈</text>
+    <view class="header-placeholder"></view>
+  </view>
+
+  <scroll-view class="main" scroll-y>
+    <text class="section-tip">您的建议将帮助我们改进衣橱管家。也可发送邮件至 service@privclo.com</text>
+
+    <view class="card">
+      <text class="label">反馈内容</text>
+      <textarea
+        class="textarea"
+        placeholder="请描述您遇到的问题或建议（必填）"
+        maxlength="500"
+        value="{{content}}"
+        bindinput="onContentInput"
+        auto-height
+      />
+
+      <text class="label">联系方式（选填）</text>
+      <input
+        class="input"
+        placeholder="手机号 / 微信号，便于我们回复"
+        maxlength="40"
+        value="{{contact}}"
+        bindinput="onContactInput"
+      />
+
+      <view class="email-row">
+        <text class="email-text">客服邮箱：service@privclo.com</text>
+        <view class="email-copy" bindtap="onCopyEmail">复制</view>
+      </view>
+
+      <view class="submit-btn {{submitting ? 'submit-btn-disabled' : ''}}" bindtap="onSubmit">提交反馈</view>
+    </view>
+  </scroll-view>
+</view>

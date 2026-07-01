@@ -1,5 +1,8 @@
 {
   "lazyCodeLoading": "requiredComponents",
+  "requiredPrivateInfos": [
+    "getLocation"
+  ],
   "permission": {
     "scope.userLocation": {
       "desc": "用于获取当地天气并推荐合适的穿搭"
@@ -78,6 +81,7 @@
         "pages/account-security/account-security",
         "pages/notification-settings/notification-settings",
         "pages/faq/faq",
+        "pages/feedback/feedback",
         "pages/role-manage/role-manage",
         "pages/model-profile/model-profile",
         "pages/outfit-preferences/outfit-preferences"
@@ -114,10 +118,10 @@
   "window": {
     "navigationStyle": "custom",
     "backgroundTextStyle": "dark",
-    "navigationBarBackgroundColor": "#F9F6ED",
+    "navigationBarBackgroundColor": "#FFFFFF",
     "navigationBarTitleText": "",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#F9F6ED"
+    "backgroundColor": "#FFFFFF"
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json"

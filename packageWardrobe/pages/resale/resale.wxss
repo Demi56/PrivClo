@@ -2,7 +2,7 @@
 
 .page {
   min-height: 100vh;
-  background: linear-gradient(180deg, #E8F4F8 0%, #F5F8FA 50%, #FFFFFF 100%);
+  background: linear-gradient(180deg, #D4EDFA 0%, #F5F8FA 50%, #FFFFFF 100%);
   display: flex;
   flex-direction: column;
   padding-bottom: env(safe-area-inset-bottom);
@@ -62,7 +62,7 @@
 }
 
 .header-nav-item.header-nav-active {
-  background: #6EC5D9;
+  background: #7DD3FC;
   color: #FFFFFF;
 }
 
@@ -140,7 +140,7 @@
 .bubble-text {
   font-size: 30rpx;
   line-height: 1.5;
-  color: #6EC5D9;
+  color: #7DD3FC;
   font-weight: 600;
   display: block;
 }
@@ -238,7 +238,7 @@
 }
 
 .stats-desc .highlight {
-  color: #6EC5D9;
+  color: #7DD3FC;
   font-weight: 600;
 }
 
@@ -250,7 +250,7 @@
   font-size: 30rpx;
   font-weight: 500;
   color: #FFFFFF;
-  background: linear-gradient(135deg, #6EC5D9 0%, #5BB5C9 100%);
+  background: linear-gradient(135deg, #7DD3FC 0%, #38BDF8 100%);
   border-radius: 44rpx;
   margin-top: 64rpx;
 }

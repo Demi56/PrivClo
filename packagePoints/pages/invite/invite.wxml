@@ -18,7 +18,7 @@
     <!-- 插画区：小精灵管家 -->
     <view class="illustration-wrap">
       <view class="illustration-placeholder">
-        <image class="sprite-img" src="{{spriteUrl}}" mode="aspectFit" />
+        <image class="sprite-img" src="{{spriteUrl}}" mode="aspectFit" binderror="onSpriteImgError" />
       </view>
     </view>
 
@@ -31,7 +31,8 @@
     <!-- 邀请卡：二维码 + 邀请码 -->
     <view class="invite-card-wrap">
       <view class="invite-card-header">
-        <view class="invite-card-avatar"></view>
+        <image wx:if="{{!avatarError && userAvatarUrl}}" class="invite-card-avatar" src="{{userAvatarUrl}}" mode="aspectFill" binderror="onAvatarError" />
+        <view wx:else class="invite-card-avatar invite-card-avatar-fallback">{{gender === 'male' ? '♂' : '♀'}}</view>
         <text class="invite-card-title">{{roleName}}的邀请卡</text>
       </view>
       <view class="qr-area">

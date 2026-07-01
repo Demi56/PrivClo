@@ -10,7 +10,7 @@
     <view class="header-back" bindtap="goBack">
       <view class="header-back-arrow"></view>
     </view>
-    <text class="header-title">AI服务说明</text>
+    <text class="header-title">AI 服务说明</text>
     <view class="header-placeholder"></view>
   </view>
 
@@ -35,6 +35,11 @@
           <text class="section-title">{{item.title}}</text>
         </view>
         <text class="section-content">{{item.content}}</text>
+      </view>
+
+      <view class="legal-links">
+        <view class="legal-link-btn" bindtap="onOpenPrivacy">阅读《隐私政策》</view>
+        <view class="legal-link-btn" bindtap="onOpenTerms">阅读《用户协议》</view>
       </view>
     </view>
   </scroll-view>

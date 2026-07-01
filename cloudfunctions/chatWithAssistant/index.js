@@ -154,8 +154,13 @@ exports.main = async (event, context) => {
   if (event.userClothes) userContext.userClothes = event.userClothes
   if (event.context && event.context.forecast) userContext.forecast = event.context.forecast
   if (event.context && event.context.outfitPreferences) userContext.outfitPreferences = event.context.outfitPreferences
+  if (event.context && event.context.learningLibrary) userContext.learningLibrary = event.context.learningLibrary
+  if (event.context && event.context.profile) userContext.profile = event.context.profile
+  if (event.context && event.context.userDataSummary) userContext.userDataSummary = event.context.userDataSummary
+  if (event.context && event.context.userDataLibrary) userContext.userDataLibrary = event.context.userDataLibrary
+  if (event.context && event.context.isGuestMode === true) userContext.isGuestMode = true
   if (!messages || !Array.isArray(messages) || messages.length === 0) {
-    return { errMsg: '缺少 messages 参数', data: { reply: '小助手走神了，稍后再试～ 😅' } }
+    return { errMsg: '缺少 messages 参数', data: { reply: '精灵小管家走神了，稍后再试～ 😅' } }
   }
 
   let reply = ''
@@ -171,7 +176,7 @@ exports.main = async (event, context) => {
     const is403 = msg.includes('403') || msg.includes('forbidden') || msg.includes('permission')
     const isAuth = msg.includes('401') || msg.includes('unauthorized')
 
-    let userMsg = '小助手走神了，稍后再试～ 😅'
+    let userMsg = '精灵小管家走神了，稍后再试～ 😅'
     if (is403 || isAuth) {
       userMsg = '权限配置中，稍等1分钟再试～ ⏳'
       if (process.env.HUNYUAN_API_KEY) {
@@ -202,5 +207,5 @@ exports.main = async (event, context) => {
     if (extractedPreferences) data.extractedPreferences = extractedPreferences
     return { errMsg: '', data }
   }
-  return { errMsg: '', data: { reply: '小助手走神了，稍后再试～ 😅' } }
+  return { errMsg: '', data: { reply: '精灵小管家走神了，稍后再试～ 😅' } }
 }

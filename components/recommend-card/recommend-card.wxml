@@ -28,4 +28,8 @@
     <text class="tips-title">搭配建议</text>
     <text class="tips-text">{{recommendations.tips}}</text>
   </view>
+
+  <view class="ai-disclaimer">
+    <text class="ai-disclaimer-text">✨ AI推荐 · 仅供参考</text>
+  </view>
 </view>

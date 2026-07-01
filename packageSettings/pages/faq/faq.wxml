@@ -54,10 +54,12 @@
 
       <view class="help-card">
         <text class="help-title">没有找到答案？</text>
-        <text class="help-desc">可查看 AI 服务说明与隐私协议，或通过以下方式联系我们</text>
+        <text class="help-desc">可查看 AI 服务说明、隐私政策与用户协议，或通过以下方式联系我们</text>
         <view class="help-links">
           <view class="help-link" bindtap="onOpenAiService">AI 服务说明</view>
-          <view class="help-link" bindtap="onOpenPrivacy">隐私协议</view>
+          <view class="help-link" bindtap="onOpenPrivacy">隐私政策</view>
+          <view class="help-link" bindtap="onOpenTerms">用户协议</view>
+          <view class="help-link" bindtap="onOpenFeedback">意见反馈</view>
         </view>
         <text class="help-contact">客服邮箱：service@privclo.com\n工作时间：工作日 9:00–18:00</text>
       </view>

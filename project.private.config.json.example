@@ -1,0 +1,7 @@
+{
+  "description": "复制为 project.private.config.json（已在 .gitignore 中，每台机器一份）",
+  "projectname": "PrivClo",
+  "setting": {
+    "compileHotReLoad": true
+  }
+}

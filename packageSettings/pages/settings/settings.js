@@ -32,11 +32,19 @@ Page({
     wx.navigateTo({ url: '/packageSettings/pages/faq/faq' })
   },
 
+  onFeedback() {
+    wx.navigateTo({ url: '/packageSettings/pages/feedback/feedback' })
+  },
+
   onPrivacy() {
     wx.navigateTo({ url: '/packageSettings/pages/privacy-terms/privacy-terms?tab=0' })
   },
 
-  onTerms() {
+  onUserAgreement() {
+    wx.navigateTo({ url: '/packageSettings/pages/privacy-terms/privacy-terms?tab=1' })
+  },
+
+  onAiService() {
     wx.navigateTo({ url: '/packageSettings/pages/ai-service/ai-service' })
   }
 })

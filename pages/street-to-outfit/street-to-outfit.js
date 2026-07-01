@@ -2,6 +2,7 @@
  * 街拍转穿搭 - 上传街拍图，AI 识别衣物并匹配衣橱
  */
 const { aggregateForRecommend } = require('../../utils/userProfileBuilder.js')
+const { applyAiWatermark } = require('../../utils/aiWatermark.js')
 
 Page({
   data: {
@@ -163,6 +164,7 @@ Page({
         weather: 'sunny',
         weatherText: '晴天',
         type: 'outfit_inspiration',
+        aiAssisted: true,
         content: `街拍穿搭灵感｜${analysis.style || ''}｜${(clothingList || []).map(i => i.name || i.description).filter(Boolean).join('、')}`,
         photo: uploadedImage,
         stickers: [],
@@ -181,5 +183,35 @@ Page({
 
   onBack() {
     wx.navigateBack({ fail: () => wx.switchTab({ url: '/pages/model/model' }) })
+  },
+
+  async saveToAlbum() {
+    const src = this.data.cardImage || this.data.uploadedImage
+    if (!src) {
+      wx.showToast({ title: '暂无可保存图片', icon: 'none' })
+      return
+    }
+    wx.showLoading({ title: '保存中...' })
+    try {
+      let filePath = src
+      if (src.startsWith('http')) {
+        const dl = await new Promise((resolve, reject) => {
+          wx.downloadFile({ url: src, success: resolve, fail: reject })
+        })
+        filePath = dl.tempFilePath
+      }
+      let watermarked = filePath
+      try {
+        watermarked = await applyAiWatermark(this, 'aiWatermarkCanvas', filePath, 'AI生成')
+      } catch (e) {
+        console.warn('watermark failed', e)
+      }
+      await wx.saveImageToPhotosAlbum({ filePath: watermarked })
+      wx.hideLoading()
+      wx.showToast({ title: '已保存到相册', icon: 'success' })
+    } catch (e) {
+      wx.hideLoading()
+      wx.showToast({ title: '保存失败', icon: 'none' })
+    }
   }
 })

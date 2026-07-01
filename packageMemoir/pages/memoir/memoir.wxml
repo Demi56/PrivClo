@@ -121,13 +121,13 @@
       </view>
     </view>
 
-    <!-- 衣橱小助 -->
+    <!-- 衣橱管家 -->
     <view class="card card-qr">
       <view class="qr-icon"></view>
       <view class="qr-content">
         <view class="card-title-row">
           <view class="card-icon card-icon-person"></view>
-          <text class="card-title">衣橱小助</text>
+          <text class="card-title">衣橱管家</text>
         </view>
         <text class="qr-desc">长按识别二维码，开启你的穿搭之旅</text>
       </view>

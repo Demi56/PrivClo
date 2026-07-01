@@ -11,7 +11,6 @@
       <view class="header-back-arrow"></view>
     </view>
     <view class="header-title-wrap">
-      <view class="header-title-icon"></view>
       <text class="header-title">任务广场</text>
     </view>
     <view class="header-placeholder"></view>
@@ -26,7 +25,7 @@
       <view class="points-arrow"></view>
     </view>
     <view class="daily-progress">
-      <text class="progress-label">今日获得积分</text>
+      <text class="progress-label">每日积分进度</text>
       <view class="progress-bar-wrap">
         <view class="progress-bar-fill" style="width: {{todayPoints >= dailyMax ? 100 : (todayPoints / dailyMax * 100)}}%;"></view>
       </view>
@@ -61,11 +60,17 @@
           <view class="task-info">
             <text class="task-name">{{item.name}}</text>
             <text class="task-desc">{{item.desc}}</text>
-            <text class="task-remark">{{item.remark}}</text>
+            <text class="task-remark">{{item.progressText || item.remark}}</text>
           </view>
           <view class="task-right">
             <text class="task-reward">+{{item.reward}}</text>
-            <view class="task-btn" data-id="{{item.id}}" data-type="daily" catchtap="onClaim">领取</view>
+            <view
+              class="task-btn {{item.btnDisabled ? 'task-btn-disabled' : ''}}"
+              data-id="{{item.id}}"
+              data-type="daily"
+              data-action="{{item.btnAction}}"
+              catchtap="onClaim"
+            >{{item.btnLabel}}</view>
           </view>
         </view>
       </view>
@@ -79,10 +84,17 @@
           <view class="task-info">
             <text class="task-name">{{item.name}}</text>
             <text class="task-desc">{{item.desc}}</text>
+            <text class="task-remark">{{item.progressText || ''}}</text>
           </view>
           <view class="task-right">
             <text class="task-reward">+{{item.reward}}</text>
-            <view class="task-btn" data-id="{{item.id}}" data-type="novice" catchtap="onClaim">领取</view>
+            <view
+              class="task-btn {{item.btnDisabled ? 'task-btn-disabled' : ''}}"
+              data-id="{{item.id}}"
+              data-type="novice"
+              data-action="{{item.btnAction}}"
+              catchtap="onClaim"
+            >{{item.btnLabel}}</view>
           </view>
         </view>
       </view>
@@ -95,11 +107,18 @@
           <view class="task-info">
             <text class="task-name">{{item.name}}</text>
             <text class="task-desc">{{item.desc}}</text>
-            <text wx:if="{{item.extra}}" class="task-remark">{{item.extra}}</text>
+            <text wx:if="{{item.extra && item.btnAction === 'none'}}" class="task-remark">{{item.extra}}</text>
+            <text wx:else class="task-remark">{{item.progressText || item.extra}}</text>
           </view>
           <view class="task-right">
             <text class="task-reward">+{{item.reward}}</text>
-            <view class="task-btn" data-id="{{item.id}}" data-type="achieve" catchtap="onClaim">领取</view>
+            <view
+              class="task-btn {{item.btnDisabled ? 'task-btn-disabled' : ''}}"
+              data-id="{{item.id}}"
+              data-type="achieve"
+              data-action="{{item.btnAction}}"
+              catchtap="onClaim"
+            >{{item.btnLabel}}</view>
           </view>
         </view>
       </view>
@@ -116,7 +135,7 @@
           </view>
           <view class="task-right task-right-limited">
             <text class="task-reward">{{item.reward}}</text>
-            <view class="task-btn task-btn-disabled" data-id="{{item.id}}" data-type="limited" catchtap="onClaim">暂未开放</view>
+            <view class="task-btn task-btn-disabled" data-id="{{item.id}}" data-type="limited" data-action="none" catchtap="onClaim">{{item.btnLabel}}</view>
           </view>
         </view>
       </view>
@@ -145,8 +164,7 @@
         <text class="rules-text">• 1元人民币 = 100积分</text>
         <text class="rules-text">• 注册奖励：1000积分（新用户一次性）</text>
         <text class="rules-text">• 邀请好友：1000积分/人（邀请者与被邀请者各得1000）</text>
-        <text class="rules-text">• 新增角色位：2000积分</text>
-        <text class="rules-text">• 每日任务上限：220积分</text>
+        <text class="rules-text">• 每日任务上限：100积分</text>
         <text class="rules-text">• 新手任务总计：380积分</text>
         <text class="rules-text">• 成就任务总计：2250积分</text>
       </scroll-view>

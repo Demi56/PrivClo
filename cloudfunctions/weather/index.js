@@ -5,22 +5,21 @@
  * 3. 返回格式化数据给前端
  */
 const cloud = require('wx-server-sdk')
+const zlib = require('zlib')
 const { SignJWT, importPKCS8 } = require('jose')
 const { API_HOST, PROJECT_ID, KEY_ID, PRIVATE_KEY } = require('./config.js')
 
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 
-// 和风天气 icon -> 小程序天气图标
 function iconToWeatherIcon(icon) {
   const code = parseInt(icon, 10) || 100
-  if (code >= 100 && code <= 104) return 'sun'
-  if (code >= 150 && code <= 153) return 'sun'
-  if (code === 101 || code === 151) return 'cloud'
-  if (code === 104) return 'cloudy'
+  if (code === 302 || code === 303 || code === 304 || code === 311 || code === 312) return 'thunder'
   if (code >= 300 && code <= 399) return 'rain'
-  if (code >= 350 && code <= 399) return 'rain'
-  if (code >= 400 && code <= 499) return 'rain'
-  if (code >= 500 && code <= 515) return 'cloudy'
+  if (code >= 400 && code <= 499) return 'snow'
+  if (code >= 500 && code <= 515) return 'fog'
+  if (code === 104) return 'cloudy'
+  if (code === 101 || code === 102 || code === 103 || code === 151 || code === 152 || code === 153) return 'cloud'
+  if (code === 100 || code === 150) return 'sun'
   return 'sun'
 }
 
@@ -35,33 +34,105 @@ async function generateJwt() {
   return token
 }
 
-/** 调用和风天气 API */
+/** 解析和风天气响应体（可能为 gzip，且部分环境下 Content-Encoding 不可靠） */
+function parseQWeatherJson(buffer, encoding) {
+  if (!buffer || !buffer.length) {
+    throw new Error('和风天气返回空响应')
+  }
+
+  const enc = String(encoding || '').toLowerCase()
+  const tryParse = (text) => {
+    const trimmed = String(text || '').trim()
+    if (!trimmed) throw new Error('和风天气返回空内容')
+    return JSON.parse(trimmed)
+  }
+
+  const tryGunzip = () => {
+    const text = zlib.gunzipSync(buffer).toString('utf8')
+    return tryParse(text)
+  }
+
+  // 已是 JSON 文本（部分运行时会自动解压但仍保留 gzip 头字段）
+  const asText = buffer.toString('utf8')
+  if (asText.trim().startsWith('{') || asText.trim().startsWith('[')) {
+    return tryParse(asText)
+  }
+
+  // gzip 魔数 0x1f 0x8b
+  if (buffer.length >= 2 && buffer[0] === 0x1f && buffer[1] === 0x8b) {
+    return tryGunzip()
+  }
+
+  if (enc.includes('gzip')) {
+    return tryGunzip()
+  }
+  if (enc.includes('deflate')) {
+    return tryParse(zlib.inflateSync(buffer).toString('utf8'))
+  }
+  if (enc.includes('br')) {
+    return tryParse(zlib.brotliDecompressSync(buffer).toString('utf8'))
+  }
+
+  // 兜底：先按 utf8 解析，失败再尝试 gunzip
+  try {
+    return tryParse(asText)
+  } catch (e) {
+    return tryGunzip()
+  }
+}
+
+/** 调用和风天气 API（JWT 专用 API Host） */
 function callQWeather(path, params, token) {
+  const base = String(API_HOST || '').replace(/\/+$/, '')
+  const pathname = path.startsWith('/') ? path : `/${path}`
   const qs = new URLSearchParams(params).toString()
-  const url = `${API_HOST}${path}?${qs}`
+  const url = `${base}${pathname}${qs ? `?${qs}` : ''}`
+  let parsed
+  try {
+    parsed = new URL(url)
+  } catch (e) {
+    return Promise.reject(new Error(`Invalid URL: ${url}`))
+  }
   return new Promise((resolve, reject) => {
     const https = require('https')
-    const req = https.get(url, {
-      headers: { Authorization: `Bearer ${token}` }
+    const req = https.request({
+      protocol: parsed.protocol,
+      hostname: parsed.hostname,
+      port: parsed.port || 443,
+      path: parsed.pathname + parsed.search,
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json'
+      }
     }, res => {
-      let body = ''
-      res.setEncoding('utf8')
-      res.on('data', chunk => { body += chunk })
+      const chunks = []
+      res.on('data', chunk => { chunks.push(chunk) })
       res.on('end', () => {
+        const buffer = Buffer.concat(chunks)
         try {
-          const data = JSON.parse(body)
+          const data = parseQWeatherJson(buffer, res.headers['content-encoding'])
           if (data.code !== '200') {
-            reject(new Error(data.code || 'api_error'))
+            const detail = [data.code, data.message || data.refer || ''].filter(Boolean).join(':')
+            reject(new Error(detail || 'api_error'))
           } else {
             resolve(data)
           }
         } catch (e) {
-          reject(e)
+          const head = bufferHeadHex(buffer)
+          console.error('[weather] parse failed:', e.message, 'encoding:', res.headers['content-encoding'], 'head:', head)
+          reject(new Error('解析天气响应失败，请重新部署 weather 云函数（gzip-v3）'))
         }
       })
     })
     req.on('error', reject)
+    req.end()
   })
+}
+
+function bufferHeadHex(buffer) {
+  if (!buffer || !buffer.length) return ''
+  return Array.from(buffer.slice(0, 4)).map(b => b.toString(16).padStart(2, '0')).join(' ')
 }
 
 exports.main = async (event, context) => {
@@ -86,16 +157,17 @@ exports.main = async (event, context) => {
     let locationId = loc
 
     if (isCoords || type === 'coords') {
-      // 经纬度：先查城市，再查天气
-      const geo = await callQWeather('/v2/city/lookup', { location: loc }, token)
+      // 经纬度：先查城市，再用 LocationID 查天气（比直接传坐标更稳定）
+      const geo = await callQWeather('/geo/v2/city/lookup', { location: loc }, token)
       if (!geo.location || geo.location.length === 0) {
         return { errMsg: '未找到该位置对应的城市' }
       }
-      city = geo.location[0].adm2 || geo.location[0].name || '未知'
-      locationId = loc
+      const geoItem = geo.location[0]
+      city = geoItem.adm2 || geoItem.name || '未知'
+      locationId = geoItem.id || loc
     } else {
       // 城市名：先查 locationId
-      const geo = await callQWeather('/v2/city/lookup', { location: loc }, token)
+      const geo = await callQWeather('/geo/v2/city/lookup', { location: loc }, token)
       if (!geo.location || geo.location.length === 0) {
         return { errMsg: '未找到该城市' }
       }
@@ -113,6 +185,7 @@ exports.main = async (event, context) => {
       city,
       temp: String(now.temp || ''),
       weather: now.text || '晴',
+      iconCode: String(now.icon || '100'),
       weatherIcon: iconToWeatherIcon(now.icon),
       humidity: now.humidity || '',
       windSpeed: now.windSpeed || '',
@@ -137,7 +210,7 @@ exports.main = async (event, context) => {
       }
     }
 
-    return { errMsg: '', data: result }
+    return { errMsg: '', data: result, _deploy: 'gzip-v3' }
   } catch (e) {
     console.error('weather cloud function error:', e)
     return {

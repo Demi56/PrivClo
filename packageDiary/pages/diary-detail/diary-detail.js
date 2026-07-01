@@ -87,8 +87,7 @@ Page({
     stickerCurrentCat: 'weather',
     stickerList: STICKER_LIBRARY.weather,
     selectedPhoto: false,
-    selectedStickerSid: ''
-  },
+    showAiAssistTag: false,
 
   onLoad(options) {
     try {
@@ -114,6 +113,7 @@ Page({
         const idx = stored.pages.findIndex(p => p.year === year && p.month === month && p.day === day)
         if (idx >= 0) {
           this.setData({ pages: stored.pages, currentPage: idx })
+          this._syncAiAssistTag(stored.pages, idx)
           return
         }
       }
@@ -130,6 +130,13 @@ Page({
       stickers: []
     }
     this.setData({ pages: [page] })
+    this._syncAiAssistTag([page], 0)
+  },
+
+  _syncAiAssistTag(pages, index) {
+    const page = pages && pages[index]
+    const show = !!(page && (page.aiAssisted || page.type === 'outfit_inspiration'))
+    this.setData({ showAiAssistTag: show })
   },
 
   commitContentEdit() {
@@ -228,6 +235,7 @@ Page({
           isFlipping: false,
           flipDeg: 0
         })
+        this._syncAiAssistTag(this.data.pages, targetIdx)
       }, FLIP_DURATION + 50)
     })
   },
@@ -286,6 +294,7 @@ Page({
           isFlipping: false,
           flipDeg: 0
         })
+        this._syncAiAssistTag(this.data.pages, targetIdx)
       }, FLIP_DURATION + 50)
     })
   },
@@ -305,6 +314,10 @@ Page({
     }
     try {
       wx.setStorageSync(STORAGE_KEY, JSON.stringify({ pages, updatedAt: Date.now() }))
+      try {
+        const { recordDailyAction } = require('../../../utils/taskSquare.js')
+        recordDailyAction('diary')
+      } catch (err) {}
       wx.showToast({ title: '已保存', icon: 'success' })
     } catch (e) {
       wx.showToast({ title: '保存失败', icon: 'none' })

@@ -41,7 +41,7 @@ Page({
 
   onShareAppMessage() {
     return {
-      title: '我的穿搭小助手 PrivClo，快来一起探索天气穿搭吧！',
+      title: '我的衣橱管家 PrivClo，快来一起探索天气穿搭吧！',
       path: '/pages/model/model'
     }
   }

@@ -1,7 +1,26 @@
-/** 全局样式 - PrivClo v2.0 **/
+/** 全局样式 - PrivClo v2.0 | 主题见 config/theme.js */
 page {
-  background-color: #F9F6ED; /* 页面背景主色 - 浅米白 */
+  --theme-bg: #FFFFFF;
+  --theme-bg-subtle: #EFF6FC;
+  --theme-primary: #7DD3FC;
+  --theme-primary-mid: #A7E0F6;
+  --theme-primary-soft: #D4EDFA;
+  --theme-primary-pale: #EFF6FC;
+  --theme-primary-dark: #38BDF8;
+  --theme-deep-blue: #0EA5E9;
+  --theme-tab-inactive: #D1D5DB;
+  --theme-text: #1F2937;
+  --theme-text-secondary: #4B5563;
+  --theme-text-muted: rgba(75, 85, 99, 0.85);
+  --theme-border: #E5E7EB;
+  --theme-border-soft: #D4EDFA;
+  --theme-gradient-brand: linear-gradient(180deg, #EFF6FC 0%, #D4EDFA 35%, #A7E0F6 70%, #7DD3FC 100%);
+  --theme-gradient-page: linear-gradient(180deg, #FFFFFF 0%, #EFF6FC 45%, #D4EDFA 100%);
+  --theme-gradient-soft: linear-gradient(180deg, #FFFFFF 0%, #EFF6FC 40%, #D4EDFA 100%);
+  --theme-gradient-ice: linear-gradient(180deg, #EFF6FC 0%, #D4EDFA 10%, #A7E0F6 32%, #7DD3FC 100%);
+
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", STHeiti, "Microsoft Yahei", sans-serif;
   box-sizing: border-box;
 }
-

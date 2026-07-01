@@ -8,7 +8,10 @@
     <view class="header-back" bindtap="onBack">
       <view class="header-back-arrow"></view>
     </view>
-    <text class="header-title">日记</text>
+    <view class="header-title-wrap">
+      <text class="header-title">日记</text>
+      <text wx:if="{{showAiAssistTag}}" class="header-ai-tag">AI辅助生成</text>
+    </view>
     <view class="header-placeholder"></view>
   </view>
 

@@ -8,7 +8,7 @@
   <view class="content">
     <!-- 精灵插图卡片 -->
     <view class="sprite-card">
-      <image class="sprite-img" src="{{loadingSpriteUrl}}" mode="aspectFit" />
+      <image class="sprite-img" src="{{loadingSpriteUrl}}" mode="aspectFit" binderror="onLoadingSpriteError" />
     </view>
 
     <!-- 标题区 -->

@@ -128,7 +128,9 @@ Page({
       height: (roleHeight || '').trim(),
       weight: (roleWeight || '').trim(),
       bustWaistHip: roleBustWaistHipEnabled ? (roleBustWaistHip || '').trim() : '',
-      selectedStyles: Array.isArray(existing.selectedStyles) ? existing.selectedStyles : [],
+      selectedStyles: prefs.styleTags && prefs.styleTags.length
+        ? prefs.styleTags.slice()
+        : (Array.isArray(existing.selectedStyles) ? existing.selectedStyles : []),
       avatarUrl: existing.avatarUrl || ''
     }
     try {

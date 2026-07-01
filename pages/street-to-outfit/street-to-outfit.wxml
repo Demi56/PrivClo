@@ -22,6 +22,7 @@
     </view>
 
     <view class="result-area" wx:if="{{analysis}}">
+      <view class="ai-result-tag">✨ AI推荐 · 仅供参考</view>
       <view class="style-tag">{{analysis.style}}</view>
       <view class="clothing-list">
         <view class="clothing-item" wx:for="{{clothingList}}" wx:key="index">
@@ -35,6 +36,9 @@
       <text wx:if="{{tip}}" class="fallback-tip">{{tip}}</text>
 
       <button class="btn-save" bindtap="saveToDiary">保存为穿搭灵感</button>
+      <button class="btn-album" bindtap="saveToAlbum">保存到相册</button>
     </view>
   </view>
+
+  <canvas type="2d" id="aiWatermarkCanvas" class="ai-watermark-canvas"></canvas>
 </view>

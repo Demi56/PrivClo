@@ -21,7 +21,7 @@
     <!-- 文案区 -->
     <view class="text-block">
       <text class="title-main">您的天气穿搭</text>
-      <text class="title-sub">贴心小助手</text>
+      <text class="title-sub">衣橱管家</text>
       <text class="desc">让我来帮您挑选今天最完美的天气穿搭吧!</text>
     </view>
 

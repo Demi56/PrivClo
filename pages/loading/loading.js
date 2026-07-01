@@ -1,5 +1,5 @@
 // 加载过渡页 - 小程序启动后直接进入首页
-const { getImageUrl } = require('../../utils/image.js')
+const { getLoadingSpriteImageUrl, getLoadingSpriteCdnUrl } = require('../../utils/spriteImage.js')
 
 Page({
   data: {
@@ -13,10 +13,10 @@ Page({
       const sys = wx.getSystemInfoSync()
       this.setData({
         statusBarHeight: sys.statusBarHeight || 20,
-        loadingSpriteUrl: getImageUrl('/images/loading-sprite.png')
+        loadingSpriteUrl: getLoadingSpriteImageUrl()
       })
     } catch (e) {
-      this.setData({ statusBarHeight: 20, loadingSpriteUrl: getImageUrl('/images/loading-sprite.png') })
+      this.setData({ statusBarHeight: 20, loadingSpriteUrl: getLoadingSpriteImageUrl() })
     }
     this.startProgress()
   },
@@ -43,5 +43,12 @@ Page({
         }, 200)
       }
     }, 50)
+  },
+
+  onLoadingSpriteError() {
+    const cdn = getLoadingSpriteCdnUrl()
+    if (this.data.loadingSpriteUrl !== cdn) {
+      this.setData({ loadingSpriteUrl: cdn })
+    }
   }
 })

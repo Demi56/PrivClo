@@ -1,6 +1,7 @@
 /**
  * 首页定位城市与天气 —— 供 model 页写入、天气日历等页读取同步
  */
+const qweatherIcon = require('./qweatherIcon.js')
 const STORAGE_KEY = 'privclo_home_weather'
 const DEFAULT_CITY = '深圳'
 
@@ -13,7 +14,9 @@ function cityHash(city) {
 
 function iconToCalendarType(icon) {
   const k = String(icon || 'sun')
-  if (k === 'rain') return 'rainy'
+  if (k === 'thunder' || k === 'rain') return 'rainy'
+  if (k === 'snow') return 'rainy'
+  if (k === 'fog') return 'haze'
   if (k === 'cloudy') return 'cloudy'
   if (k === 'cloud') return 'overcast'
   if (k === 'sun') return 'sunny'
@@ -56,6 +59,7 @@ function setHomeWeather(payload) {
     temp: payload.temp != null ? String(payload.temp) : '',
     weather: payload.weather != null ? String(payload.weather) : '',
     weatherIcon: payload.weatherIcon || 'sun',
+    iconCode: qweatherIcon.normalizeIconCode(payload.iconCode),
     updatedAt: Date.now()
   }
   try {

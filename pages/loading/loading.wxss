@@ -1,7 +1,7 @@
 /* 加载过渡页 - 参考设计图 */
 .page {
   min-height: 100vh;
-  background: linear-gradient(180deg, #EFF6FC 0%, #D4EDFA 35%, #A7E0F6 70%, #7DD3FC 100%);
+  background: var(--theme-gradient-brand, linear-gradient(180deg, #EFF6FC 0%, #D4EDFA 35%, #A7E0F6 70%, #7DD3FC 100%));
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -23,25 +23,38 @@
   padding: 60rpx 48rpx 80rpx;
 }
 
-/* 精灵插图卡片 */
+/* 精灵插图 + 毛玻璃底卡 */
 .sprite-card {
+  position: relative;
   width: 420rpx;
   height: 420rpx;
-  background: transparent;
-  border-radius: 32rpx;
-  box-shadow: 0 12rpx 48rpx rgba(125, 211, 252, 0.25), 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  margin-bottom: 56rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  margin-bottom: 56rpx;
-  padding: 40rpx;
-  box-sizing: border-box;
+  overflow: visible;
+}
+
+.sprite-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 32rpx;
+  background: rgba(255, 255, 255, 0.42);
+  backdrop-filter: blur(24rpx);
+  -webkit-backdrop-filter: blur(24rpx);
+  box-shadow: 0 12rpx 48rpx rgba(125, 211, 252, 0.25), 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  z-index: 0;
 }
 
 .sprite-img {
-  width: 100%;
-  height: 100%;
+  position: relative;
+  z-index: 1;
+  width: 560rpx;
+  height: 560rpx;
 }
 
 /* 标题区 */
@@ -56,14 +69,14 @@
 .title {
   font-size: 48rpx;
   font-weight: 700;
-  color: #1F2937;
+  color: var(--theme-text, #1F2937);
   letter-spacing: 2rpx;
 }
 
 .tagline {
   font-size: 28rpx;
   font-weight: 400;
-  color: #4B5563;
+  color: var(--theme-text-secondary, #4B5563);
   letter-spacing: 1rpx;
 }
 
@@ -80,7 +93,7 @@
 .loading-label {
   font-size: 22rpx;
   font-weight: 500;
-  color: rgba(75, 85, 99, 0.85);
+  color: var(--theme-text-muted, rgba(75, 85, 99, 0.85));
   letter-spacing: 2rpx;
   flex-shrink: 0;
 }
@@ -99,7 +112,7 @@
 
 .loading-bar-fill {
   height: 100%;
-  background: rgba(125, 211, 252, 0.9);
+  background: var(--theme-primary, rgba(125, 211, 252, 0.9));
   border-radius: 6rpx;
   transition: width 0.08s ease;
 }
@@ -107,6 +120,6 @@
 .version {
   font-size: 22rpx;
   font-weight: 500;
-  color: rgba(75, 85, 99, 0.85);
+  color: var(--theme-text-muted, rgba(75, 85, 99, 0.85));
   flex-shrink: 0;
 }

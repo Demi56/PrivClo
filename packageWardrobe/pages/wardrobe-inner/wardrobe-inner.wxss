@@ -2,7 +2,7 @@
 
 .page {
   min-height: 100vh;
-  background: #F5F0E8;
+  background: #EFF6FC;
   padding-bottom: env(safe-area-inset-bottom);
   position: relative;
 }
@@ -15,7 +15,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 24rpx 32rpx;
-  background: #F5F0E8;
+  background: #EFF6FC;
 }
 .header-back {
   width: 72rpx;
@@ -61,7 +61,7 @@
 }
 
 .header-nav-item.header-nav-active {
-  background: #6EC5D9;
+  background: #7DD3FC;
   color: #FFFFFF;
 }
 
@@ -77,7 +77,7 @@
   left: 0;
   right: 0;
   z-index: 11;
-  background: #F5F0E8;
+  background: #EFF6FC;
 }
 
 .categories-inner {
@@ -164,13 +164,13 @@
   z-index: 15;
   padding: 24rpx 32rpx;
   padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
-  background: #F5F0E8;
+  background: #EFF6FC;
 }
 
 .scan-btn {
   width: 100%;
   height: 88rpx;
-  background: #6EC5D9;
+  background: #7DD3FC;
   border-radius: 44rpx;
   display: flex;
   flex-direction: row;

@@ -2,7 +2,7 @@
 
 .page {
   min-height: 100vh;
-  background: #F5F0E8;
+  background: #EFF6FC;
   display: flex;
   flex-direction: column;
   padding-bottom: env(safe-area-inset-bottom);
@@ -16,7 +16,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 24rpx 32rpx;
-  background: #F5F0E8;
+  background: #EFF6FC;
 }
 .header-back {
   width: 72rpx;
@@ -58,13 +58,13 @@
   padding: 16rpx 28rpx;
   font-size: 26rpx;
   color: #666666;
-  background: #F5F0E8;
+  background: #EFF6FC;
   border-radius: 32rpx;
   flex-shrink: 0;
 }
 
 .tab-item.tab-active {
-  background: #6EC5D9;
+  background: #7DD3FC;
   color: #FFFFFF;
   font-weight: 500;
 }
@@ -159,7 +159,7 @@
 
 .product-points {
   font-size: 24rpx;
-  color: #6EC5D9;
+  color: #7DD3FC;
   font-weight: 500;
 }
 
@@ -167,13 +167,20 @@
   padding: 10rpx 24rpx;
   font-size: 24rpx;
   color: #FFFFFF;
-  background: #6EC5D9;
+  background: #7DD3FC;
   border-radius: 24rpx;
 }
 
 .product-btn-exchanged {
   background: #B0BEC5;
   color: #ECEFF1;
+}
+
+.product-btn-redeemed {
+  padding: 10rpx 14rpx;
+  font-size: 22rpx;
+  background: #38BDF8;
+  color: #FFFFFF;
 }
 
 .empty-tip {

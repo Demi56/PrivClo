@@ -110,4 +110,6 @@
     <button class="action-btn clear" bindtap="clearOutfit">清空</button>
     <button class="action-btn save" bindtap="saveOutfitImage">保存穿搭照</button>
   </view>
+
+  <canvas type="2d" id="aiWatermarkCanvas" class="ai-watermark-canvas"></canvas>
 </view>

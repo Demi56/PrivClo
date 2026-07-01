@@ -22,7 +22,7 @@
           class="setting-switch"
           checked="{{enabled}}"
           bindchange="onToggleMaster"
-          color="#4DD0E1"
+          color="#0EA5E9"
         />
       </view>
 
@@ -38,7 +38,7 @@
             disabled="{{itemsDisabled}}"
             data-key="{{item.key}}"
             bindchange="onToggleItem"
-            color="#4DD0E1"
+            color="#0EA5E9"
           />
         </view>
       </view>

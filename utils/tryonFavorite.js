@@ -53,6 +53,10 @@ function addFavoriteOutfit(outfit) {
       app.globalData.favoritesTryonItemSlots = outfit.tryonItemSlots.slice()
     }
   }
+  try {
+    const { recordDailyAction } = require('./taskSquare.js')
+    recordDailyAction('weather')
+  } catch (e) {}
   return outfit
 }
 

@@ -8,6 +8,10 @@ const wardrobeDisplay = require('../../utils/wardrobeDisplay.js')
 const tryonFavorite = require('../../utils/tryonFavorite.js')
 const { removeSrcFromOutfit } = require('../../utils/tryonOutfitHelpers.js')
 const { MAIN_DIARY, MAIN_WARDROBE, MAIN_MINE, reLaunchMain } = require('../../utils/mainTabs.js')
+const locationAuth = require('../../utils/locationAuth.js')
+const qweatherIcon = require('../../utils/qweatherIcon.js')
+const { getSpriteImageUrl, getSpriteCdnUrl } = require('../../utils/spriteImage.js')
+const { textToWeatherEffect } = require('../../utils/weatherEffect.js')
 
 // 3D 模特全身穿搭展示页面
 // 温度区间 -> 穿搭类型（对应上衣、下衣、鞋子的整体搭配）
@@ -67,18 +71,18 @@ const DEFAULT_ROLE_BODY = {
 const HOME_TRYON_VISIBLE_SLOTS = 6
 const HOME_TRYON_PANEL_STORAGE_KEY = 'privclo_home_tryon_panel_collapsed'
 const SOLID_BG_STORAGE_KEY = 'privclo_solid_bg_color'
-const DEFAULT_SOLID_BG_COLOR = '#ECE8E2'
+const DEFAULT_SOLID_BG_COLOR = '#EFF6FC'
 const SOLID_COLOR_PRESETS = [
-  { color: '#ECE8E2', name: '米白' },
-  { color: '#F9F6ED', name: '暖白' },
   { color: '#FFFFFF', name: '纯白' },
-  { color: '#E8E4E0', name: '浅灰' },
-  { color: '#D4E8F0', name: '浅蓝' },
+  { color: '#EFF6FC', name: '浅蓝白' },
+  { color: '#D4EDFA', name: '天蓝浅' },
+  { color: '#A7E0F6', name: '晴空' },
+  { color: '#E5E7EB', name: '浅灰' },
+  { color: '#D4E8F0', name: '雾蓝' },
   { color: '#F5E6E8', name: '浅粉' },
   { color: '#E8F0E8', name: '浅绿' },
   { color: '#EDE8F5', name: '浅紫' },
-  { color: '#D8D4CE', name: '灰褐' },
-  { color: '#C5D8E8', name: '雾蓝' }
+  { color: '#C5D8E8', name: '淡蓝' }
 ]
 
 Page({
@@ -91,6 +95,9 @@ Page({
     temp: '22',
     weather: '晴',
     weatherIcon: 'sun',
+    weatherIconCode: '100',
+    weatherIconColor: qweatherIcon.getColorForIconCode('100'),
+    weatherIconUrl: qweatherIcon.getQWeatherIconFallbackUrl(),
     modelOutfitSrc: '',
     modelDisplaySrc: '',
     modelDefaultUrl: '',
@@ -118,6 +125,7 @@ Page({
     showChatAssistant: false,
     showGenderPicker: false,
     genderPick: 'female',
+    showBgModeSwitcher: false,
     activeBgMode: '',
     solidBgColor: DEFAULT_SOLID_BG_COLOR,
     solidBgColorInput: DEFAULT_SOLID_BG_COLOR,
@@ -160,6 +168,9 @@ Page({
   },
 
   onLoad(options) {
+    if (!qweatherIcon.isSafeWeatherIconUrl(this.data.weatherIconUrl)) {
+      this.setData({ weatherIconUrl: qweatherIcon.getQWeatherIconFallbackUrl() })
+    }
     try {
       const sys = wx.getSystemInfoSync()
       const bar = sys.statusBarHeight || 20
@@ -182,11 +193,12 @@ Page({
       showGenderPicker,
       modelImgError: false,
       modelDefaultUrl: getImageUrl(getModelImagePath(gender)),
-      spriteUrl: getImageUrl('/images/sprite.png'),
+      spriteUrl: getSpriteImageUrl(),
       roleAvatarFemaleUrl: getImageUrl('/images/role/avatar-female.png'),
       roleAvatarMaleUrl: getImageUrl('/images/role/avatar-male.png')
     })
     this.applyHomeWeatherFromStorage()
+    this.refreshWeatherCapsuleIcon(this.data.weatherIconCode)
     this.applySolidBgColorFromStorage()
     this.applyHomeScenesFromStorage()
     this.syncTryonItemSlotsFromApp()
@@ -464,12 +476,45 @@ Page({
       weather: saved.weather || this.data.weather,
       weatherIcon: saved.weatherIcon || this.data.weatherIcon
     })
+    this.refreshWeatherCapsuleIcon(saved.iconCode || this.data.weatherIconCode)
+  },
+
+  refreshWeatherCapsuleIcon(iconCode) {
+    const code = qweatherIcon.normalizeIconCode(iconCode)
+    const color = qweatherIcon.getColorForIconCode(code)
+    const self = this
+    this.setData({
+      weatherIconCode: code,
+      weatherIconColor: color,
+      weatherIconUrl: qweatherIcon.getInstantIconUrl(code)
+    })
+    qweatherIcon.loadColoredIconUrl(code).then(function (url) {
+      if (String(self.data.weatherIconCode) !== code) return
+      self.setData({ weatherIconUrl: qweatherIcon.sanitizeWeatherIconUrl(url) })
+    })
   },
 
   syncHomeWeatherToStorage() {
-    const { city, temp, weather, weatherIcon } = this.data
+    const { city, temp, weather, weatherIcon, weatherIconCode } = this.data
     if (!city) return
-    homeWeather.setHomeWeather({ city, temp, weather, weatherIcon })
+    homeWeather.setHomeWeather({
+      city,
+      temp,
+      weather,
+      weatherIcon,
+      iconCode: weatherIconCode
+    })
+  },
+
+  onWeatherCapsuleIconError() {
+    this.setData({ weatherIconUrl: qweatherIcon.getQWeatherIconFallbackUrl() })
+  },
+
+  onSpriteImgError() {
+    const cdn = getSpriteCdnUrl()
+    if (this.data.spriteUrl !== cdn) {
+      this.setData({ spriteUrl: cdn })
+    }
   },
 
   updateModelOutfit() {
@@ -491,21 +536,21 @@ Page({
 
   fetchWeatherAndSwitch() {
     wx.showLoading({ title: '获取天气...' })
-    wx.getLocation({
-      type: 'wgs84',
-      success: (res) => {
-        const { latitude, longitude } = res
-        this.fetchWeatherByCoords(latitude, longitude)
-      },
-      fail: (err) => {
-        wx.hideLoading()
-        this.useSimulatedWeather()
-        this.applyWeatherAndOutfit()
-      }
-    })
+    const self = this
+    locationAuth.requestUserLocation()
+      .then(function (result) {
+        if (result.ok) {
+          self.fetchWeatherByCoords(result.latitude, result.longitude, { applyOutfitToast: true })
+        } else {
+          wx.hideLoading()
+          self.useSimulatedWeather()
+          self.applyWeatherAndOutfit()
+        }
+      })
   },
 
-  fetchWeatherByCoords(lat, lng) {
+  fetchWeatherByCoords(lat, lng, options) {
+    const opts = options || {}
     if (weatherService.hasApiKey) {
       weatherService.getWeatherByCoords(lat, lng, { includeForecast: true })
         .then(data => {
@@ -517,20 +562,50 @@ Page({
             forecast: data.forecast || []
           }, () => {
             this.syncHomeWeatherToStorage()
+            if (opts.onWeatherReady) opts.onWeatherReady()
           })
+          this.refreshWeatherCapsuleIcon(data.iconCode)
           wx.hideLoading()
+          this.updateModelOutfit()
           this.updateChatContext()
-          this.applyWeatherAndOutfit()
+          if (opts.applyOutfitToast) {
+            this.applyWeatherAndOutfit()
+          } else if (opts.showWeatherSuccess) {
+            wx.showToast({ title: '已更新至 ' + data.city, icon: 'success' })
+          }
         })
-        .catch(() => {
-          this.useSimulatedWeather()
+        .catch((err) => {
+          console.error('[weather]', 'model fetchWeatherByCoords fail:', err)
+          if (lat != null && lng != null) {
+            this.useSimulatedWeatherByCoords(lat, lng)
+          } else {
+            this.useSimulatedWeather()
+          }
           wx.hideLoading()
-          this.applyWeatherAndOutfit()
+          this.updateModelOutfit()
+          this.updateChatContext()
+          if (opts.showWeatherError) {
+            wx.showToast({
+              title: weatherService.formatErrorToast(err),
+              icon: 'none',
+              duration: 3000
+            })
+          }
+          if (opts.applyOutfitToast) {
+            this.applyWeatherAndOutfit()
+          }
         })
     } else {
       this.useSimulatedWeatherByCoords(lat, lng)
       wx.hideLoading()
-      this.applyWeatherAndOutfit()
+      this.updateModelOutfit()
+      this.updateChatContext()
+      if (opts.applyOutfitToast) {
+        this.applyWeatherAndOutfit()
+      } else if (opts.showWeatherSuccess) {
+        wx.showToast({ title: '已更新至 ' + this.data.city, icon: 'success' })
+        if (opts.onWeatherReady) opts.onWeatherReady()
+      }
     }
   },
 
@@ -543,23 +618,33 @@ Page({
     const city = lat > 25 ? '深圳' : lat > 20 ? '广州' : lat > 30 ? '北京' : '上海'
     const weathers = ['晴', '多云', '阴', '小雨']
     const seed = Math.floor(lat * 100 + lng + month * 10) % 4
+    const weatherIcon = seed === 0 ? 'sun' : seed === 1 ? 'cloud' : seed === 2 ? 'cloudy' : 'rain'
+    const iconCode = qweatherIcon.getIconCodeFromEffect(weatherIcon)
     this.setData({
       city,
       temp: String(temp),
       weather: weathers[seed],
-      weatherIcon: seed === 0 ? 'sun' : seed === 1 ? 'cloud' : seed === 2 ? 'cloudy' : 'rain'
-    }, () => this.syncHomeWeatherToStorage())
+      weatherIcon
+    }, () => {
+      this.syncHomeWeatherToStorage()
+      this.refreshWeatherCapsuleIcon(iconCode)
+    })
   },
 
   useSimulatedWeather() {
     const month = new Date().getMonth() + 1
     const temp = month >= 5 && month <= 9 ? 26 : month >= 10 && month <= 11 ? 18 : 10
+    const weather = month >= 5 && month <= 9 ? '晴' : '多云'
+    const iconCode = qweatherIcon.getIconCodeFromWeatherText(weather)
     this.setData({
       city: this.data.city || '深圳',
       temp: String(temp),
-      weather: month >= 5 && month <= 9 ? '晴' : '多云',
-      weatherIcon: 'sun'
-    }, () => this.syncHomeWeatherToStorage())
+      weather,
+      weatherIcon: month >= 5 && month <= 9 ? 'sun' : 'cloud'
+    }, () => {
+      this.syncHomeWeatherToStorage()
+      this.refreshWeatherCapsuleIcon(iconCode)
+    })
   },
 
   applyWeatherAndOutfit() {
@@ -574,6 +659,9 @@ Page({
   },
 
   onShow() {
+    if (!qweatherIcon.isSafeWeatherIconUrl(this.data.weatherIconUrl)) {
+      this.setData({ weatherIconUrl: qweatherIcon.getQWeatherIconFallbackUrl() })
+    }
     const saved = homeWeather.getHomeWeather()
     if (saved && saved.city && saved.city !== this.data.city) {
       this.setData({
@@ -582,6 +670,7 @@ Page({
         weather: saved.weather || this.data.weather,
         weatherIcon: saved.weatherIcon || this.data.weatherIcon
       }, () => {
+        this.refreshWeatherCapsuleIcon(saved.iconCode || this.data.weatherIconCode)
         this.updateModelOutfit()
         this.updateChatContext()
       })
@@ -608,6 +697,7 @@ Page({
   },
 
   onOpenChatAssistant() {
+    this.updateChatContext()
     this.setData({ showChatAssistant: true })
   },
 
@@ -619,18 +709,17 @@ Page({
     const app = getApp()
     const { city, temp, weather, forecast, gender } = this.data
     const g = gender || 'female'
-    const profile = app.getRoleProfile(g)
-    const stylePref = profile?.selectedStyles?.length
-      ? profile.selectedStyles
-      : app.getStylePreference(g)
-    const profileWithStyles = { ...profile, selectedStyles: stylePref }
-    const outfitPrefs = app.getOutfitPreferences()
+    const { buildAssistantProfile } = require('../../utils/assistantProfile.js')
+    const assistantProfile = buildAssistantProfile(app, {
+      gender: g,
+      weather: { city, temp, weather, forecast: forecast || [] }
+    })
     this.setData({
       chatWeather: { city, temp, weather, forecast: forecast || [] },
       chatWardrobe: app.getUserWardrobeItems(),
-      chatProfile: { ...profileWithStyles, outfitPreferences: outfitPrefs },
+      chatProfile: assistantProfile,
       chatGender: g,
-      chatAge: outfitPrefs.age || profile?.age || null
+      chatAge: assistantProfile.age
     })
   },
 
@@ -1009,19 +1098,28 @@ Page({
 
   doGetLocationAndWeather() {
     wx.showLoading({ title: '获取天气...' })
-    wx.getLocation({
-      type: 'wgs84',
-      success: (res) => {
-        const { latitude, longitude } = res
-        this.fetchWeatherByCoords(latitude, longitude)
-      },
-      fail: () => {
-        wx.hideLoading()
-        this.useSimulatedWeather()
-        this.updateModelOutfit()
-        wx.showToast({ title: '定位失败，已使用默认天气', icon: 'none' })
-      }
-    })
+    const self = this
+    locationAuth.requestUserLocation()
+      .then(function (result) {
+        if (result.ok) {
+          self.fetchWeatherByCoords(result.latitude, result.longitude, {
+            showWeatherError: true,
+            showWeatherSuccess: true,
+            onWeatherReady: function () {
+              self.setData({ showCitySearch: false, citySearchKeyword: '', filteredCityList: [] })
+            }
+          })
+        } else {
+          wx.hideLoading()
+          self.useSimulatedWeather()
+          self.updateModelOutfit()
+          locationAuth.showLocationFailToast(result.reason)
+        }
+      })
+  },
+
+  onRelocateFromCitySearch() {
+    this.doGetLocationAndWeather()
   },
 
   onOpenCitySearch() {
@@ -1066,6 +1164,7 @@ Page({
             weatherIcon: data.weatherIcon,
             forecast: data.forecast || []
           }, () => this.syncHomeWeatherToStorage())
+          this.refreshWeatherCapsuleIcon(data.iconCode)
           this.updateChatContext()
           this.updateModelOutfit()
           wx.showToast({ title: '已切换至 ' + data.city, icon: 'success' })
@@ -1082,15 +1181,19 @@ Page({
   applyWeatherByCityFallback(cityName) {
     const hash = cityName.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0)
     const temp = 12 + (hash % 18)
-    const weathers = ['晴', '多云', '阴', '小雨']
-    const weather = weathers[hash % 4]
-    const iconMap = { 0: 'sun', 1: 'cloud', 2: 'cloudy', 3: 'rain' }
+    const weathers = ['晴', '多云', '阴', '小雨', '雪', '雾', '雷阵雨']
+    const weather = weathers[hash % weathers.length]
+    const weatherIcon = textToWeatherEffect(weather)
+    const iconCode = qweatherIcon.getIconCodeFromEffect(weatherIcon)
     this.setData({
       city: cityName,
       temp: String(temp),
       weather,
-      weatherIcon: iconMap[hash % 4]
-    }, () => this.syncHomeWeatherToStorage())
+      weatherIcon
+    }, () => {
+      this.syncHomeWeatherToStorage()
+      this.refreshWeatherCapsuleIcon(iconCode)
+    })
     this.updateChatContext()
     this.updateModelOutfit()
     wx.showToast({ title: '已切换至 ' + cityName, icon: 'success' })

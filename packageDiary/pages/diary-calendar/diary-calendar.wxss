@@ -2,7 +2,7 @@
 
 .page {
   min-height: 100vh;
-  background: #F5F0E8;
+  background: #EFF6FC;
   display: flex;
   flex-direction: column;
   padding-bottom: env(safe-area-inset-bottom);
@@ -17,7 +17,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 20rpx 32rpx 24rpx;
-  background: #F5F0E8;
+  background: #EFF6FC;
 }
 
 .header-back {

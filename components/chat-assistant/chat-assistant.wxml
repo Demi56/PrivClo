@@ -14,7 +14,10 @@
     <view class="chat-panel-mask"></view>
     <view class="chat-panel">
       <view class="chat-header">
-        <text class="chat-title">精灵小管家</text>
+        <view class="chat-header-text">
+          <text class="chat-title">精灵小管家</text>
+          <text class="chat-ai-tag">AI 生成 · 仅供参考</text>
+        </view>
         <view class="chat-close-btn" bindtap="onClosePanel">×</view>
       </view>
       <scroll-view
@@ -34,6 +37,7 @@
               <view class="chat-msg-bubble">
                 <text class="chat-msg-text">{{item.content}}</text>
               </view>
+              <text wx:if="{{item.role === 'assistant' && item.content}}" class="chat-msg-ai-note">AI 生成 · 仅供参考</text>
               <view wx:if="{{item.role === 'assistant' && item.id}}" class="chat-msg-feedback">
                 <view class="chat-feedback-btn {{item.feedback === 'up' ? 'active' : ''}}" bindtap="onFeedbackUp" data-id="{{item.id}}">👍</view>
                 <view class="chat-feedback-btn {{item.feedback === 'down' ? 'active' : ''}}" bindtap="onFeedbackDown" data-id="{{item.id}}">👎</view>

@@ -1,5 +1,9 @@
-const { getImageUrl } = require('../../utils/image.js')
 const { MAIN_MODEL, MAIN_WARDROBE, MAIN_MINE, reLaunchMain } = require('../../utils/mainTabs.js')
+const {
+  getActiveDiarySkinIndex,
+  getActiveDiarySkinCdnUrl,
+  refreshActiveDiarySkinImageUrl
+} = require('../../utils/diarySkin.js')
 const DIARY_STORAGE_KEY = 'diary_pages'
 
 // 日记页面 - 我的日记本
@@ -9,6 +13,7 @@ Page({
     avatarError: false,
     diaryImgSrc: '',
     diaryImgError: false,
+    diarySkinIndex: 1,
     gender: 'female',
     currentDiary: '默认用户的穿搭日记',
     pageCount: 1,
@@ -39,6 +44,18 @@ Page({
     }
   },
 
+  _refreshDiarySkinImage() {
+    const skinIndex = getActiveDiarySkinIndex()
+    refreshActiveDiarySkinImageUrl().then((url) => {
+      if (!url) return
+      this.setData({
+        diaryImgSrc: url,
+        diaryImgError: false,
+        diarySkinIndex: skinIndex
+      })
+    })
+  },
+
   onLoad(options) {
     try {
       const sys = wx.getSystemInfoSync()
@@ -54,8 +71,11 @@ Page({
       gender,
       currentDiary: diaryName,
       diaryList,
-      diaryImgSrc: getImageUrl('/images/diary/diary-book.png')
-    }, () => this._updatePageCountFromStorage())
+      diaryImgError: false
+    }, () => {
+      this._updatePageCountFromStorage()
+      this._refreshDiarySkinImage()
+    })
   },
 
   onShow() {
@@ -74,6 +94,7 @@ Page({
       this.setData({ currentDiary: diaryName })
     }
     this._updatePageCountFromStorage()
+    this._refreshDiarySkinImage()
   },
 
   onAvatarTap() {
@@ -85,6 +106,12 @@ Page({
   },
 
   onDiaryImgError() {
+    const skinIndex = this.data.diarySkinIndex || getActiveDiarySkinIndex()
+    const cdn = getActiveDiarySkinCdnUrl(skinIndex)
+    if (this.data.diaryImgSrc !== cdn) {
+      this.setData({ diaryImgSrc: cdn, diaryImgError: false })
+      return
+    }
     this.setData({ diaryImgError: true })
   },
 

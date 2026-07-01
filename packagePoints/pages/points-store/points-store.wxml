@@ -28,13 +28,20 @@
     <view class="product-grid">
       <view wx:for="{{displayList}}" wx:key="id" class="product-card {{item.category === 4 ? 'product-card-role' : ''}} {{item.category === 3 ? 'product-card-capacity' : ''}}">
         <view class="product-img-wrap">
-          <image wx:if="{{item.image}}" class="product-img" src="{{item.image}}" mode="{{item.category === 4 || item.category === 3 ? 'aspectFit' : 'aspectFill'}}" />
+          <image
+            wx:if="{{item.image}}"
+            class="product-img"
+            src="{{item.image}}"
+            mode="{{item.category === 4 || item.category === 3 ? 'aspectFit' : 'aspectFill'}}"
+            data-id="{{item.id}}"
+            binderror="onProductImgError"
+          />
           <view wx:else class="product-img product-img-placeholder"></view>
         </view>
         <text class="product-name">{{item.name}}</text>
         <view class="product-row">
           <text class="product-points">{{item.points}} 积分</text>
-          <view class="product-btn {{item.id === '12' || item.id === '19' ? 'product-btn-exchanged' : ''}}" catchtap="onExchange" data-id="{{item.id}}">{{item.id === '12' || item.id === '19' ? '已兑换' : '兑换'}}</view>
+          <view class="product-btn {{item.actionDisabled ? 'product-btn-exchanged' : ''}} {{item.actionRedeemed ? 'product-btn-redeemed' : ''}}" catchtap="onExchange" data-id="{{item.id}}">{{item.actionLabel}}</view>
         </view>
       </view>
     </view>

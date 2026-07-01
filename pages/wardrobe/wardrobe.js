@@ -1,6 +1,9 @@
-const { getImageUrl } = require('../../utils/image.js')
-const wardrobeDisplay = require('../../utils/wardrobeDisplay.js')
 const { MAIN_MODEL, MAIN_DIARY, MAIN_MINE, reLaunchMain } = require('../../utils/mainTabs.js')
+const {
+  resolveActiveTheme,
+  refreshActiveThemeImage
+} = require('../../utils/wardrobeTheme.js')
+const { resolveWardrobeThemeTempUrl } = require('../../utils/pointsStoreImage.js')
 
 // 衣橱页面 - 我的衣橱
 Page({
@@ -9,6 +12,7 @@ Page({
     avatarError: false,
     wardrobeImgSrc: '',
     wardrobeImgError: false,
+    wardrobeThemeIndex: 1,
     gender: 'female',
     currentWardrobe: '默认用户的衣橱',
     itemCount: 0,
@@ -33,6 +37,18 @@ Page({
     this.setData({ itemCount: count, wardrobeList: nextList })
   },
 
+  _refreshWardrobeThemeImage() {
+    const theme = resolveActiveTheme()
+    refreshActiveThemeImage().then((result) => {
+      if (!result || !result.image) return
+      this.setData({
+        wardrobeImgSrc: result.image,
+        wardrobeImgError: false,
+        wardrobeThemeIndex: result.themeIndex || theme.themeIndex || 1
+      })
+    })
+  },
+
   onLoad(options) {
     try {
       const sys = wx.getSystemInfoSync()
@@ -49,8 +65,11 @@ Page({
       currentWardrobe: wardrobeName,
       itemCount: 0,
       wardrobeList,
-      wardrobeImgSrc: wardrobeDisplay.getWardrobeDisplayImageUrl()
-    }, () => this._updateItemCountFromStorage())
+      wardrobeImgError: false
+    }, () => {
+      this._updateItemCountFromStorage()
+      this._refreshWardrobeThemeImage()
+    })
   },
 
   onShow() {
@@ -69,6 +88,7 @@ Page({
       this.setData({ currentWardrobe: wardrobeName })
     }
     this._updateItemCountFromStorage()
+    this._refreshWardrobeThemeImage()
   },
 
   onAvatarTap() {
@@ -80,7 +100,18 @@ Page({
   },
 
   onWardrobeImgError() {
-    this.setData({ wardrobeImgError: true })
+    const themeIndex = this.data.wardrobeThemeIndex || resolveActiveTheme().themeIndex || 1
+    resolveWardrobeThemeTempUrl(themeIndex).then((url) => {
+      if (!url) {
+        this.setData({ wardrobeImgError: true })
+        return
+      }
+      if (this.data.wardrobeImgSrc !== url) {
+        this.setData({ wardrobeImgSrc: url, wardrobeImgError: false })
+        return
+      }
+      this.setData({ wardrobeImgError: true })
+    })
   },
 
   onPrevWardrobe() {

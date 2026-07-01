@@ -1,6 +1,7 @@
 /**
  * 法律文档页（subpackage：packageSettings/pages/privacy-terms）
- * tab=0 隐私协议 | tab=1 服务条款（用户协议）
+ * tab=0 隐私政策 | tab=1 用户协议
+ * 运营主体：衣橱管家
  */
 var LEGAL_DOC_PATH = '/packageSettings/pages/privacy-terms/privacy-terms'
 

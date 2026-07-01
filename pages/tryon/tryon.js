@@ -5,7 +5,7 @@ const {
   applyTabPickToOutfit
 } = require('../../utils/tryonOutfitHelpers.js')
 const { normalizeTryonGender } = require('../../utils/clothingPositions.js')
-const meshDeform = require('../../utils/clothingMeshDeform.js')
+const { applyAiWatermark } = require('../../utils/aiWatermark.js')
 
 Page({
   data: {
@@ -442,7 +442,13 @@ Page({
         wx.hideLoading();
         return;
       }
-      await wx.saveImageToPhotosAlbum({ filePath: tempFilePath });
+      var watermarkedPath = tempFilePath;
+      try {
+        watermarkedPath = await applyAiWatermark(this, 'aiWatermarkCanvas', tempFilePath, 'AI生成');
+      } catch (wmErr) {
+        console.warn('AI watermark failed, save original', wmErr);
+      }
+      await wx.saveImageToPhotosAlbum({ filePath: watermarkedPath });
       wx.hideLoading();
       wx.showToast({ title: '已保存到相册', icon: 'success' });
       this.saveOutfitRecord(tempFilePath);

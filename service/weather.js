@@ -12,6 +12,7 @@ const {
   USE_JWT,
   HAS_CREDENTIALS
 } = require('../config/weather.js')
+const { iconToWeatherEffect } = require('../utils/weatherEffect.js')
 
 function request(options) {
   return new Promise((resolve, reject) => {
@@ -21,6 +22,38 @@ function request(options) {
       fail: err => reject(err)
     })
   })
+}
+
+var WEATHER_LOG_TAG = '[weather]'
+
+function logWeatherFail(stage, err, extra) {
+  var payload = { stage: stage, err: err }
+  if (extra) payload.extra = extra
+  console.error(WEATHER_LOG_TAG, 'fail:', payload)
+  if (err && err.message) {
+    console.error(WEATHER_LOG_TAG, 'message:', err.message)
+  }
+  if (err && err.errMsg) {
+    console.error(WEATHER_LOG_TAG, 'errMsg:', err.errMsg)
+  }
+}
+
+function formatErrorToast(err) {
+  var msg = (err && err.message) ? String(err.message) : ''
+  if (/WEATHER_PRIVATE_KEY|私钥/.test(msg)) {
+    return '天气服务未配置私钥，请联系开发者'
+  }
+  if (/请开通云开发|cloud\.callFunction|FUNCTION_NOT_FOUND|-501000/.test(msg)) {
+    return '云开发未就绪，请检查环境是否到期'
+  }
+  if (/401|403|未授权|unauthorized/i.test(msg)) {
+    return '天气 API 授权失败，请检查密钥'
+  }
+  if (/402|超过|quota|limit/i.test(msg)) {
+    return '天气 API 调用次数已用尽'
+  }
+  if (msg && msg.length <= 24) return msg
+  return '天气获取失败，已使用估算天气'
 }
 
 /** 云函数：根据经纬度或城市名获取天气 */
@@ -35,19 +68,32 @@ function callWeatherCloudFunction(location, type, options = {}) {
       type: type || (location.includes(',') ? 'coords' : 'city'),
       includeForecast: !!options.includeForecast
     }
+    console.log(WEATHER_LOG_TAG, 'callFunction:', data)
     wx.cloud.callFunction({
       name: 'weather',
       data
     }).then(res => {
       const result = res.result || {}
-      if (result.errMsg) {
-        reject(new Error(result.errMsg))
+      const errMsg = result.errMsg ? String(result.errMsg).trim() : ''
+      if (errMsg) {
+        const err = new Error(errMsg)
+        logWeatherFail('cloud_result', err, { result: result })
+        reject(err)
       } else if (result.data) {
+        if (result._deploy) {
+          console.log(WEATHER_LOG_TAG, 'cloud deploy:', result._deploy)
+        }
+        console.log(WEATHER_LOG_TAG, 'success:', result.data)
         resolve(result.data)
       } else {
-        reject(new Error('天气数据异常'))
+        const err = new Error('天气数据异常')
+        logWeatherFail('cloud_result_empty', err, { result: result })
+        reject(err)
       }
-    }).catch(reject)
+    }).catch(err => {
+      logWeatherFail('cloud_call', err, { location: data.location })
+      reject(err)
+    })
   })
 }
 
@@ -76,16 +122,7 @@ function buildAuthRequest(url, data) {
 }
 
 function iconToWeatherIcon(icon) {
-  const code = parseInt(icon, 10) || 100
-  if (code >= 100 && code <= 104) return 'sun'
-  if (code >= 150 && code <= 153) return 'sun'
-  if (code === 101 || code === 151) return 'cloud'
-  if (code === 104) return 'cloudy'
-  if (code >= 300 && code <= 399) return 'rain'
-  if (code >= 350 && code <= 399) return 'rain'
-  if (code >= 400 && code <= 499) return 'rain'
-  if (code >= 500 && code <= 515) return 'cloudy'
-  return 'sun'
+  return iconToWeatherEffect(icon)
 }
 
 /**
@@ -125,6 +162,7 @@ function getWeatherByCoords(lat, lng, options = {}) {
         city,
         temp: String(now.temp || ''),
         weather: now.text || '晴',
+        iconCode: String(now.icon || '100'),
         weatherIcon: iconToWeatherIcon(now.icon)
       }
     })
@@ -164,6 +202,7 @@ function getWeatherByCity(cityName, options = {}) {
         city: cityName,
         temp: String(now.temp || ''),
         weather: now.text || '晴',
+        iconCode: String(now.icon || '100'),
         weatherIcon: iconToWeatherIcon(now.icon)
       }
     })
@@ -172,5 +211,6 @@ function getWeatherByCity(cityName, options = {}) {
 module.exports = {
   getWeatherByCoords,
   getWeatherByCity,
-  hasApiKey: HAS_CREDENTIALS
+  hasApiKey: HAS_CREDENTIALS,
+  formatErrorToast
 }

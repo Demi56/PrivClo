@@ -1,7 +1,7 @@
 {
   "navigationBarTitleText": "智能穿搭",
   "navigationStyle": "custom",
-  "navigationBarBackgroundColor": "#F5F0E8",
+  "navigationBarBackgroundColor": "#EFF6FC",
   "usingComponents": {
     "recommend-card": "/components/recommend-card/recommend-card"
   }

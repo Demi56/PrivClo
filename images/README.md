@@ -1,10 +1,13 @@
 # 图片资源说明
 
-## 精灵图（必放）
+## 精灵图
 
-- **路径**: `sprite.png`（与本 README 同目录）
-- **要求**: 小精灵形象的**抠图 PNG**（背景透明），与设计图中间角色一致。**单张不超过 200KB**（微信代码质量要求），建议最长边约 400–512px 以保证体积。
-- 放置后，引导页中间的圆角青绿容器会显示该精灵图，实现「完整抠图复刻」效果。
-- 容器背景色已设为 `#99DDCC`（主点缀色-浅），与设计图青绿背景一致。
+### 首页右上角 + 聊天头像（`config/sprite.js`）
 
-若暂无抠图，可先用设计图中的精灵区域裁剪一张 PNG 放在此处，或使用任意透明 PNG 占位。
+- 云存储：`SPRITE_CLOUD_FILE_ID` → `images/sprite.webp`
+- CDN 回退：`/images/sprite.webp`
+
+### 加载过渡页（独立，不随首页变动）
+
+- 路径：`/images/loading-sprite.png`（与首页 `sprite.webp` 分离）
+- 配置项：`LOADING_SPRITE_IMAGE_PATH`

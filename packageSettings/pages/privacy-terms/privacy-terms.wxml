@@ -10,7 +10,7 @@
     <view class="header-back" bindtap="onBack">
       <view class="header-back-arrow"></view>
     </view>
-    <text class="header-title">用户协议与隐私政策</text>
+    <text class="header-title">隐私政策与用户协议</text>
     <view class="header-placeholder"></view>
   </view>
 
