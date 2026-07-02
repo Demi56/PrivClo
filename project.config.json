@@ -52,7 +52,7 @@
     ],
     "include": []
   },
-  "appid": "wx05bcc49a0450d455",
+  "appid": "touristappid",
   "editorSetting": {},
   "libVersion": "3.14.2",
   "cloudfunctionTemplateRoot": "cloudfunctionTemplate/"
