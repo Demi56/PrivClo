@@ -94,60 +94,6 @@
           </view>
         </view>
       </view>
-      <view class="bg-mode-item bg-mode-item-indoor {{activeBgMode === 'indoor' ? 'bg-mode-item-active' : ''}}" bindtap="onBgModeTap" data-mode="indoor" hover-class="bg-mode-item-pressed">
-        <view class="bg-mode-chip bg-mode-chip-indoor">
-          <view class="bg-mode-icon"></view>
-        </view>
-        <view wx:if="{{activeBgMode === 'indoor' && showIndoorScenePicker}}" class="scene-picker-popup" catchtap="onPopupCatch">
-          <view class="scene-picker-popup-arrow"></view>
-          <view class="scene-picker-popup-panel">
-            <view class="scene-picker-head">
-              <text class="scene-picker-title">室内场景</text>
-              <view class="scene-picker-close" catchtap="onCloseIndoorScenePicker">×</view>
-            </view>
-            <view class="scene-picker-grid">
-              <view
-                wx:for="{{indoorScenes}}"
-                wx:key="id"
-                class="scene-picker-item {{indoorSceneId === item.id ? 'scene-picker-item-active' : ''}}"
-                catchtap="onIndoorScenePick"
-                data-id="{{item.id}}"
-              >
-                <image class="scene-picker-thumb" src="{{item.image}}" mode="aspectFill" lazy-load="{{true}}" />
-                <text class="scene-picker-name">{{item.name}}</text>
-              </view>
-            </view>
-          </view>
-        </view>
-      </view>
-      <view class="bg-mode-item bg-mode-item-outdoor {{activeBgMode === 'outdoor' ? 'bg-mode-item-active' : ''}}" bindtap="onBgModeTap" data-mode="outdoor" hover-class="bg-mode-item-pressed">
-        <view class="bg-mode-chip bg-mode-chip-outdoor">
-          <view class="bg-mode-icon"></view>
-        </view>
-        <view wx:if="{{activeBgMode === 'outdoor' && showOutdoorScenePicker}}" class="scene-picker-popup scene-picker-popup-outdoor" catchtap="onPopupCatch">
-          <view class="scene-picker-popup-arrow"></view>
-          <view class="scene-picker-popup-panel scene-picker-popup-panel-wide">
-            <view class="scene-picker-head">
-              <text class="scene-picker-title">室外场景</text>
-              <view class="scene-picker-close" catchtap="onCloseOutdoorScenePicker">×</view>
-            </view>
-            <scroll-view class="scene-picker-scroll" scroll-y="{{true}}">
-              <view class="scene-picker-grid">
-                <view
-                  wx:for="{{outdoorScenes}}"
-                  wx:key="id"
-                  class="scene-picker-item {{outdoorSceneId === item.id ? 'scene-picker-item-active' : ''}}"
-                  catchtap="onOutdoorScenePick"
-                  data-id="{{item.id}}"
-                >
-                  <image class="scene-picker-thumb" src="{{item.image}}" mode="aspectFill" lazy-load="{{true}}" />
-                  <text class="scene-picker-name">{{item.name}}</text>
-                </view>
-              </view>
-            </scroll-view>
-          </view>
-        </view>
-      </view>
     </view>
   </view>
 
@@ -155,14 +101,6 @@
   <view class="model-area">
     <!-- 默认渐变背景：底层 -->
     <view class="model-bg model-bg-{{activeBgMode || 'default'}}" style="{{activeBgMode === 'solid' ? 'background-color:' + solidBgColor + ';' : ''}}"></view>
-    <view wx:if="{{activeBgMode === 'indoor' && indoorSceneImage}}" class="model-bg-scene-wrap">
-      <image class="model-bg-scene-image" src="{{indoorSceneImage}}" mode="aspectFill" lazy-load="{{true}}" />
-      <view class="model-bg-scene-mask"></view>
-    </view>
-    <view wx:if="{{activeBgMode === 'outdoor' && outdoorSceneImage}}" class="model-bg-scene-wrap">
-      <image class="model-bg-scene-image" src="{{outdoorSceneImage}}" mode="aspectFill" lazy-load="{{true}}" />
-      <view class="model-bg-scene-mask"></view>
-    </view>
     <!-- 天气动画层：仅默认背景时显示 -->
     <view wx:if="{{!activeBgMode}}" class="weather-animation weather-animation-{{weatherIcon || 'sun'}}" data-weather="{{weatherIcon}}">
       <!-- 晴天：阳光射线 -->

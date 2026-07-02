@@ -3,13 +3,13 @@ const { getModelImagePath } = require('../../utils/clothingPositions.js')
 const weatherService = require('../../service/weather.js')
 const homeWeather = require('../../utils/homeWeather.js')
 const colorPicker = require('../../utils/colorPicker.js')
-const homeSceneBg = require('../../utils/homeSceneBg.js')
 const wardrobeDisplay = require('../../utils/wardrobeDisplay.js')
 const tryonFavorite = require('../../utils/tryonFavorite.js')
 const { removeSrcFromOutfit } = require('../../utils/tryonOutfitHelpers.js')
 const { MAIN_DIARY, MAIN_WARDROBE, MAIN_MINE, reLaunchMain } = require('../../utils/mainTabs.js')
 const locationAuth = require('../../utils/locationAuth.js')
 const qweatherIcon = require('../../utils/qweatherIcon.js')
+const chineseCities = require('../../utils/chineseCities.js')
 const { getSpriteImageUrl, getSpriteCdnUrl } = require('../../utils/spriteImage.js')
 const { textToWeatherEffect } = require('../../utils/weatherEffect.js')
 
@@ -34,32 +34,8 @@ function getOutfitImagePath(gender, tempLevel) {
   return getImageUrl(`/images/model/outfits/${gender}-${tempLevel}.png`)
 }
 
-// 中国城市列表（直辖市、省会、计划单列市及主要地级市，供切换定位筛选）
-const CHINESE_CITIES = [
-  '北京', '上海', '天津', '重庆', '深圳', '广州', '杭州', '南京', '成都', '武汉', '西安', '苏州', '郑州', '长沙', '沈阳', '青岛', '宁波', '东莞', '无锡', '昆明',
-  '大连', '厦门', '合肥', '佛山', '福州', '哈尔滨', '济南', '温州', '南宁', '长春', '石家庄', '常州', '泉州', '南昌', '贵阳', '太原', '嘉兴', '南通', '金华', '珠海',
-  '惠州', '徐州', '海口', '乌鲁木齐', '绍兴', '中山', '台州', '兰州', '泰州', '济南', '潍坊', '保定', '镇江', '扬州', '桂林', '唐山', '三亚', '宜昌', '襄阳', '洛阳',
-  '临沂', '江门', '汕头', '泰安', '漳州', '邯郸', '芜湖', '盐城', '遵义', '包头', '株洲', '绵阳', '赣州', '阜阳', '银川', '遵义', '衡阳', '南阳', '威海', '湛江',
-  '大庆', '柳州', '珠海', '鞍山', '咸阳', '九江', '商丘', '信阳', '周口', '新乡', '开封', '芜湖', '蚌埠', '安庆', '马鞍山', '淮安', '连云港', '宿迁', '湖州', '衢州',
-  '丽水', '舟山', '莆田', '龙岩', '三明', '南平', '宁德', '漳州', '韶关', '梅州', '潮州', '揭阳', '肇庆', '清远', '阳江', '茂名', '湛江', '韶关', '河源', '云浮',
-  '自贡', '攀枝花', '泸州', '德阳', '广元', '遂宁', '内江', '乐山', '南充', '眉山', '宜宾', '广安', '达州', '雅安', '巴中', '资阳', '阿坝', '甘孜', '凉山',
-  '遵义', '六盘水', '安顺', '毕节', '铜仁', '曲靖', '玉溪', '保山', '昭通', '丽江', '普洱', '临沧', '楚雄', '红河', '文山', '西双版纳', '大理', '德宏', '怒江', '迪庆',
-  '拉萨', '日喀则', '昌都', '林芝', '山南', '那曲', '阿里',
-  '延安', '榆林', '汉中', '安康', '商洛', '铜川', '宝鸡', '咸阳', '渭南',
-  '嘉峪关', '金昌', '白银', '天水', '武威', '张掖', '平凉', '酒泉', '庆阳', '定西', '陇南', '临夏', '甘南',
-  '西宁', '海东', '海北', '黄南', '海南', '果洛', '玉树', '海西',
-  '石嘴山', '吴忠', '固原', '中卫',
-  '克拉玛依', '吐鲁番', '哈密', '昌吉', '博尔塔拉', '巴音郭楞', '阿克苏', '克孜勒苏', '喀什', '和田', '伊犁', '塔城', '阿勒泰',
-  '呼和浩特', '乌海', '赤峰', '通辽', '鄂尔多斯', '呼伦贝尔', '巴彦淖尔', '乌兰察布', '兴安盟', '锡林郭勒盟', '阿拉善盟',
-  '三沙', '儋州', '五指山', '琼海', '文昌', '万宁', '东方', '定安', '屯昌', '澄迈', '临高', '白沙', '昌江', '乐东', '陵水', '保亭', '琼中'
-]
-
 function filterCities(keyword) {
-  const k = String(keyword || '').trim()
-  if (!k) return CHINESE_CITIES.slice()
-  return CHINESE_CITIES.filter(function (name) {
-    return name.indexOf(k) !== -1
-  })
+  return chineseCities.filterCities(keyword, 400)
 }
 
 // 角色信息录入：无存档时使用的常规男/女标准数据（身高 cm、体重 kg、三围 胸/腰/臀）
@@ -137,14 +113,6 @@ Page({
     pickerValTop: 0,
     svCanvasWidth: 280,
     svCanvasHeight: 120,
-    indoorScenes: homeSceneBg.getSceneList('indoor'),
-    outdoorScenes: homeSceneBg.getSceneList('outdoor'),
-    indoorSceneId: homeSceneBg.getDefaultSceneId('indoor'),
-    outdoorSceneId: homeSceneBg.getDefaultSceneId('outdoor'),
-    indoorSceneImage: homeSceneBg.resolveScene('indoor').image,
-    outdoorSceneImage: homeSceneBg.resolveScene('outdoor').image,
-    showIndoorScenePicker: false,
-    showOutdoorScenePicker: false,
     tryonItemSlots: [],
     selectedTryonSlotIndex: -1,
     homeTryonPanelCollapsed: false,
@@ -200,7 +168,6 @@ Page({
     this.applyHomeWeatherFromStorage()
     this.refreshWeatherCapsuleIcon(this.data.weatherIconCode)
     this.applySolidBgColorFromStorage()
-    this.applyHomeScenesFromStorage()
     this.syncTryonItemSlotsFromApp()
     this.loadHomeTryonPanelState()
     this.refreshWardrobeHandleImage()
@@ -432,38 +399,9 @@ Page({
     } catch (e) {}
   },
 
-  applyHomeScenesFromStorage() {
-    const indoorId = homeSceneBg.loadSceneId('indoor')
-    const outdoorId = homeSceneBg.loadSceneId('outdoor')
-    this.applyIndoorScene(indoorId, false)
-    this.applyOutdoorScene(outdoorId, false)
-  },
-
-  applyIndoorScene(id, persist) {
-    const scene = homeSceneBg.resolveScene('indoor', id)
-    if (!scene) return
-    this.setData({
-      indoorSceneId: scene.id,
-      indoorSceneImage: scene.image
-    })
-    if (persist !== false) homeSceneBg.saveSceneId('indoor', scene.id)
-  },
-
-  applyOutdoorScene(id, persist) {
-    const scene = homeSceneBg.resolveScene('outdoor', id)
-    if (!scene) return
-    this.setData({
-      outdoorSceneId: scene.id,
-      outdoorSceneImage: scene.image
-    })
-    if (persist !== false) homeSceneBg.saveSceneId('outdoor', scene.id)
-  },
-
   closeAllBgPickers() {
     return {
-      showSolidColorPicker: false,
-      showIndoorScenePicker: false,
-      showOutdoorScenePicker: false
+      showSolidColorPicker: false
     }
   },
 
@@ -612,12 +550,14 @@ Page({
   useSimulatedWeatherByCoords(lat, lng) {
     const now = new Date()
     const month = now.getMonth() + 1
+    const nearest = chineseCities.findNearestCity(lat, lng)
+    const city = nearest.name || '深圳'
     const latNorm = Math.abs(lat)
     const baseTemp = 28 - (latNorm - 22) * 0.8 - (month - 6) * 3
-    const temp = Math.round(Math.max(-5, Math.min(38, baseTemp + (lat * 0.01 % 5))))
-    const city = lat > 25 ? '深圳' : lat > 20 ? '广州' : lat > 30 ? '北京' : '上海'
+    const seedOffset = Math.floor(Math.abs(lat * 1000) + Math.abs(lng * 1000) + month * 10)
+    const temp = Math.round(Math.max(-5, Math.min(38, baseTemp + (seedOffset % 7) - 3)))
     const weathers = ['晴', '多云', '阴', '小雨']
-    const seed = Math.floor(lat * 100 + lng + month * 10) % 4
+    const seed = seedOffset % 4
     const weatherIcon = seed === 0 ? 'sun' : seed === 1 ? 'cloud' : seed === 2 ? 'cloudy' : 'rain'
     const iconCode = qweatherIcon.getIconCodeFromEffect(weatherIcon)
     this.setData({
@@ -746,6 +686,35 @@ Page({
     }, () => {
       this.updateModelOutfit()
       this.updateChatContext()
+      this.promptLocationPermissionAfterGenderPick()
+    })
+  },
+
+  /** 新用户确认性别后自动弹出定位授权说明，同意后走系统定位授权与天气拉取 */
+  promptLocationPermissionAfterGenderPick() {
+    const self = this
+    setTimeout(function () {
+      self.promptLocationPermission(function () {
+        self.doGetLocationAndWeather()
+      })
+    }, 320)
+  },
+
+  promptLocationPermission(onConfirm) {
+    if (this.data.hasAskedLocationPermission) {
+      if (typeof onConfirm === 'function') onConfirm()
+      return
+    }
+    const self = this
+    wx.showModal({
+      title: '获取定位权限',
+      content: '需要获取您的位置以显示当地天气并推荐穿搭，是否同意授权？',
+      confirmText: '同意',
+      cancelText: '取消',
+      success(m) {
+        self.setData({ hasAskedLocationPermission: true })
+        if (m.confirm && typeof onConfirm === 'function') onConfirm()
+      }
     })
   },
 
@@ -849,58 +818,30 @@ Page({
   },
   onBgModeTap(e) {
     const mode = e.currentTarget.dataset.mode
-    if (!mode) return
+    if (!mode || mode !== 'solid') return
     const current = this.data.activeBgMode
-    const pickerMap = {
-      solid: 'showSolidColorPicker',
-      indoor: 'showIndoorScenePicker',
-      outdoor: 'showOutdoorScenePicker'
-    }
-    const pickerKey = pickerMap[mode]
 
-    if (current === mode && pickerKey) {
-      if (this.data[pickerKey]) {
+    if (current === 'solid') {
+      if (this.data.showSolidColorPicker) {
         this.setData(Object.assign({ activeBgMode: '' }, this.closeAllBgPickers()))
       } else {
         const updates = this.closeAllBgPickers()
-        updates[pickerKey] = true
+        updates.showSolidColorPicker = true
         this.setData(updates, () => {
-          if (mode === 'solid') this.initSolidColorWheel()
+          this.initSolidColorWheel()
         })
       }
       return
     }
 
-    const next = current === mode ? '' : mode
+    const next = current === 'solid' ? '' : 'solid'
     const updates = Object.assign({
       activeBgMode: next
     }, this.closeAllBgPickers())
     if (next === 'solid') updates.showSolidColorPicker = true
-    if (next === 'indoor') updates.showIndoorScenePicker = true
-    if (next === 'outdoor') updates.showOutdoorScenePicker = true
     this.setData(updates, () => {
       if (next === 'solid') this.initSolidColorWheel()
     })
-  },
-
-  onIndoorScenePick(e) {
-    const id = e.currentTarget.dataset.id
-    if (!id) return
-    this.applyIndoorScene(id, true)
-  },
-
-  onOutdoorScenePick(e) {
-    const id = e.currentTarget.dataset.id
-    if (!id) return
-    this.applyOutdoorScene(id, true)
-  },
-
-  onCloseIndoorScenePicker() {
-    this.setData({ showIndoorScenePicker: false })
-  },
-
-  onCloseOutdoorScenePicker() {
-    this.setData({ showOutdoorScenePicker: false })
   },
 
   applySolidBgColor(color, persist) {
@@ -1079,17 +1020,8 @@ Page({
   onWeatherCapsuleTap() {
     const self = this
     if (!this.data.hasAskedLocationPermission) {
-      wx.showModal({
-        title: '获取定位权限',
-        content: '需要获取您的位置以显示当地天气并推荐穿搭，是否同意授权？',
-        confirmText: '同意',
-        cancelText: '取消',
-        success(m) {
-          self.setData({ hasAskedLocationPermission: true })
-          if (m.confirm) {
-            self.doGetLocationAndWeather()
-          }
-        }
+      this.promptLocationPermission(function () {
+        self.doGetLocationAndWeather()
       })
     } else {
       this.onOpenCitySearch()

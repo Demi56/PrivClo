@@ -139,14 +139,19 @@ Page({
   },
 
   onOpenWardrobe() {
+    if (this._openingWardrobe) return
+    this._openingWardrobe = true
     const gender = this.data.gender || 'female'
     this.setData({ magicActive: true })
     setTimeout(() => {
       this.setData({ magicActive: false })
       wx.navigateTo({
-        url: '/packageWardrobe/pages/category-detail/category-detail?category=tops&gender=' + encodeURIComponent(gender)
+        url: '/packageWardrobe/pages/category-detail/category-detail?category=tops&gender=' + encodeURIComponent(gender),
+        complete: () => {
+          this._openingWardrobe = false
+        }
       })
-    }, 1000)
+    }, 600)
   },
 
   onTabHome() { reLaunchMain(MAIN_MODEL, this.data.gender) },

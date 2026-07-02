@@ -25,6 +25,8 @@ Component({
     messages: [],
     inputText: '',
     loading: false,
+    uploadingImage: false,
+    pendingImage: null,
     scrollToId: '',
     inputFocus: false,
     unreadCount: 0,
@@ -50,13 +52,16 @@ Component({
     attached() {
       const avatarUrl = this.properties.avatarUrl
       const userAvatarUrl = this.properties.userAvatarUrl
-      const messages = decorateMessagesWithTimeLabels(getApp().getChatHistory())
-      const last = messages.length ? messages[messages.length - 1] : null
-      this.setData({
-        spriteAvatar: avatarUrl || getSpriteImageUrl(),
-        userAvatar: userAvatarUrl || getImageUrl('/images/role/avatar-female.png'),
-        messages,
-        scrollToId: last ? 'msg-' + last.id : ''
+      const rawMessages = getApp().getChatHistory()
+      this._resolveHistoryImages(rawMessages).then((messages) => {
+        const decorated = decorateMessagesWithTimeLabels(messages)
+        const last = decorated.length ? decorated[decorated.length - 1] : null
+        this.setData({
+          spriteAvatar: avatarUrl || getSpriteImageUrl(),
+          userAvatar: userAvatarUrl || getImageUrl('/images/role/avatar-female.png'),
+          messages: decorated,
+          scrollToId: last ? 'msg-' + last.id : ''
+        })
       })
     }
   },
@@ -78,6 +83,104 @@ Component({
       if (last && last.id) {
         this.setData({ scrollToId: 'msg-' + last.id })
       }
+    },
+
+    async _resolveHistoryImages(messages) {
+      const list = Array.isArray(messages) ? messages.slice() : []
+      const fileIDs = [...new Set(
+        list.filter((m) => m && m.imageFileID && !m.imageUrl).map((m) => m.imageFileID)
+      )]
+      if (!fileIDs.length || !wx.cloud) return list
+      try {
+        const res = await wx.cloud.getTempFileURL({ fileList: fileIDs })
+        const map = {}
+        ;(res.fileList || []).forEach((item) => {
+          if (item && item.status === 0 && item.tempFileURL) map[item.fileID] = item.tempFileURL
+        })
+        return list.map((m) => ({
+          ...m,
+          imageUrl: m.imageUrl || map[m.imageFileID] || ''
+        }))
+      } catch (e) {
+        console.warn('resolve history images failed', e)
+        return list
+      }
+    },
+
+    _buildHistoryPayload(messages) {
+      return (messages || []).map((m) => ({
+        role: m.role,
+        content: m.content || (m.imageUrl || m.imageFileID ? '[图片]' : ''),
+        imageFileID: m.imageFileID || '',
+        imageUrl: m.imageUrl || ''
+      }))
+    },
+
+    _buildContext() {
+      const app = getApp()
+      const weather = this.properties.weather || {}
+      const gender = this.properties.gender || app.getUserGender() || 'female'
+      const profile = buildAssistantProfile(app, { gender, weather })
+      const outfitPrefs = profile.outfitPreferences || app.getOutfitPreferences()
+      const stylePreference = profile.stylePreference
+        || (profile.selectedStyles && profile.selectedStyles.length ? profile.selectedStyles : null)
+        || outfitPrefs.styleTags
+        || []
+      return {
+        city: weather.city,
+        temp: weather.temp,
+        weather: weather.weather,
+        forecast: weather.forecast || [],
+        wardrobe: this.properties.wardrobe || app.getUserWardrobeItems(),
+        profile,
+        outfitPreferences: outfitPrefs,
+        learningLibrary: profile.learningLibrary || null,
+        userDataLibrary: profile.userDataLibrary || null,
+        userDataSummary: profile.userDataSummary || '',
+        isGuestMode: profile.isGuestMode === true,
+        gender: profile.gender || gender,
+        roleType: this.properties.roleType || profile.roleType,
+        age: profile.age ?? this.properties.age,
+        stylePreference
+      }
+    },
+
+    async _requestAssistant(newMessages) {
+      const history = this._buildHistoryPayload(newMessages)
+      const context = this._buildContext()
+      const hasImage = newMessages.some((m) => m.role === 'user' && (m.imageUrl || m.imageFileID))
+      const timeoutMs = hasImage ? 45000 : 15000
+
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('timeout')), timeoutMs)
+      })
+      const callPromise = wx.cloud.callFunction({
+        name: 'chatWithAssistant',
+        data: { messages: history, context }
+      })
+
+      const res = await Promise.race([callPromise, timeoutPromise])
+      const result = res.result || {}
+      const reply = (result.data && result.data.reply) || result.reply
+      const errMsg = result.errMsg
+      const content = reply || errMsg || '精灵小管家信号不太好，稍等一下哦～ 😅'
+      const lastUser = newMessages.filter((m) => m.role === 'user').pop()
+      const assistantMsg = {
+        id: 'a' + Date.now(),
+        role: 'assistant',
+        content,
+        userMsg: lastUser ? (lastUser.content || (lastUser.imageUrl ? '[图片]' : '')) : '',
+        time: Date.now()
+      }
+      if (result.data && result.data.extractedPreferences) {
+        getApp().mergeOutfitPreferencesFromChat(result.data.extractedPreferences)
+      }
+      const merged = [...newMessages, assistantMsg]
+      this._setMessages(merged, {
+        loading: false,
+        scrollToId: 'msg-' + assistantMsg.id
+      })
+      this._persistMessages(merged)
     },
 
     onOpenPanel() {
@@ -102,6 +205,68 @@ Component({
       this.triggerEvent('scrolltolower')
     },
 
+    onPickImage() {
+      if (this.data.loading || this.data.uploadingImage) return
+      wx.showActionSheet({
+        itemList: ['拍照', '从相册选择'],
+        success: (res) => {
+          const sourceType = res.tapIndex === 0 ? ['camera'] : ['album']
+          this._chooseAndUploadImage(sourceType)
+        }
+      })
+    },
+
+    onRemovePendingImage() {
+      this.setData({ pendingImage: null })
+    },
+
+    onPreviewImage(e) {
+      const url = e.currentTarget.dataset.url
+      if (!url) return
+      wx.previewImage({ urls: [url], current: url })
+    },
+
+    async _chooseAndUploadImage(sourceType) {
+      try {
+        const chooseRes = await new Promise((resolve, reject) => {
+          wx.chooseMedia({
+            count: 1,
+            mediaType: ['image'],
+            sourceType,
+            success: resolve,
+            fail: reject
+          })
+        })
+        const tempPath = chooseRes.tempFiles && chooseRes.tempFiles[0] && chooseRes.tempFiles[0].tempFilePath
+        if (!tempPath) return
+
+        this.setData({ uploadingImage: true, pendingImage: { previewUrl: tempPath, fileID: '', tempPath } })
+        const cloudPath = `chat/user/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.jpg`
+        const uploadRes = await wx.cloud.uploadFile({ cloudPath, filePath: tempPath })
+        let previewUrl = tempPath
+        try {
+          const urlRes = await wx.cloud.getTempFileURL({ fileList: [uploadRes.fileID] })
+          if (urlRes.fileList && urlRes.fileList[0] && urlRes.fileList[0].tempFileURL) {
+            previewUrl = urlRes.fileList[0].tempFileURL
+          }
+        } catch (e) {
+          console.warn('getTempFileURL for chat image failed', e)
+        }
+        this.setData({
+          uploadingImage: false,
+          pendingImage: {
+            fileID: uploadRes.fileID,
+            previewUrl,
+            tempPath
+          }
+        })
+      } catch (e) {
+        console.warn('choose/upload chat image failed', e)
+        this.setData({ uploadingImage: false, pendingImage: null })
+        wx.showToast({ title: '图片上传失败', icon: 'none' })
+      }
+    },
+
     onFeedbackUp(e) {
       const id = e.currentTarget.dataset.id
       if (!id) return
@@ -124,88 +289,42 @@ Component({
 
     async onSend() {
       const input = (this.data.inputText || '').trim()
-      if (!input || this.data.loading) return
+      const pendingImage = this.data.pendingImage
+      if ((!input && !pendingImage) || this.data.loading || this.data.uploadingImage) return
 
       const now = Date.now()
-      const userMsg = { id: 'u' + now, role: 'user', content: input, time: now }
+      const userMsg = {
+        id: 'u' + now,
+        role: 'user',
+        content: input,
+        time: now
+      }
+      if (pendingImage && pendingImage.fileID) {
+        userMsg.imageFileID = pendingImage.fileID
+        userMsg.imageUrl = pendingImage.previewUrl || pendingImage.tempPath || ''
+      }
+
       const newMessages = [...this.data.messages, userMsg]
       this._setMessages(newMessages, {
         inputText: '',
+        pendingImage: null,
         loading: true,
         scrollToId: 'msg-' + userMsg.id
       })
       this._persistMessages(newMessages)
 
-      const history = newMessages.map(m => ({ role: m.role, content: m.content }))
-      const app = getApp()
-      const weather = this.properties.weather || {}
-      const gender = this.properties.gender || app.getUserGender() || 'female'
-      const profile = buildAssistantProfile(app, { gender, weather })
-      const outfitPrefs = profile.outfitPreferences || app.getOutfitPreferences()
-      const stylePreference = profile.stylePreference
-        || (profile.selectedStyles && profile.selectedStyles.length ? profile.selectedStyles : null)
-        || outfitPrefs.styleTags
-        || []
-      const context = {
-        city: weather.city,
-        temp: weather.temp,
-        weather: weather.weather,
-        forecast: weather.forecast || [],
-        wardrobe: this.properties.wardrobe || app.getUserWardrobeItems(),
-        profile,
-        outfitPreferences: outfitPrefs,
-        learningLibrary: profile.learningLibrary || null,
-        userDataLibrary: profile.userDataLibrary || null,
-        userDataSummary: profile.userDataSummary || '',
-        isGuestMode: profile.isGuestMode === true,
-        gender: profile.gender || gender,
-        roleType: this.properties.roleType || profile.roleType,
-        age: profile.age ?? this.properties.age,
-        stylePreference
-      }
-
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('timeout')), 10000)
-      })
-      const callPromise = wx.cloud.callFunction({
-        name: 'chatWithAssistant',
-        data: { messages: history, context }
-      })
-
       try {
-        const res = await Promise.race([callPromise, timeoutPromise])
-        const result = res.result || {}
-        const reply = (result.data && result.data.reply) || result.reply
-        const errMsg = result.errMsg
-        const content = reply || errMsg || '精灵小管家信号不太好，稍等一下哦～ 😅'
-        const lastUser = newMessages.filter(m => m.role === 'user').pop()
-        const assistantMsg = {
-          id: 'a' + Date.now(),
-          role: 'assistant',
-          content,
-          userMsg: lastUser ? lastUser.content : '',
-          time: Date.now()
-        }
-        if (result.data && result.data.extractedPreferences) {
-          getApp().mergeOutfitPreferencesFromChat(result.data.extractedPreferences)
-        }
-        const merged = [...newMessages, assistantMsg]
-        this._setMessages(merged, {
-          loading: false,
-          scrollToId: 'msg-' + assistantMsg.id
-        })
-        this._persistMessages(merged)
+        await this._requestAssistant(newMessages)
       } catch (err) {
         console.error('发送失败', err)
         const errorMsg = err.message === 'timeout'
           ? '思考时间有点长，再试一次吧～ 🤔'
           : '精灵小管家信号不太好，稍等一下哦～ 😅'
-        const lastUser = newMessages.filter(m => m.role === 'user').pop()
         const assistantMsg = {
           id: 'e' + Date.now(),
           role: 'assistant',
           content: errorMsg,
-          userMsg: lastUser ? lastUser.content : '',
+          userMsg: userMsg.content || (userMsg.imageUrl ? '[图片]' : ''),
           time: Date.now()
         }
         const merged = [...newMessages, assistantMsg]

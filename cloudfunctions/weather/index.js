@@ -8,6 +8,7 @@ const cloud = require('wx-server-sdk')
 const zlib = require('zlib')
 const { SignJWT, importPKCS8 } = require('jose')
 const { API_HOST, PROJECT_ID, KEY_ID, PRIVATE_KEY } = require('./config.js')
+const geoResolve = require('./geoResolve.js')
 
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 
@@ -155,24 +156,26 @@ exports.main = async (event, context) => {
 
     let city = ''
     let locationId = loc
+    const coordPair = geoResolve.parseCoordPair(loc)
+    const queryLat = event.latitude != null ? Number(event.latitude) : (coordPair && coordPair.lat)
+    const queryLng = event.longitude != null ? Number(event.longitude) : (coordPair && coordPair.lng)
 
     if (isCoords || type === 'coords') {
-      // 经纬度：先查城市，再用 LocationID 查天气（比直接传坐标更稳定）
-      const geo = await callQWeather('/geo/v2/city/lookup', { location: loc }, token)
+      const geo = await callQWeather('/geo/v2/city/lookup', { location: loc, number: 5 }, token)
       if (!geo.location || geo.location.length === 0) {
         return { errMsg: '未找到该位置对应的城市' }
       }
-      const geoItem = geo.location[0]
-      city = geoItem.adm2 || geoItem.name || '未知'
+      const geoItem = geoResolve.pickBestGeoLocation(geo.location, queryLat, queryLng)
+      city = geoResolve.resolveCityDisplayName(geoItem)
       locationId = geoItem.id || loc
     } else {
-      // 城市名：先查 locationId
-      const geo = await callQWeather('/geo/v2/city/lookup', { location: loc }, token)
+      const geo = await callQWeather('/geo/v2/city/lookup', { location: loc, number: 5 }, token)
       if (!geo.location || geo.location.length === 0) {
         return { errMsg: '未找到该城市' }
       }
-      city = geo.location[0].name || loc
-      locationId = geo.location[0].id
+      const geoItem = geo.location[0]
+      city = geoResolve.resolveCityDisplayName(geoItem) || geoItem.name || loc
+      locationId = geoItem.id
     }
 
     const weather = await callQWeather('/v7/weather/now', { location: locationId }, token)

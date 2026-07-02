@@ -28,10 +28,10 @@
       </view>
     </view>
 
-    <button class="btn-open" bindtap="onOpenWardrobe">
+    <view class="btn-open" catchtap="onOpenWardrobe">
       <text class="btn-open-text">打开衣橱</text>
       <view class="btn-open-icon"></view>
-    </button>
+    </view>
   </view>
 
   <!-- 底部 Tab 栏：衣橱高亮 -->

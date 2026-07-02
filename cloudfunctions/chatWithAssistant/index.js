@@ -4,14 +4,16 @@
  */
 const cloud = require('wx-server-sdk')
 const { buildSystemPrompt } = require('./config.js')
+const { resolveHttpChatUrl, isTokenHubKey } = require('./hunyuanHttp.js')
+const { callVisionChat, resolveMessageImages, messageHasVision } = require('./visionChat.js')
 
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 
 /** 从用户消息中解析偏好（简单关键词匹配） */
 function parseUserPreferences(userMsg) {
-  if (!userMsg || typeof userMsg !== 'string') return null
-  const text = userMsg.trim()
-  if (!text) return null
+  if (!userMsg) return null
+  const text = typeof userMsg === 'string' ? userMsg.trim() : ''
+  if (!text || text === '[图片]') return null
   const avoid = []
   const prefer = []
   const avoidPatterns = [
@@ -45,8 +47,12 @@ function parseUserPreferences(userMsg) {
   return { avoid: [...new Set(avoid)], prefer: [...new Set(prefer)] }
 }
 
-const API_URL = 'https://api.hunyuan.cloud.tencent.com/v1/chat/completions'
-const HUNYUAN_MODEL = process.env.HUNYUAN_MODEL || 'hunyuan-2.0-instruct-20251111'
+function resolveHttpModel() {
+  if (process.env.HUNYUAN_MODEL) return process.env.HUNYUAN_MODEL
+  return isTokenHubKey() ? 'hy3-preview' : 'hunyuan-2.0-instruct-20251111'
+}
+
+const HUNYUAN_MODEL = resolveHttpModel()
 
 /** 尝试 cloud.extend.AI（显式指定 provider/model/network） */
 async function callCloudAI(messages, userContext) {
@@ -105,7 +111,8 @@ function callHunyuanHTTP(messages, userContext) {
   })
   return new Promise((resolve, reject) => {
     const https = require('https')
-    const url = new URL(API_URL)
+    const apiUrl = resolveHttpChatUrl(API_KEY)
+    const url = new URL(apiUrl)
     const req = https.request({
       hostname: url.hostname,
       path: url.pathname,
@@ -160,31 +167,53 @@ exports.main = async (event, context) => {
   if (event.context && event.context.userDataLibrary) userContext.userDataLibrary = event.context.userDataLibrary
   if (event.context && event.context.isGuestMode === true) userContext.isGuestMode = true
   if (!messages || !Array.isArray(messages) || messages.length === 0) {
-    return { errMsg: '缺少 messages 参数', data: { reply: '精灵小管家走神了，稍后再试～ 😅' } }
+    return { errMsg: '缺少 messages 参数', data: { reply: '精灵小管家走神了，稍等一下哦～ 😅' } }
   }
+
+  try {
+    messages = await resolveMessageImages(messages)
+  } catch (err) {
+    console.warn('resolveMessageImages failed:', err.message)
+  }
+
+  const hasVision = messageHasVision(messages)
 
   let reply = ''
   try {
-    console.log('开始调用混元模型，消息数：', messages.length)
+    console.log('开始调用混元模型，消息数：', messages.length, '含图片：', hasVision)
     const startTime = Date.now()
-    reply = await callCloudAI(messages, userContext)
+    if (hasVision) {
+      reply = await callVisionChat(messages, userContext)
+    } else {
+      reply = await callCloudAI(messages, userContext)
+    }
     console.log(`模型调用成功，耗时：${Date.now() - startTime}ms`)
   } catch (e) {
     console.error('完整错误：', e)
     const msg = String(e.message || e).toLowerCase()
     const isTimeout = msg.includes('timeout')
     const is403 = msg.includes('403') || msg.includes('forbidden') || msg.includes('permission')
-    const isAuth = msg.includes('401') || msg.includes('unauthorized')
+    const isAuth = msg.includes('401') || msg.includes('unauthorized') || msg.includes('api key')
 
-    let userMsg = '精灵小管家走神了，稍后再试～ 😅'
+    let userMsg = '精灵小管家走神了，稍等一下哦～ 😅'
+    if (hasVision && !process.env.HUNYUAN_API_KEY) {
+      return { errMsg: '', data: { reply: '图片对话需配置混元 API Key，暂时只能文字聊天哦～' } }
+    }
     if (is403 || isAuth) {
       userMsg = '权限配置中，稍等1分钟再试～ ⏳'
-      if (process.env.HUNYUAN_API_KEY) {
+      if (process.env.HUNYUAN_API_KEY && !hasVision) {
         try {
           reply = await callHunyuanHTTP(messages, userContext)
         } catch (e2) {
           console.error('HTTP fallback error:', e2)
           return { errMsg: '', data: { reply: userMsg } }
+        }
+      } else if (process.env.HUNYUAN_API_KEY && hasVision) {
+        try {
+          reply = await callVisionChat(messages, userContext)
+        } catch (e2) {
+          console.error('Vision fallback error:', e2)
+          return { errMsg: '', data: { reply: '图片识别暂时不可用，请稍后再试～ 📷' } }
         }
       } else {
         return { errMsg: '', data: { reply: userMsg } }
@@ -192,6 +221,8 @@ exports.main = async (event, context) => {
     } else if (isTimeout) {
       userMsg = '思考时间有点长，再问一次吧～ 🤔'
       return { errMsg: '', data: { reply: userMsg } }
+    } else if (hasVision) {
+      return { errMsg: '', data: { reply: '图片识别暂时不可用，请稍后再试～ 📷' } }
     } else {
       return { errMsg: '', data: { reply: userMsg } }
     }
@@ -200,7 +231,9 @@ exports.main = async (event, context) => {
   const lastUserMsg = messages && messages.length > 0
     ? messages.filter(m => m.role === 'user').pop()
     : null
-  const extractedPreferences = lastUserMsg ? parseUserPreferences(lastUserMsg.content) : null
+  const extractedPreferences = lastUserMsg
+    ? parseUserPreferences(lastUserMsg.content)
+    : null
 
   if (reply) {
     const data = { reply }

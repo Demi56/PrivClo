@@ -1,5 +1,7 @@
 // 登录页
 const { openUserAgreement, openPrivacyPolicy } = require('../../utils/legalPages.js')
+const { getSystemMetrics } = require('../../utils/systemInfo.js')
+const { backAfterAuth } = require('../../utils/safeNavigate.js')
 const {
   validateAccount,
   validatePassword
@@ -32,7 +34,7 @@ Page({
   onLoad(options) {
     const fromSave = options.fromSave === '1' || options.fromSave === true
     try {
-      const sys = wx.getSystemInfoSync()
+      const sys = getSystemMetrics()
       this.setData({ statusBarHeight: sys.statusBarHeight || 20, fromSave: !!fromSave })
     } catch (e) {
       this.setData({ statusBarHeight: 20, fromSave: !!fromSave })
@@ -158,11 +160,7 @@ Page({
   afterAuthSuccess() {
     const app = getApp()
     if (app.markUserLoggedIn) app.markUserLoggedIn()
-    if (this.data.fromSave) {
-      wx.navigateBack({ delta: 2 })
-    } else {
-      wx.reLaunch({ url: '/pages/model/model' })
-    }
+    backAfterAuth(this.data.fromSave)
   },
 
   onAgreement() {

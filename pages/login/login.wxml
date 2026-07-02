@@ -5,7 +5,7 @@
 <view class="page">
   <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
 
-  <!-- 背景装饰：柔和青绿 + 模糊白圆 -->
+  <!-- 背景装饰：冰蓝 + 光晕 -->
   <view class="bg-deco">
     <view class="bg-circle bg-circle-1"></view>
     <view class="bg-circle bg-circle-2"></view>

@@ -87,7 +87,9 @@ Page({
     stickerCurrentCat: 'weather',
     stickerList: STICKER_LIBRARY.weather,
     selectedPhoto: false,
-    showAiAssistTag: false,
+    selectedStickerSid: '',
+    showAiAssistTag: false
+  },
 
   onLoad(options) {
     try {

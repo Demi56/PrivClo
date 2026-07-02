@@ -4,10 +4,13 @@ try {
   if (img && img.getImageUrl) getImageUrl = img.getImageUrl
 } catch (e) { console.warn('[category-detail] image utils fallback', e) }
 
+const { getSystemMetrics } = require('../../../utils/systemInfo.js')
+
 const { emptyOutfit, applyTabPickToOutfit, removeSrcFromOutfit } = require('../../../utils/tryonOutfitHelpers.js')
 const { getModelImagePath } = require('../../../utils/clothingPositions.js')
 const tryonFavorite = require('../../../utils/tryonFavorite.js')
 const wardrobeNav = require('../../utils/wardrobeNav.js')
+const { safeNavigateBack } = require('../../../utils/safeNavigate.js')
 
 // 分类详情页 - 上衣区等，顶部试穿+底部分类展示+底部扫描
 Page({
@@ -58,7 +61,7 @@ Page({
     /** 与 `.scan-footer` 高度一致，用于 detail-main 的 bottom 留白；勿依赖异步 setData 后的 this.data */
     let footerHeightPx = 120
     try {
-      const sys = wx.getSystemInfoSync()
+      const sys = getSystemMetrics()
       statusBarHeight = sys.statusBarHeight || 20
       const w = sys.windowWidth || 375
       const safeBottom = (sys.safeAreaInsets && sys.safeAreaInsets.bottom) || 0
@@ -397,7 +400,14 @@ Page({
   },
 
   onBack() {
-    wx.navigateBack()
+    if (this._backing) return
+    this._backing = true
+    const gender = this.data.gender || 'female'
+    safeNavigateBack({
+      delta: 1,
+      fallbackUrl: '/pages/wardrobe/wardrobe?gender=' + encodeURIComponent(gender)
+    })
+    setTimeout(() => { this._backing = false }, 500)
   },
 
   /**
@@ -405,34 +415,39 @@ Page({
    */
   _syncScrollAreaToTryonHeader: function() {
     var self = this
+    if (self._syncScrollTimer) return
+    self._syncScrollTimer = setTimeout(function() {
+      self._syncScrollTimer = null
+    }, 80)
     var minTop = typeof self._minScrollAreaTop === 'number' ? self._minScrollAreaTop : 0
     var headerBottom = (self.data.statusBarHeight || 20) + (self.data.headerHeightPx || 48)
     wx.createSelectorQuery()
+      .in(self)
       .select('.tryon-header')
       .boundingClientRect()
       .exec(function(res) {
         var rect = res && res[0]
         if (!rect || typeof rect.bottom !== 'number') {
-          if (minTop > 0) self.setData({ scrollAreaTop: minTop })
+          if (minTop > 0 && self.data.scrollAreaTop !== minTop) {
+            self.setData({ scrollAreaTop: minTop })
+          }
           return
         }
         var topPx = Math.ceil(rect.bottom)
-        /* 实测过小（首帧/真机布局未完成）时勿把中间区顶到导航栏下，否则 Tab 叠在返回键上会误触回首页 */
-        if (topPx <= headerBottom + 16) {
-          if (minTop > 0) topPx = minTop
-          else return
+        if (topPx <= headerBottom + 24) {
+          topPx = minTop > 0 ? minTop : topPx
         }
         if (topPx <= 0) return
+        if (Math.abs((self.data.scrollAreaTop || 0) - topPx) < 4) return
         self.setData({ scrollAreaTop: topPx })
       })
   },
 
   onReady: function() {
     var self = this
-    this._syncScrollAreaToTryonHeader()
     setTimeout(function() {
       self._syncScrollAreaToTryonHeader()
-    }, 100)
+    }, 200)
   },
 
   onTryonToggleTap() {
@@ -464,12 +479,11 @@ Page({
     var self = this
     setTimeout(function() {
       self._syncScrollAreaToTryonHeader()
-    }, 120)
+    }, 280)
   },
 
   onModelTap() {
-    const gender = getApp().globalData.modelGender || this.data.gender || 'female'
-    wx.navigateTo({ url: '/pages/model/model?gender=' + gender })
+    // 衣橱内试穿区模特仅作展示，不跳转首页，避免误触反复回到 model 页
   },
 
   onTryonFavorite() {

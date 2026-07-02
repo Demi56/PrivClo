@@ -1,5 +1,7 @@
 // 微信登录确认及同意授权页（由「我的」头像或保存拦截进入）
 const { openUserAgreement, openPrivacyPolicy } = require('../../utils/legalPages.js')
+const { getSystemMetrics } = require('../../utils/systemInfo.js')
+const { safeNavigateBack, backAfterAuth } = require('../../utils/safeNavigate.js')
 
 Page({
   data: {
@@ -14,7 +16,7 @@ Page({
     const fromSave = opt.fromSave === '1' || opt.fromSave === true
     const fromMine = opt.fromMine === '1' || opt.fromMine === true
     try {
-      const sys = wx.getSystemInfoSync()
+      const sys = getSystemMetrics()
       this.setData({
         statusBarHeight: sys.statusBarHeight || 20,
         fromSave: !!fromSave,
@@ -35,18 +37,12 @@ Page({
     app.markUserLoggedIn()
     if (app.grantRegistrationReward) app.grantRegistrationReward()
     wx.showToast({ title: '登录成功', icon: 'success', duration: 1200 })
-    if (this.data.fromSave) {
-      setTimeout(() => wx.navigateBack({ delta: 2 }), 500)
-      return
-    }
-    if (this.data.fromMine) {
-      setTimeout(() => wx.navigateBack(), 500)
-      return
-    }
     setTimeout(() => {
-      const g = app.getUserGender && app.getUserGender()
-      const genderQ = (g === 'male' || g === 'female') ? '?gender=' + encodeURIComponent(g) : ''
-      wx.reLaunch({ url: '/pages/model/model' + genderQ })
+      if (this.data.fromSave || this.data.fromMine) {
+        safeNavigateBack({ delta: 1 })
+        return
+      }
+      backAfterAuth(false)
     }, 500)
   },
 
@@ -59,6 +55,6 @@ Page({
   },
 
   onBack() {
-    wx.navigateBack()
+    safeNavigateBack()
   }
 })

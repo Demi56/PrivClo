@@ -1,11 +1,13 @@
 /**
  * 腾讯混元大模型 API 配置
- * 请在云开发控制台配置环境变量 HUNYUAN_API_KEY
- * 获取 Key：腾讯混元控制台 https://console.cloud.tencent.com/hunyuan/start
+ * TokenHub Key（sk- 开头）→ https://tokenhub.tencentmaas.com/v1/chat/completions
+ * 旧混元 Key → https://api.hunyuan.cloud.tencent.com/v1/chat/completions
  */
+const { resolveHttpChatUrl, isTokenHubKey } = require('./hunyuanHttp.js')
+
 const API_KEY = process.env.HUNYUAN_API_KEY
-const API_URL = 'https://api.hunyuan.cloud.tencent.com/v1/chat/completions'
-const MODEL = process.env.HUNYUAN_MODEL || 'hunyuan-turbos-latest'
+const API_URL = resolveHttpChatUrl(API_KEY)
+const MODEL = process.env.HUNYUAN_MODEL || (isTokenHubKey(API_KEY) ? 'hy3-preview' : 'hunyuan-turbos-latest')
 
 function buildSystemPrompt(context) {
   let base = `你是衣橱管家的精灵小管家，一位贴心、可爱的穿搭顾问。你的特点：

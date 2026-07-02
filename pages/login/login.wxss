@@ -1,8 +1,8 @@
-/* 登录页 - 与设计图一致 */
+/* 登录页 - 冰蓝色系（与微信授权页一致） */
 
 .page {
   min-height: 100vh;
-  background-color: #E8F5F3; /* 柔和青绿背景 */
+  background-color: #E8F4FC;
   display: flex;
   flex-direction: column;
   padding-bottom: env(safe-area-inset-bottom);
@@ -13,7 +13,7 @@
   flex-shrink: 0;
 }
 
-/* 背景装饰：模糊白圆 */
+/* 背景装饰：冰蓝光晕 */
 .bg-deco {
   position: fixed;
   left: 0;
@@ -27,7 +27,7 @@
 .bg-circle {
   position: absolute;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(125, 211, 252, 0.35);
   filter: blur(60rpx);
 }
 
@@ -76,17 +76,18 @@
   width: 120rpx;
   height: 120rpx;
   border-radius: 28rpx;
-  background-color: rgba(102, 204, 170, 0.35);
+  background-color: rgba(56, 189, 248, 0.14);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 24rpx;
+  box-shadow: 0 8rpx 24rpx rgba(56, 189, 248, 0.12);
 }
 
 .app-icon {
   width: 72rpx;
   height: 72rpx;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 2v4M6 22v-4M6 6h12l-2 14H8L6 6z'/%3E%3C/svg%3E") center/contain no-repeat;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2338BDF8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 2v4M6 22v-4M6 6h12l-2 14H8L6 6z'/%3E%3C/svg%3E") center/contain no-repeat;
 }
 
 .app-name {
@@ -234,7 +235,7 @@
 
 /* 睁眼：当前可查看明文 */
 .pwd-toggle-icon-visible {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2366AA88' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2338BDF8' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E");
 }
 
 .forgot-row {
@@ -255,7 +256,7 @@
   line-height: 1;
   padding-top: 6rpx;
   border-radius: 48rpx;
-  background-color: #66CCAA; /* 主点缀色 */
+  background: linear-gradient(135deg, #38BDF8 0%, #7DD3FC 100%);
   color: #FFFFFF;
   font-size: 36rpx;
   font-weight: bold;
@@ -264,6 +265,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(56, 189, 248, 0.28);
 }
 
 .btn-login::after {
@@ -286,7 +288,7 @@
 
 .register-link {
   font-size: 28rpx;
-  color: #66CCAA;
+  color: #0EA5E9;
 }
 
 .social-row {
@@ -315,7 +317,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4rpx 16rpx rgba(56, 189, 248, 0.12);
 }
 
 .social-label {
@@ -324,7 +326,7 @@
 }
 
 .social-label-link {
-  color: #66CCAA;
+  color: #0EA5E9;
 }
 
 .social-icon {
@@ -333,7 +335,7 @@
 }
 
 .social-icon-wechat {
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2307C160'%3E%3Cpath d='M8.5 2C4.36 2 1 4.69 1 8c0 2.19 1.34 4.13 3.41 5.35l-.95 2.8 3.2-1.56A9.4 9.4 0 008.5 14c4.14 0 7.5-2.69 7.5-6S12.64 2 8.5 2zm5.25 4.5a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm-6 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z'/%3E%3Cpath d='M20.5 10c0-3.31-3.36-6-7.5-6-.9 0-1.76.16-2.56.45.82.98 1.32 2.2 1.32 3.55 0 3.31 3.36 6 7.5 6 .9 0 1.76-.16 2.56-.45-.82-.98-1.32-2.2-1.32-3.55 0-.34.04-.67.1-1h.9z'/%3E%3C/svg%3E") center/contain no-repeat;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2338BDF8'%3E%3Cpath d='M8.5 2C4.36 2 1 4.69 1 8c0 2.19 1.34 4.13 3.41 5.35l-.95 2.8 3.2-1.56A9.4 9.4 0 008.5 14c4.14 0 7.5-2.69 7.5-6S12.64 2 8.5 2zm5.25 4.5a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm-6 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z'/%3E%3Cpath d='M20.5 10c0-3.31-3.36-6-7.5-6-.9 0-1.76.16-2.56.45.82.98 1.32 2.2 1.32 3.55 0 3.31 3.36 6 7.5 6 .9 0 1.76-.16 2.56-.45-.82-.98-1.32-2.2-1.32-3.55 0-.34.04-.67.1-1h.9z'/%3E%3C/svg%3E") center/contain no-repeat;
 }
 
 /* ========== 底部协议 ========== */
@@ -349,5 +351,5 @@
 
 .footer-link {
   font-size: 24rpx;
-  color: #66CCAA;
+  color: #0EA5E9;
 }

@@ -35,7 +35,15 @@
             <image class="chat-msg-avatar" src="{{item.role === 'user' ? userAvatar : spriteAvatar}}" mode="aspectFill" />
             <view class="chat-msg-bubble-wrap">
               <view class="chat-msg-bubble">
-                <text class="chat-msg-text">{{item.content}}</text>
+                <image
+                  wx:if="{{item.imageUrl}}"
+                  class="chat-msg-image"
+                  src="{{item.imageUrl}}"
+                  mode="widthFix"
+                  bindtap="onPreviewImage"
+                  data-url="{{item.imageUrl}}"
+                />
+                <text wx:if="{{item.content}}" class="chat-msg-text">{{item.content}}</text>
               </view>
               <text wx:if="{{item.role === 'assistant' && item.content}}" class="chat-msg-ai-note">AI 生成 · 仅供参考</text>
               <view wx:if="{{item.role === 'assistant' && item.id}}" class="chat-msg-feedback">
@@ -54,17 +62,28 @@
           </view>
         </view>
       </scroll-view>
+      <view wx:if="{{pendingImage}}" class="chat-pending-wrap">
+        <view class="chat-pending-card">
+          <image class="chat-pending-img" src="{{pendingImage.previewUrl}}" mode="aspectFill" bindtap="onPreviewImage" data-url="{{pendingImage.previewUrl}}" />
+          <view wx:if="{{uploadingImage}}" class="chat-pending-mask">上传中...</view>
+          <view class="chat-pending-remove" catchtap="onRemovePendingImage">×</view>
+        </view>
+        <text class="chat-pending-tip">已选图片，可补充文字后发送</text>
+      </view>
       <view class="chat-input-wrap">
+        <view class="chat-image-btn {{loading || uploadingImage ? 'chat-image-btn-disabled' : ''}}" catchtap="onPickImage">
+          <view class="chat-image-btn-icon"></view>
+        </view>
         <input
           class="chat-input"
-          placeholder="问问精灵穿搭建议吧～"
+          placeholder="问问精灵穿搭建议，或发送照片～"
           value="{{inputText}}"
           bindinput="onInput"
           confirm-type="send"
           bindconfirm="onSend"
           focus="{{inputFocus}}"
         />
-        <view class="chat-send-btn {{inputText ? '' : 'chat-send-disabled'}}" bindtap="onSend">发送</view>
+        <view class="chat-send-btn {{(inputText || pendingImage) && !loading && !uploadingImage ? '' : 'chat-send-disabled'}}" bindtap="onSend">发送</view>
       </view>
     </view>
   </view>

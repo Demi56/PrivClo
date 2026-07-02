@@ -1,86 +1,37 @@
 /**
- * 添加衣物 - 默认智能抠图，不满意可手动微调
- * 流程：选择图片 → AI抠图 → 预览 →（可选）背面抠图 → 保存衣橱
+ * 添加衣物 - AI 识别分类 + 智能抠图 + 手动微调
+ * 流程：选择图片 → 上传 → AI识别 → 智能抠图 → 预览 → 保存衣橱
  */
 
-const { needsDualSide } = require('../../../utils/wardrobeItem.js')
-
-const CATEGORY_TABS = [
-  { id: 'tops', name: '上衣' },
-  { id: 'bottoms', name: '下装' },
-  { id: 'sets', name: '套装' },
-  { id: 'inner', name: '内搭' },
-  { id: 'shoes', name: '鞋子' },
-  { id: 'accessories', name: '其他配饰' }
-]
-
-function getSubCategories(categoryId) {
-  const map = {
-    tops: [
-      { id: 'tshirt', name: 'T恤' }, { id: 'shirt', name: '衬衫' }, { id: 'sweatshirt', name: '卫衣' },
-      { id: 'sweater', name: '毛衣' }, { id: 'knitwear', name: '针织衫' }, { id: 'blazer', name: '西装外套' },
-      { id: 'jacket', name: '夹克' }, { id: 'vest', name: '马甲' }, { id: 'trenchcoat', name: '风衣' },
-      { id: 'overcoat', name: '大衣' }, { id: 'downcoat', name: '羽绒服' }
-    ],
-    bottoms: [
-      { id: 'jeans', name: '牛仔裤' }, { id: 'sportspants', name: '运动裤' }, { id: 'shorts', name: '短裤' },
-      { id: 'dresspants', name: '西裤' }, { id: 'skirt', name: '半身裙' }
-    ],
-    sets: [
-      { id: 'dresses', name: '连衣裙' }, { id: 'casual', name: '连体牛仔' }, { id: 'homewear', name: '家居服' },
-      { id: 'businessset', name: '商务套装' }, { id: 'sportset', name: '运动套装' }
-    ],
-    inner: [
-      { id: 'baseshirt', name: '打底衫' }, { id: 'underwear', name: '内裤' }, { id: 'socks', name: '袜子' },
-      { id: 'bra', name: '文胸' }, { id: 'camisole', name: '吊带' }, { id: 'tanktop', name: '打底背心' },
-      { id: 'thermal', name: '保暖衣裤' }
-    ],
-    shoes: [
-      { id: 'casual', name: '休闲鞋' }, { id: 'sports', name: '运动鞋' }, { id: 'business', name: '商务鞋' },
-      { id: 'heels', name: '高跟鞋' }, { id: 'sandals', name: '凉鞋' }, { id: 'slippers', name: '拖鞋' },
-      { id: 'boots', name: '靴子' }, { id: 'functionalshoes', name: '功能鞋' }
-    ],
-    accessories: [
-      { id: 'hats', name: '帽子' }, { id: 'bags', name: '包包' }, { id: 'jewelry', name: '首饰' },
-      { id: 'glasses', name: '眼镜' }, { id: 'watch', name: '手表' }, { id: 'hair', name: '发饰' },
-      { id: 'scarf', name: '围巾' }, { id: 'gloves', name: '手套' }, { id: 'belt', name: '腰带' }
-    ]
-  }
-  return map[categoryId] || []
-}
-
-function getCategoryOptionsWithCustom(typeId) {
-  const base = getSubCategories(typeId)
-  const app = getApp()
-  const config = app.getPrivateSubConfig ? app.getPrivateSubConfig() : {}
-  const cfg = config[typeId]
-  const customSubs = (cfg && cfg.subs) ? cfg.subs : []
-  const baseIds = new Set(base.map(b => b.id))
-  const merged = base.slice()
-  customSubs.forEach(s => {
-    if (s.id && s.name && !baseIds.has(s.id)) {
-      merged.push({ id: s.id, name: s.name })
-      baseIds.add(s.id)
-    }
-  })
-  return merged
-}
+const {
+  getCategoryTabsWithCustom,
+  getCategoryOptionsWithCustom,
+  resolveClassification,
+  getMattingOptions,
+  shouldUseDualEngine
+} = require('../../../utils/wardrobeTaxonomy.js')
+const { getSystemMetrics } = require('../../../utils/systemInfo.js')
+const { safeNavigateBack } = require('../../../utils/safeNavigate.js')
 
 Page({
   data: {
     statusBarHeight: 20,
-    step: 'select',             // select | uploading | matting | preview | back_select | manual_refine
+    step: 'select',             // select | uploading | analyzing | matting | preview | manual_refine
     tempImagePath: '',
     originalFileID: '',
     mattedFileID: '',
-    backMattedFileID: '',
     previewUrl: '',
-    previewBackUrl: '',
-    needsBackSide: true,
-    hasManualRefined: false,    // 是否经过手动微调
+    hasManualRefined: false,
+    aiClassified: false,
+    aiSummary: '',
+    mattingOptions: null,
+    mattingEngineUsed: '',
+    preEnhanceUsed: false,
+    dualEngineUsed: false,
+    rematCount: 0,
     progress: 0,
     loadingText: '准备中...',
-    categoryTabs: CATEGORY_TABS,
+    categoryTabs: [],
     itemTypeId: 'tops',
     itemType: '上衣',
     itemCategoryId: 'sweater',
@@ -114,14 +65,13 @@ Page({
 
   onLoad() {
     try {
-      const sys = wx.getSystemInfoSync()
+      const sys = getSystemMetrics()
       const w = sys.windowWidth || 375
       const canvasSize = Math.min(600, w - 48)
       this.setData({
         statusBarHeight: sys.statusBarHeight || 20,
         canvasWidth: canvasSize,
-        canvasHeight: canvasSize,
-        needsBackSide: needsDualSide(this.data.itemTypeId)
+        canvasHeight: canvasSize
       })
       this.canvasDpr = sys.pixelRatio || 2
     } catch (e) {
@@ -131,29 +81,104 @@ Page({
   },
 
   _refreshCategoryTabs() {
-    const app = getApp()
-    const customTypes = app.getCustomTypes ? app.getCustomTypes() : []
-    const tabs = [...CATEGORY_TABS]
-    customTypes.forEach(t => {
-      if (t.id && t.name) tabs.push({ id: t.id, name: t.name })
-    })
+    const tabs = getCategoryTabsWithCustom(getApp())
     this.setData({ categoryTabs: tabs })
   },
 
+  _applyClassification(classification, mattingOptions) {
+    if (!classification) return false
+    const app = getApp()
+    const resolved = resolveClassification({
+      typeId: classification.typeId || classification.itemTypeId,
+      typeName: classification.typeName || classification.itemType,
+      categoryId: classification.categoryId || classification.itemCategoryId,
+      categoryName: classification.categoryName || classification.itemCategory,
+      summary: classification.summary || classification.aiSummary,
+      confidence: classification.confidence || classification.aiConfidence
+    }, app)
+
+    if (resolved) {
+      this.setData({
+        itemTypeId: resolved.itemTypeId,
+        itemType: resolved.itemType,
+        itemCategoryId: resolved.itemCategoryId,
+        itemCategory: resolved.itemCategory,
+        categoryOptions: resolved.categoryOptions,
+        aiClassified: true,
+        aiSummary: resolved.aiSummary || '',
+        mattingOptions: mattingOptions || getMattingOptions(resolved.itemTypeId, mattingOptions)
+      })
+      return true
+    }
+
+    // 云函数已校验时直接应用，避免二次映射失败
+    if (classification.typeId && classification.categoryId) {
+      const opts = getCategoryOptionsWithCustom(classification.typeId, app)
+      const tab = (this.data.categoryTabs || []).find((t) => t.id === classification.typeId)
+      this.setData({
+        itemTypeId: classification.typeId,
+        itemType: classification.typeName || (tab && tab.name) || classification.typeId,
+        itemCategoryId: classification.categoryId,
+        itemCategory: classification.categoryName || classification.categoryId,
+        categoryOptions: opts,
+        aiClassified: true,
+        aiSummary: classification.summary || classification.aiSummary || '',
+        mattingOptions: mattingOptions || getMattingOptions(classification.typeId, mattingOptions)
+      })
+      return true
+    }
+    return false
+  },
+
+  async _runAiClassify(fileID) {
+    this.setData({
+      step: 'analyzing',
+      progress: 45,
+      loadingText: 'AI 识别衣物中...',
+      aiClassified: false,
+      aiSummary: ''
+    })
+    this._animateProgress(45, 58, 1200)
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'classifyClothing',
+        data: { fileID }
+      })
+      const result = res.result || {}
+      if (result.success && result.classification) {
+        const applied = this._applyClassification(result.classification, result.mattingOptions)
+        if (applied) {
+          return result.mattingOptions || getMattingOptions(result.classification.typeId, result.mattingOptions)
+        }
+      }
+
+      const errMsg = result.errMsg || 'AI 识别未成功'
+      console.warn('classifyClothing:', errMsg, result.raw || result.rawText || '')
+      const toastTitle = errMsg.length > 28 ? errMsg.slice(0, 28) + '…' : errMsg
+      wx.showToast({ title: toastTitle || '未自动识别，请手动选分类', icon: 'none', duration: 2800 })
+    } catch (e) {
+      console.warn('classifyClothing failed:', e)
+      const errText = (e && (e.message || e.errMsg)) ? String(e.message || e.errMsg) : ''
+      const isTimeout = /504003|FUNCTIONS_TIME_LIMIT_EXCEEDED|timed out|timeout/i.test(errText)
+      wx.showToast({
+        title: isTimeout ? 'AI识别超时，请手动选分类' : 'AI 识别失败，请手动选分类',
+        icon: 'none',
+        duration: 2800
+      })
+    }
+    return getMattingOptions(this.data.itemTypeId)
+  },
+
   onChooseImage(sourceType) {
-    this._captureSide = 'front'
     wx.chooseMedia({
       count: 1,
       mediaType: ['image'],
       sourceType: [sourceType],
       success: (res) => {
         const path = res.tempFiles[0] && res.tempFiles[0].tempFilePath
-        if (path) {
-          if (this._captureSide === 'back') this.startBackUpload(path)
-          else this.startUpload(path)
-        }
+        if (path) this.startUpload(path)
       },
-      fail: (err) => {
+      fail: () => {
         wx.showToast({ title: sourceType === 'camera' ? '请授权摄像头' : '请授权相册', icon: 'none' })
       }
     })
@@ -167,77 +192,14 @@ Page({
     this.onChooseImage('album')
   },
 
-  onStartBackCapture() {
-    this._captureSide = 'back'
-    this.setData({ step: 'back_select' })
-  },
-
-  onTakeBackPhoto() {
-    this._captureSide = 'back'
-    this.onChooseImage('camera')
-  },
-
-  onChooseBackFromAlbum() {
-    this._captureSide = 'back'
-    this.onChooseImage('album')
-  },
-
-  async startBackUpload(tempPath) {
-    this.setData({
-      step: 'uploading',
-      progress: 0,
-      loadingText: '上传背面图...'
-    })
-    this._animateProgress(0, 40, 800)
-    const cloudPath = `wardrobe/raw/back_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.jpg`
-    try {
-      const res = await wx.cloud.uploadFile({ cloudPath, filePath: tempPath })
-      this.setData({ progress: 40 })
-      this.runBackMatting(res.fileID)
-    } catch (e) {
-      console.error('back upload failed:', e)
-      wx.showToast({ title: '背面上传失败', icon: 'none' })
-      this.setData({ step: 'preview' })
-    }
-  },
-
-  async runBackMatting(fileID) {
-    this.setData({ step: 'matting', loadingText: '背面抠图中...' })
-    this._animateProgress(40, 85, 2000)
-    try {
-      const res = await wx.cloud.callFunction({ name: 'matting', data: { fileID } })
-      const result = res.result || {}
-      const backMattedFileID = result.fileID
-      if (result.errMsg || !backMattedFileID) throw new Error(result.errMsg || '背面抠图失败')
-      let previewBackUrl = result.tempFileURL || ''
-      if (!previewBackUrl) {
-        try {
-          const urlRes = await wx.cloud.getTempFileURL({ fileList: [backMattedFileID] })
-          if (urlRes.fileList && urlRes.fileList[0] && urlRes.fileList[0].tempFileURL) {
-            previewBackUrl = urlRes.fileList[0].tempFileURL
-          }
-        } catch (e) {}
-      }
-      this._animateProgress(85, 100, 300)
-      this.setData({
-        step: 'preview',
-        backMattedFileID,
-        previewBackUrl,
-        progress: 100
-      })
-      wx.showToast({ title: '背面已录入', icon: 'success' })
-    } catch (e) {
-      wx.showToast({ title: e.message || '背面抠图失败', icon: 'none' })
-      this.setData({ step: 'preview', progress: 0 })
-    }
-  },
-
   async startUpload(tempPath) {
     this.setData({
       step: 'uploading',
       tempImagePath: tempPath,
       progress: 0,
-      loadingText: '上传中...'
+      loadingText: '上传中...',
+      aiClassified: false,
+      aiSummary: ''
     })
     this._animateProgress(0, 40, 800)
 
@@ -248,7 +210,8 @@ Page({
         filePath: tempPath
       })
       this.setData({ originalFileID: res.fileID, progress: 40 })
-      this.runMatting(res.fileID)
+      const mattingOptions = await this._runAiClassify(res.fileID)
+      this.runMatting(res.fileID, mattingOptions)
     } catch (e) {
       console.error('upload failed:', e)
       wx.showToast({ title: '上传失败', icon: 'none' })
@@ -256,18 +219,36 @@ Page({
     }
   },
 
-  async runMatting(fileID) {
+  async runMatting(fileID, mattingOptions, extra) {
+    const opts = mattingOptions || this.data.mattingOptions || getMattingOptions(this.data.itemTypeId)
+    const isRemat = extra && extra.isRemat
+    const useDual = isRemat || shouldUseDualEngine(opts)
+    if (isRemat) {
+      opts.dualEngine = true
+      opts.preEnhance = true
+    }
+    let loadingText = '智能抠图中...'
+    if (useDual) {
+      loadingText = isRemat ? 'AI 精修双引擎择优...' : '双引擎抠图择优中...'
+    } else if (isRemat) {
+      loadingText = 'AI 精修抠图中...'
+    }
     this.setData({
       step: 'matting',
-      progress: 40,
-      loadingText: '智能抠图中...'
+      progress: isRemat ? 55 : 60,
+      loadingText,
+      mattingOptions: opts
     })
-    this._animateProgress(40, 85, 2000)
+    this._animateProgress(isRemat ? 55 : 60, 92, useDual ? 3200 : (isRemat ? 2800 : 2200))
 
     try {
       const res = await wx.cloud.callFunction({
         name: 'matting',
-        data: { fileID }
+        data: {
+          fileID,
+          mattingOptions: opts,
+          dualEngine: useDual
+        }
       })
       const result = res.result || {}
       const mattedFileID = result.fileID
@@ -296,13 +277,36 @@ Page({
         mattedFileID,
         previewUrl,
         progress: 100,
-        hasManualRefined: false
+        hasManualRefined: false,
+        mattingEngineUsed: result.engineUsed || opts.recommendedEngine || 'general',
+        preEnhanceUsed: !!result.preEnhanceUsed,
+        dualEngineUsed: !!result.dualEngineUsed,
+        rematCount: isRemat ? (this.data.rematCount + 1) : this.data.rematCount
       })
     } catch (e) {
       console.warn('matting failed:', e)
       wx.showToast({ title: e.message || '抠图失败，请重试', icon: 'none' })
-      this.setData({ step: 'select', progress: 0 })
+      this.setData({ step: isRemat ? 'preview' : 'select', progress: isRemat ? 100 : 0 })
     }
+  },
+
+  _buildRematOptions() {
+    const opts = { ...(this.data.mattingOptions || getMattingOptions(this.data.itemTypeId)) }
+    opts.dualEngine = true
+    opts.preEnhance = true
+    opts.engine = 'auto'
+    return opts
+  },
+
+  onRematEnhanced() {
+    const { originalFileID, step } = this.data
+    if (!originalFileID) {
+      wx.showToast({ title: '原图不可用，请重新选择', icon: 'none' })
+      return
+    }
+    if (step !== 'preview') return
+    const nextOpts = this._buildRematOptions()
+    this.runMatting(originalFileID, nextOpts, { isRemat: true })
   },
 
   onManualRefine() {
@@ -758,11 +762,11 @@ Page({
 
   onEditType() {
     this._refreshCategoryTabs()
-    this.setData({ showTypePicker: true, categoryOptions: getCategoryOptionsWithCustom(this.data.itemTypeId) })
+    this.setData({ showTypePicker: true, categoryOptions: getCategoryOptionsWithCustom(this.data.itemTypeId, getApp()) })
   },
 
   onEditCategory() {
-    this.setData({ showCategoryPicker: true, categoryOptions: getCategoryOptionsWithCustom(this.data.itemTypeId) })
+    this.setData({ showCategoryPicker: true, categoryOptions: getCategoryOptionsWithCustom(this.data.itemTypeId, getApp()) })
   },
 
   onSelectType(e) {
@@ -772,7 +776,7 @@ Page({
       this.setData({ showTypePicker: false, showCustomTypeInput: true, customInputValue: '' })
       return
     }
-    const opts = getCategoryOptionsWithCustom(id)
+    const opts = getCategoryOptionsWithCustom(id, getApp())
     const first = opts[0]
     this.setData({
       itemTypeId: id,
@@ -781,7 +785,8 @@ Page({
       itemCategory: first ? first.name : name,
       categoryOptions: opts,
       showTypePicker: false,
-      needsBackSide: needsDualSide(id)
+      aiClassified: false,
+      mattingOptions: getMattingOptions(id)
     })
   },
 
@@ -792,7 +797,7 @@ Page({
       this.setData({ showCategoryPicker: false, showCustomCategoryInput: true, customInputValue: '' })
       return
     }
-    this.setData({ itemCategoryId: id, itemCategory: name, showCategoryPicker: false })
+    this.setData({ itemCategoryId: id, itemCategory: name, showCategoryPicker: false, aiClassified: false })
   },
 
   onCustomTypeInput(e) {
@@ -843,7 +848,7 @@ Page({
     subs.push({ id: newId, name })
     const newConfig = Object.assign({}, config, { [typeId]: Object.assign({}, cfg, { subs }) })
     if (app.savePrivateSubConfig) app.savePrivateSubConfig(newConfig)
-    const opts = getCategoryOptionsWithCustom(typeId)
+    const opts = getCategoryOptionsWithCustom(typeId, getApp())
     this.setData({
       itemCategoryId: newId,
       itemCategory: name,
@@ -866,7 +871,7 @@ Page({
 
   onSaveToWardrobe() {
     if (!getApp().requireGuestLoginForSave()) return
-    const { mattedFileID, backMattedFileID, itemTypeId, itemCategoryId } = this.data
+    const { mattedFileID, itemTypeId, itemCategoryId } = this.data
     if (!mattedFileID || !itemTypeId || !itemCategoryId) {
       wx.showToast({ title: '请选择分类', icon: 'none' })
       return
@@ -874,10 +879,10 @@ Page({
     getApp().addUserWardrobeItem(itemTypeId, itemCategoryId, {
       src: mattedFileID,
       srcFront: mattedFileID,
-      srcBack: backMattedFileID || ''
+      srcBack: ''
     })
     wx.showToast({ title: '已保存到衣橱', icon: 'success' })
-    setTimeout(() => wx.navigateBack(), 1200)
+    setTimeout(() => safeNavigateBack(), 1200)
   },
 
   onRetry() {
@@ -886,10 +891,15 @@ Page({
       tempImagePath: '',
       originalFileID: '',
       mattedFileID: '',
-      backMattedFileID: '',
       previewUrl: '',
-      previewBackUrl: '',
       hasManualRefined: false,
+      aiClassified: false,
+      aiSummary: '',
+      mattingOptions: null,
+      mattingEngineUsed: '',
+      preEnhanceUsed: false,
+      dualEngineUsed: false,
+      rematCount: 0,
       progress: 0
     })
     this.strokeHistory = []
@@ -897,11 +907,11 @@ Page({
   },
 
   onBack() {
-    if (this.data.step === 'uploading' || this.data.step === 'matting') {
+    if (this.data.step === 'uploading' || this.data.step === 'analyzing' || this.data.step === 'matting') {
       wx.showModal({
         title: '确认退出',
         content: '当前处理未完成，确定要退出吗？',
-        success: (res) => { if (res.confirm) wx.navigateBack() }
+        success: (res) => { if (res.confirm) safeNavigateBack() }
       })
     } else if (this.data.step === 'manual_refine') {
       if (this.strokeHistory.length > 0) {
@@ -916,7 +926,7 @@ Page({
         this.setData({ step: 'preview' })
       }
     } else {
-      wx.navigateBack()
+      safeNavigateBack()
     }
   }
 })

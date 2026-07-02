@@ -34,7 +34,7 @@
       <view wx:if="{{tryonExpanded}}" class="tryon-card">
         <view class="tryon-favorite-btn {{tryonFavorited ? 'favorited' : ''}}" catchtap="onTryonFavorite">{{tryonFavorited ? '♥' : '♡'}}</view>
         <view class="tryon-content">
-          <view class="tryon-model-wrap" bindtap="onModelTap">
+          <view class="tryon-model-wrap">
             <image class="tryon-model-img" src="{{modelImgSrc}}" mode="aspectFit" />
           </view>
           <view class="tryon-items-area">

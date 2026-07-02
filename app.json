@@ -63,7 +63,6 @@
       "name": "wardrobe",
       "pages": [
         "pages/add-clothing/add-clothing",
-        "pages/wardrobe-inner/wardrobe-inner",
         "pages/official-prefit/official-prefit",
         "pages/resale/resale",
         "pages/category-detail/category-detail",

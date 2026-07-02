@@ -12,6 +12,10 @@
     "wx-server-sdk": "~3.0.4",
     "cos-nodejs-sdk-v5": "^2.13.2"
   },
+  "cloudfunctionConfig": {
+    "timeout": 60,
+    "memorySize": 512
+  },
   "keywords": [],
   "type": "commonjs"
 }

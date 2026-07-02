@@ -18,7 +18,12 @@
         <text class="guide-icon">📷</text>
       </view>
       <text class="guide-title">选择衣物图片</text>
-      <text class="guide-desc">拍照或从相册选择，AI 将自动去除背景</text>
+      <text class="guide-desc">拍照或从相册选择，AI 将自动识别分类并去除背景</text>
+      <view class="guide-tips">
+        <text class="guide-tip">· 纯色背景、光线均匀，抠图更干净</text>
+        <text class="guide-tip">· 平铺拍摄效果最佳，挂拍/穿着也可智能处理</text>
+        <text class="guide-tip">· 避免杂乱背景、强反光与阴影</text>
+      </view>
     </view>
     <view class="action-buttons">
       <view class="action-btn action-btn-camera" bindtap="onTakePhoto">
@@ -43,7 +48,7 @@
   </view>
 
   <!-- 步骤2&3：上传中 / 抠图中 -->
-  <view class="step-content step-loading" wx:elif="{{step === 'uploading' || step === 'matting'}}">
+  <view class="step-content step-loading" wx:elif="{{step === 'uploading' || step === 'analyzing' || step === 'matting'}}">
     <view class="loading-card">
       <view class="loading-spinner">
         <view class="spinner-ring"></view>
@@ -51,6 +56,13 @@
         <view class="spinner-ring spinner-ring-3"></view>
       </view>
       <text class="loading-text">{{loadingText}}</text>
+      <view class="loading-steps">
+        <text class="loading-step {{step === 'uploading' || step === 'analyzing' || step === 'matting' ? 'loading-step-done' : ''}}">上传</text>
+        <text class="loading-step-dot">·</text>
+        <text class="loading-step {{step === 'analyzing' || step === 'matting' ? 'loading-step-active' : ''}} {{step === 'matting' ? 'loading-step-done' : ''}}">AI识别</text>
+        <text class="loading-step-dot">·</text>
+        <text class="loading-step {{step === 'matting' ? 'loading-step-active' : ''}}">抠图</text>
+      </view>
       <view class="progress-bar-wrap">
         <view class="progress-bar-bg">
           <view class="progress-bar-fill" style="width: {{progress}}%"></view>
@@ -61,26 +73,21 @@
   </view>
 
   <!-- 步骤4：抠图预览 + 保存 -->
-  <view class="step-content" wx:elif="{{step === 'preview'}}">
+  <view class="step-content step-preview" wx:elif="{{step === 'preview'}}">
     <view class="preview-card">
-      <view class="preview-badge">{{hasManualRefined ? '✏️ 已微调' : '✨ 智能抠图'}}</view>
-      <view class="preview-dual" wx:if="{{previewBackUrl}}">
-        <view class="preview-side">
-          <text class="preview-side-label">正面</text>
-          <image class="preview-img preview-img-dual" src="{{previewUrl}}" mode="aspectFit" />
-        </view>
-        <view class="preview-side">
-          <text class="preview-side-label">背面</text>
-          <image class="preview-img preview-img-dual" src="{{previewBackUrl}}" mode="aspectFit" />
-        </view>
-      </view>
-      <view class="preview-img-wrap" wx:else>
+      <view class="preview-badge">{{hasManualRefined ? '已微调' : (dualEngineUsed ? 'AI双引擎择优' : (mattingEngineUsed === 'goods' ? 'AI商品抠图' : 'AI通用抠图'))}}</view>
+      <view class="preview-img-wrap">
         <image wx:if="{{previewUrl}}" class="preview-img" src="{{previewUrl}}" mode="aspectFit" />
         <view wx:else class="preview-placeholder">预览加载中...</view>
       </view>
     </view>
     <view class="category-card">
-      <text class="category-title">选择分类</text>
+      <view class="category-head">
+        <text class="category-title">选择分类</text>
+        <text wx:if="{{aiClassified}}" class="category-ai-tag">AI识别</text>
+      </view>
+      <text wx:if="{{aiClassified && aiSummary}}" class="category-ai-summary">{{aiSummary}}</text>
+      <text wx:elif="{{aiClassified}}" class="category-ai-summary">已为你预选类型与品类，点击可修改</text>
       <view class="category-tags">
         <view class="category-tag" bindtap="onEditType">
           <text class="tag-label">类型</text>
@@ -94,51 +101,27 @@
         </view>
       </view>
     </view>
-    <view class="footer-actions">
-      <button class="btn-refine" bindtap="onManualRefine">✏️ 手动微调</button>
-      <button
-        wx:if="{{needsBackSide && !backMattedFileID}}"
-        class="btn-back-side"
-        bindtap="onStartBackCapture"
-      >📷 录入背面（3D 推荐）</button>
-      <button class="btn-save" bindtap="onSaveToWardrobe">
-        <text class="btn-save-icon">✓</text>
-        <text>保存到衣橱</text>
-      </button>
-      <button class="btn-retry" bindtap="onRetry">重新选择</button>
-    </view>
-  </view>
-
-  <!-- 背面拍摄 -->
-  <view class="step-content" wx:elif="{{step === 'back_select'}}">
-    <view class="guide-card">
-      <view class="guide-icon-wrap">
-        <text class="guide-icon">🔄</text>
-      </view>
-      <text class="guide-title">录入衣物背面</text>
-      <text class="guide-desc">3D 试穿旋转时可展示背面；平铺或挂拍均可</text>
-    </view>
-    <view class="action-buttons">
-      <view class="action-btn action-btn-camera" bindtap="onTakeBackPhoto">
-        <view class="action-btn-icon-ring">
-          <view class="action-btn-icon-svg action-btn-icon-camera"></view>
+    <view class="preview-footer">
+      <view class="remat-block" wx:if="{{!hasManualRefined}}">
+        <view class="remat-block-head">
+          <text class="remat-block-label">可选优化</text>
+          <text class="remat-block-desc">背景仍有残留时，可启用双引擎对比择优</text>
         </view>
-        <view class="action-btn-copy">
-          <text class="action-btn-text">拍背面</text>
-          <text class="action-btn-hint">现场拍摄</text>
+        <view class="remat-block-btn" catchtap="onRematEnhanced">
+          <text class="remat-block-btn-text">AI 双引擎精修</text>
         </view>
       </view>
-      <view class="action-btn action-btn-album" bindtap="onChooseBackFromAlbum">
-        <view class="action-btn-icon-ring action-btn-icon-ring-album">
-          <view class="action-btn-icon-svg action-btn-icon-album"></view>
+      <view class="preview-actions">
+        <view class="preview-actions-main" bindtap="onSaveToWardrobe">
+          <text class="preview-actions-main-text">保存到衣橱</text>
         </view>
-        <view class="action-btn-copy">
-          <text class="action-btn-text">相册</text>
-          <text class="action-btn-hint">选择背面图</text>
+        <view class="preview-actions-sub">
+          <view class="preview-actions-sub-btn" bindtap="onManualRefine">手动微调</view>
+          <view class="preview-actions-sub-divider"></view>
+          <view class="preview-actions-sub-btn preview-actions-sub-btn-muted" bindtap="onRetry">重新选择</view>
         </view>
       </view>
     </view>
-    <button class="btn-retry back-select-cancel" bindtap="onBack">返回预览</button>
   </view>
 
   <!-- 手动微调：基于 AI 结果擦除/复原 -->

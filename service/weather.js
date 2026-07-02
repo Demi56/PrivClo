@@ -13,6 +13,7 @@ const {
   HAS_CREDENTIALS
 } = require('../config/weather.js')
 const { iconToWeatherEffect } = require('../utils/weatherEffect.js')
+const geoResolve = require('../utils/geoResolve.js')
 
 function request(options) {
   return new Promise((resolve, reject) => {
@@ -67,6 +68,10 @@ function callWeatherCloudFunction(location, type, options = {}) {
       location,
       type: type || (location.includes(',') ? 'coords' : 'city'),
       includeForecast: !!options.includeForecast
+    }
+    if (options.latitude != null && options.longitude != null) {
+      data.latitude = Number(options.latitude)
+      data.longitude = Number(options.longitude)
     }
     console.log(WEATHER_LOG_TAG, 'callFunction:', data)
     wx.cloud.callFunction({
@@ -133,21 +138,26 @@ function getWeatherByCoords(lat, lng, options = {}) {
   if (!HAS_CREDENTIALS) {
     return Promise.reject(new Error('未配置天气凭据'))
   }
-  const location = `${lng.toFixed(2)},${lat.toFixed(2)}`
+  const location = geoResolve.formatCoordLocation(lat, lng)
   if (USE_CLOUD_WEATHER) {
-    return callWeatherCloudFunction(location, 'coords', options)
+    return callWeatherCloudFunction(location, 'coords', {
+      ...options,
+      latitude: lat,
+      longitude: lng
+    })
   }
   let geoData
   const geoUrl = `${GEO_API_BASE}/v2/city/lookup`
   const weatherUrl = `${WEATHER_API_BASE}/v7/weather/now`
-  return buildAuthRequest(geoUrl, { location })
+  return buildAuthRequest(geoUrl, { location, number: 5 })
     .then(opts => request(opts))
     .then(geoRes => {
       geoData = geoRes.data
       if (geoData.code !== '200' || !geoData.location || geoData.location.length === 0) {
         throw new Error(geoData.code || 'geo_fail')
       }
-      return buildAuthRequest(weatherUrl, { location })
+      const loc = geoResolve.pickBestGeoLocation(geoData.location, lat, lng)
+      return buildAuthRequest(weatherUrl, { location: loc.id || location })
     })
     .then(opts => request(opts))
     .then(weatherRes => {
@@ -155,8 +165,8 @@ function getWeatherByCoords(lat, lng, options = {}) {
       if (weather.code !== '200' || !weather.now) {
         throw new Error(weather.code || 'weather_fail')
       }
-      const loc = geoData.location[0]
-      const city = loc.adm2 || loc.name || '未知'
+      const loc = geoResolve.pickBestGeoLocation(geoData.location, lat, lng)
+      const city = geoResolve.resolveCityDisplayName(loc)
       const now = weather.now
       return {
         city,
@@ -181,30 +191,31 @@ function getWeatherByCity(cityName, options = {}) {
   }
   const geoUrl = `${GEO_API_BASE}/v2/city/lookup`
   const weatherUrl = `${WEATHER_API_BASE}/v7/weather/now`
-  return buildAuthRequest(geoUrl, { location: cityName })
+  return buildAuthRequest(geoUrl, { location: cityName, number: 5 })
     .then(opts => request(opts))
     .then(res => {
       const data = res.data
       if (data.code !== '200' || !data.location || data.location.length === 0) {
         throw new Error('city_not_found')
       }
-      const locationId = data.location[0].id
-      return buildAuthRequest(weatherUrl, { location: locationId })
-    })
-    .then(opts => request(opts))
-    .then(res => {
-      const data = res.data
-      if (data.code !== '200' || !data.now) {
-        throw new Error(data.code || 'weather_fail')
-      }
-      const now = data.now
-      return {
-        city: cityName,
-        temp: String(now.temp || ''),
-        weather: now.text || '晴',
-        iconCode: String(now.icon || '100'),
-        weatherIcon: iconToWeatherIcon(now.icon)
-      }
+      const geoLoc = data.location[0]
+      const resolvedCity = geoResolve.resolveCityDisplayName(geoLoc) || cityName
+      return buildAuthRequest(weatherUrl, { location: geoLoc.id })
+        .then(opts => request(opts))
+        .then(weatherRes => {
+          const weather = weatherRes.data
+          if (weather.code !== '200' || !weather.now) {
+            throw new Error(weather.code || 'weather_fail')
+          }
+          const now = weather.now
+          return {
+            city: resolvedCity,
+            temp: String(now.temp || ''),
+            weather: now.text || '晴',
+            iconCode: String(now.icon || '100'),
+            weatherIcon: iconToWeatherIcon(now.icon)
+          }
+        })
     })
 }
 

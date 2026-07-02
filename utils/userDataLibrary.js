@@ -150,8 +150,6 @@ function summarizePoints(app) {
 function summarizePersonalization(app) {
   let wardrobeTheme = '经典奶油'
   let diarySkin = '蓝海梦境'
-  let indoorScene = ''
-  let outdoorScene = ''
   let solidBgColor = ''
   try {
     const themeMod = require('./wardrobeTheme.js')
@@ -164,17 +162,10 @@ function summarizePersonalization(app) {
     diarySkin = DIARY_SKIN_NAMES[idx] || ('皮肤' + idx)
   } catch (e) {}
   try {
-    const sceneMod = require('./homeSceneBg.js')
-    const indoor = sceneMod.resolveScene('indoor', sceneMod.loadSceneId('indoor'))
-    const outdoor = sceneMod.resolveScene('outdoor', sceneMod.loadSceneId('outdoor'))
-    indoorScene = indoor?.name || ''
-    outdoorScene = outdoor?.name || ''
-  } catch (e) {}
-  try {
     const c = wx.getStorageSync('privclo_solid_bg_color')
     if (c) solidBgColor = String(c)
   } catch (e) {}
-  return { wardrobeTheme, diarySkin, indoorScene, outdoorScene, solidBgColor }
+  return { wardrobeTheme, diarySkin, solidBgColor }
 }
 
 function summarizeNotificationSettings(app) {
@@ -330,8 +321,6 @@ function formatUserDataLibraryForPrompt(library) {
   const pzParts = [
     pz.diarySkin ? `日记皮肤：${pz.diarySkin}` : '',
     pz.wardrobeTheme ? `衣橱主题：${pz.wardrobeTheme}` : '',
-    pz.indoorScene ? `室内背景：${pz.indoorScene}` : '',
-    pz.outdoorScene ? `室外背景：${pz.outdoorScene}` : '',
     pz.solidBgColor ? `纯色背景：${pz.solidBgColor}` : ''
   ].filter(Boolean)
   if (pzParts.length) lines.push(`【个性化设置】${pzParts.join('；')}`)

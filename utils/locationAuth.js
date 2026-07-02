@@ -69,6 +69,8 @@ function getLocationCoords() {
   return new Promise(function (resolve, reject) {
     wx.getLocation({
       type: 'gcj02',
+      isHighAccuracy: true,
+      highAccuracyExpireTime: 4000,
       success: resolve,
       fail: function (err) {
         logLocationFail('get_location', err)

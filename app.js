@@ -221,14 +221,16 @@ App({
     if (!Array.isArray(messages)) return
     try {
       const sanitized = messages
-        .filter((m) => m && (m.role === 'user' || m.role === 'assistant') && m.content)
+        .filter((m) => m && (m.role === 'user' || m.role === 'assistant') && (m.content || m.imageUrl || m.imageFileID))
         .map((m) => ({
           id: m.id,
           role: m.role,
-          content: m.content,
+          content: m.content || '',
           time: m.time != null ? m.time : undefined,
           feedback: m.feedback || '',
-          userMsg: m.userMsg || ''
+          userMsg: m.userMsg || '',
+          imageUrl: m.imageUrl || '',
+          imageFileID: m.imageFileID || ''
         }))
       wx.setStorageSync(CHAT_HISTORY_KEY, sanitized.slice(-100))
     } catch (e) {

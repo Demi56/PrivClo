@@ -128,26 +128,6 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Crect x='5' y='5' width='14' height='14' rx='3' fill='rgba(77,208,225,0.16)' stroke='%234DD0E1' stroke-width='1.8'/%3E%3Cpath d='M8 16l3-3.5 2 2 3-4' stroke='%2326C6DA' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
-/* 室内：房屋 */
-.bg-mode-chip-indoor .bg-mode-icon {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M4.5 10.8L12 5l7.5 5.8V18a1.2 1.2 0 01-1.2 1.2H15v-5.2H9V19.2H5.7A1.2 1.2 0 014.5 18v-7.2z' fill='rgba(102,102,102,0.1)' stroke='%23666666' stroke-width='1.7' stroke-linejoin='round'/%3E%3Crect x='10.2' y='13.2' width='3.6' height='3.6' rx='0.6' stroke='%23666666' stroke-width='1.4'/%3E%3C/svg%3E");
-}
-
-.bg-mode-item-active .bg-mode-chip-indoor .bg-mode-icon,
-.bg-mode-item-pressed .bg-mode-chip-indoor .bg-mode-icon {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M4.5 10.8L12 5l7.5 5.8V18a1.2 1.2 0 01-1.2 1.2H15v-5.2H9V19.2H5.7A1.2 1.2 0 014.5 18v-7.2z' fill='rgba(77,208,225,0.14)' stroke='%234DD0E1' stroke-width='1.8' stroke-linejoin='round'/%3E%3Crect x='10.2' y='13.2' width='3.6' height='3.6' rx='0.6' stroke='%2326C6DA' stroke-width='1.5'/%3E%3C/svg%3E");
-}
-
-/* 室外：日照远山 */
-.bg-mode-chip-outdoor .bg-mode-icon {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Ccircle cx='17.2' cy='7.2' r='2.4' fill='rgba(102,102,102,0.18)' stroke='%23666666' stroke-width='1.6'/%3E%3Cpath d='M3.5 17.5l5.2-5.8 3.2 2.8L14.8 11l6.2 6.5' stroke='%23666666' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M3 18.5h18' stroke='%23666666' stroke-width='1.5' stroke-linecap='round' opacity='0.45'/%3E%3C/svg%3E");
-}
-
-.bg-mode-item-active .bg-mode-chip-outdoor .bg-mode-icon,
-.bg-mode-item-pressed .bg-mode-chip-outdoor .bg-mode-icon {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Ccircle cx='17.2' cy='7.2' r='2.4' fill='rgba(77,208,225,0.2)' stroke='%234DD0E1' stroke-width='1.7'/%3E%3Cpath d='M3.5 17.5l5.2-5.8 3.2 2.8L14.8 11l6.2 6.5' stroke='%2326C6DA' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M3 18.5h18' stroke='%234DD0E1' stroke-width='1.5' stroke-linecap='round' opacity='0.35'/%3E%3C/svg%3E");
-}
-
 /* 纯色背景：色值小弹窗（图标下方） */
 .solid-color-popup {
   position: absolute;
@@ -342,160 +322,13 @@
   transition: background 0.3s ease;
 }
 
-.model-bg-default,
-.model-bg-outdoor {
+.model-bg-default {
   background: var(--theme-gradient-brand, linear-gradient(180deg, #EFF6FC 0%, #D4EDFA 35%, #A7E0F6 70%, #7DD3FC 100%));
 }
 
 .model-bg-solid {
   /* 实际色值由 solidBgColor 内联样式覆盖 */
   background: #EFF6FC;
-}
-
-.model-bg-indoor {
-  background: var(--theme-gradient-brand, linear-gradient(180deg, #EFF6FC 0%, #D4EDFA 35%, #A7E0F6 70%, #7DD3FC 100%));
-}
-
-.model-bg-scene-wrap {
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1;
-  overflow: hidden;
-}
-
-.model-bg-scene-image {
-  width: 100%;
-  height: 100%;
-}
-
-.model-bg-scene-mask {
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.06);
-  pointer-events: none;
-}
-
-/* 室内 / 室外场景选择弹窗 */
-.scene-picker-popup {
-  position: absolute;
-  left: 50%;
-  top: calc(100% + 8rpx);
-  transform: translateX(-50%);
-  z-index: 20;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.scene-picker-popup-outdoor {
-  left: auto;
-  right: 0;
-  transform: none;
-}
-
-.scene-picker-popup-arrow {
-  width: 0;
-  height: 0;
-  border-left: 12rpx solid transparent;
-  border-right: 12rpx solid transparent;
-  border-bottom: 12rpx solid rgba(255, 255, 255, 0.95);
-  filter: drop-shadow(0 -2rpx 4rpx rgba(0, 0, 0, 0.06));
-}
-
-.scene-picker-popup-outdoor .scene-picker-popup-arrow {
-  margin-right: 20rpx;
-  align-self: flex-end;
-}
-
-.scene-picker-popup-panel {
-  width: 320rpx;
-  padding: 20rpx;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 20rpx;
-  box-shadow: 0 8rpx 28rpx rgba(0, 0, 0, 0.12);
-  backdrop-filter: blur(12rpx);
-  box-sizing: border-box;
-}
-
-.scene-picker-popup-panel-wide {
-  width: 360rpx;
-}
-
-.scene-picker-head {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16rpx;
-}
-
-.scene-picker-title {
-  font-size: 24rpx;
-  color: #333333;
-  font-weight: 500;
-}
-
-.scene-picker-close {
-  width: 40rpx;
-  height: 40rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32rpx;
-  line-height: 1;
-  color: #999999;
-}
-
-.scene-picker-scroll {
-  max-height: 420rpx;
-}
-
-.scene-picker-grid {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 12rpx;
-}
-
-.scene-picker-item {
-  width: calc(50% - 6rpx);
-  box-sizing: border-box;
-}
-
-.scene-picker-thumb {
-  width: 100%;
-  height: 96rpx;
-  border-radius: 12rpx;
-  background: #E5E7EB;
-  border: 2rpx solid transparent;
-  box-sizing: border-box;
-}
-
-.scene-picker-item-active .scene-picker-thumb {
-  border-color: #4DD0E1;
-  box-shadow: 0 0 0 4rpx rgba(77, 208, 225, 0.28);
-}
-
-.scene-picker-name {
-  display: block;
-  margin-top: 6rpx;
-  font-size: 20rpx;
-  color: #666666;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.scene-picker-item-active .scene-picker-name {
-  color: #333333;
-  font-weight: 500;
 }
 
 /* 天气动画层：位于背景之上、模特之下 */

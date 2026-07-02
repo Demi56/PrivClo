@@ -1,11 +1,11 @@
 {
-  "name": "chatWithAssistant",
+  "name": "classifyClothing",
   "version": "1.0.0",
-  "description": "精灵小管家 AI 对话 - 云开发 AI 扩展调用混元（成长计划免费额度）",
+  "description": "混元视觉识别衣物类型品类",
   "main": "index.js",
   "dependencies": {
     "@cloudbase/node-sdk": "^3.16.0",
-    "wx-server-sdk": "~2.6.3"
+    "wx-server-sdk": "3.0.5-beta.1"
   },
   "cloudfunctionConfig": {
     "timeout": 60,
