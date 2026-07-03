@@ -27,7 +27,6 @@
     "pages/wardrobe/wardrobe",
     "pages/recommend/recommend",
     "pages/street-to-outfit/street-to-outfit",
-    "pages/tryon/tryon",
     "pages/mine/mine"
   ],
   "subpackages": [

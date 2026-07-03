@@ -9,6 +9,7 @@ const { getSystemMetrics } = require('../../../utils/systemInfo.js')
 const { emptyOutfit, applyTabPickToOutfit, removeSrcFromOutfit } = require('../../../utils/tryonOutfitHelpers.js')
 const { getModelImagePath } = require('../../../utils/clothingPositions.js')
 const tryonFavorite = require('../../../utils/tryonFavorite.js')
+const tryonItemSlotsSync = require('../../../utils/tryonItemSlotsSync.js')
 const wardrobeNav = require('../../utils/wardrobeNav.js')
 const { safeNavigateBack } = require('../../../utils/safeNavigate.js')
 
@@ -106,14 +107,9 @@ Page({
       try { categoryId = decodeURIComponent(categoryId) } catch (e) {}
     }
     const gender = options.gender || 'female'
-    const defaultTryonItems = []
     const app = getApp()
-    let tryonItemSlots = app.globalData.tryonItemSlots
-    if (!tryonItemSlots || !Array.isArray(tryonItemSlots)) {
-      tryonItemSlots = Array(9).fill('').map((_, i) => defaultTryonItems[i] || '')
-      app.globalData.tryonItemSlots = tryonItemSlots
-    }
-    const tryonItems = tryonItemSlots.filter(function (s) { return s })
+    const tryonItemSlots = tryonItemSlotsSync.getTryonItemSlotsFromApp(app)
+    const tryonItems = tryonItemSlotsSync.getFilledItems(tryonItemSlots)
     const subCategories = this.loadSubCategoriesForCategory(categoryId)
     const titleMap = { tops: '上衣区', bottoms: '下装区', sets: '套装区', inner: '内搭区', shoes: '鞋子区', accessories: '其他配饰区' }
     let categoryTitle = titleMap[categoryId]
@@ -466,12 +462,19 @@ Page({
     }
   },
 
+  syncTryonItemSlotsFromApp() {
+    const tryonItemSlots = tryonItemSlotsSync.getTryonItemSlotsFromApp()
+    const tryonItems = tryonItemSlotsSync.getFilledItems(tryonItemSlots)
+    this.setData({ tryonItemSlots, tryonItems })
+  },
+
   onShow() {
     const app = getApp()
     const modelDisplaySrc = app.globalData.modelDisplaySrc
     if (modelDisplaySrc) {
       this.setData({ modelDisplaySrc, modelImgSrc: modelDisplaySrc })
     }
+    this.syncTryonItemSlotsFromApp()
     // 从录入页返回时刷新子分类（含用户新录入的单品）
     const categoryId = this.data.activeTab
     const subCategories = this.loadSubCategoriesForCategory(categoryId)
@@ -540,7 +543,7 @@ Page({
       return
     }
     const app = getApp()
-    if (slots.length) app.globalData.tryonItemSlots = slots.slice()
+    if (slots.length) tryonItemSlotsSync.setTryonItemSlotsToApp(slots, app)
     this.setData({ showFavoriteTagPopup: false, tryonFavorited: true })
     wx.showToast({ title: '已保存到收藏区', icon: 'success' })
   },
@@ -567,33 +570,8 @@ Page({
   },
 
   onTryOn() {
-    if (this._tryonNavigating) return
-    this._tryonNavigating = true
-    var self = this
     if (getApp().incrementStyledCount) getApp().incrementStyledCount()
-    const g = this.data.gender || 'female'
-    const app = getApp()
-    if (!app.globalData) app.globalData = {}
-    app.globalData.tryonItemSlots = (this.data.tryonItemSlots || []).slice()
-    app.globalData.tryonLaunchContext = {
-      activeTab: this.data.activeTab,
-      prefitMode: 'private',
-      categoryTabs: this.data.categoryTabs,
-      categoryId: this.data.categoryId
-    }
-    wx.navigateTo({
-      url: '/pages/tryon/tryon?gender=' + encodeURIComponent(g),
-      fail: function (err) {
-        self._tryonNavigating = false
-        console.error('category-detail tryon navigateTo fail', err)
-        wx.showToast({ title: '无法打开试穿页', icon: 'none' })
-      },
-      complete: function () {
-        setTimeout(function () {
-          self._tryonNavigating = false
-        }, 400)
-      }
-    })
+    wx.showToast({ title: '试穿功能开发中', icon: 'none' })
   },
 
   onSlotTap(e) {
@@ -609,18 +587,14 @@ Page({
     var idx = e.currentTarget.dataset.index
     if (idx === undefined) return
     var slots = this.data.tryonItemSlots || []
-    var newSlots = slots.slice()
-    newSlots[idx] = ''
-    var filled = newSlots.filter(function (s) { return s })
-    var minLen = Math.max(9, filled.length)
-    var tryonItemSlots = filled.concat(Array(Math.max(0, minLen - filled.length)).fill(''))
+    var result = tryonItemSlotsSync.removeTryonItemAt(slots, Number(idx))
+    var tryonItemSlots = tryonItemSlotsSync.setTryonItemSlotsToApp(result.slots)
+    var tryonItems = tryonItemSlotsSync.getFilledItems(tryonItemSlots)
     const appRm = getApp()
-    appRm.globalData.tryonItemSlots = tryonItemSlots
-    const removedSrc = slots[idx]
-    if (removedSrc) {
-      appRm.globalData.tryonInitialOutfit = removeSrcFromOutfit(appRm.globalData.tryonInitialOutfit, removedSrc)
+    if (result.removedSrc) {
+      appRm.globalData.tryonInitialOutfit = removeSrcFromOutfit(appRm.globalData.tryonInitialOutfit, result.removedSrc)
     }
-    this.setData({ tryonItemSlots, tryonItems: filled, selectedTryonSlotIndex: -1 })
+    this.setData({ tryonItemSlots, tryonItems, selectedTryonSlotIndex: -1 })
   },
 
   onDeleteSubCategoryItem(e) {
@@ -644,15 +618,10 @@ Page({
     var tryonItemSlots = this.data.tryonItemSlots || []
     var tryonItems = this.data.tryonItems || []
     if (deletedSrc) {
-      const idx = tryonItemSlots.indexOf(deletedSrc)
-      if (idx >= 0) {
-        const newSlots = tryonItemSlots.slice()
-        newSlots[idx] = ''
-        const filled = newSlots.filter(function (s) { return s })
-        const minLen = Math.max(9, filled.length)
-        tryonItemSlots = filled.concat(Array(Math.max(0, minLen - filled.length)).fill(''))
-        tryonItems = filled
-        app.globalData.tryonItemSlots = tryonItemSlots
+      var removeResult = tryonItemSlotsSync.removeTryonItemBySrc(tryonItemSlots, deletedSrc)
+      if (removeResult.removed) {
+        tryonItemSlots = tryonItemSlotsSync.setTryonItemSlotsToApp(removeResult.slots, app)
+        tryonItems = tryonItemSlotsSync.getFilledItems(tryonItemSlots)
       }
     }
     if (deletedSrc) {
@@ -673,19 +642,13 @@ Page({
     }
     this.setData({ selectedSubCategoryItem: { subId, itemIndex: parseInt(itemIndex, 10) } })
     const slots = this.data.tryonItemSlots || []
-    const idx = slots.findIndex(function (s) { return !s })
-    var newSlots = slots.slice()
-    if (idx >= 0) {
-      newSlots[idx] = src
-    } else {
-      newSlots.push(src)
-    }
-    const tryonItems = newSlots.filter(function (s) { return s })
+    const newSlots = tryonItemSlotsSync.addTryonItemSrc(slots, src)
+    const tryonItemSlots = tryonItemSlotsSync.setTryonItemSlotsToApp(newSlots)
+    const tryonItems = tryonItemSlotsSync.getFilledItems(tryonItemSlots)
     const appPick = getApp()
-    appPick.globalData.tryonItemSlots = newSlots
     const prevOutfit = appPick.globalData.tryonInitialOutfit || emptyOutfit()
     appPick.globalData.tryonInitialOutfit = applyTabPickToOutfit(prevOutfit, this.data.activeTab, src)
-    this.setData({ tryonItemSlots: newSlots, tryonItems })
+    this.setData({ tryonItemSlots, tryonItems })
   },
 
   onDeleteSubCategoryRow(e) {

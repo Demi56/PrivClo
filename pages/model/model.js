@@ -5,6 +5,7 @@ const homeWeather = require('../../utils/homeWeather.js')
 const colorPicker = require('../../utils/colorPicker.js')
 const wardrobeDisplay = require('../../utils/wardrobeDisplay.js')
 const tryonFavorite = require('../../utils/tryonFavorite.js')
+const tryonItemSlotsSync = require('../../utils/tryonItemSlotsSync.js')
 const { removeSrcFromOutfit } = require('../../utils/tryonOutfitHelpers.js')
 const { MAIN_DIARY, MAIN_WARDROBE, MAIN_MINE, reLaunchMain } = require('../../utils/mainTabs.js')
 const locationAuth = require('../../utils/locationAuth.js')
@@ -44,7 +45,7 @@ const DEFAULT_ROLE_BODY = {
   male: { height: '175', weight: '68', bustWaistHip: '95 / 80 / 98' }
 }
 
-const HOME_TRYON_VISIBLE_SLOTS = 6
+const HOME_TRYON_VISIBLE_SLOTS = tryonItemSlotsSync.DEFAULT_MIN_SLOTS
 const HOME_TRYON_PANEL_STORAGE_KEY = 'privclo_home_tryon_panel_collapsed'
 const SOLID_BG_STORAGE_KEY = 'privclo_solid_bg_color'
 const DEFAULT_SOLID_BG_COLOR = '#EFF6FC'
@@ -269,17 +270,8 @@ Page({
   },
 
   syncTryonItemSlotsFromApp() {
-    const app = getApp()
-    let slots = app.globalData.tryonItemSlots
-    if (!slots || !Array.isArray(slots)) {
-      slots = Array(HOME_TRYON_VISIBLE_SLOTS).fill('')
-      app.globalData.tryonItemSlots = slots
-    }
-    const padded = slots.slice()
-    while (padded.length < HOME_TRYON_VISIBLE_SLOTS) {
-      padded.push('')
-    }
-    this.setData({ tryonItemSlots: padded })
+    const tryonItemSlots = tryonItemSlotsSync.getTryonItemSlotsFromApp()
+    this.setData({ tryonItemSlots })
   },
 
   onHomeSlotTap(e) {
@@ -295,16 +287,11 @@ Page({
     const idx = e.currentTarget.dataset.index
     if (idx === undefined) return
     const slots = this.data.tryonItemSlots || []
-    const newSlots = slots.slice()
-    newSlots[idx] = ''
-    const filled = newSlots.filter(function (s) { return s })
-    const minLen = Math.max(HOME_TRYON_VISIBLE_SLOTS, filled.length)
-    const tryonItemSlots = filled.concat(Array(Math.max(0, minLen - filled.length)).fill(''))
+    const result = tryonItemSlotsSync.removeTryonItemAt(slots, Number(idx))
+    const tryonItemSlots = tryonItemSlotsSync.setTryonItemSlotsToApp(result.slots)
     const app = getApp()
-    app.globalData.tryonItemSlots = tryonItemSlots
-    const removedSrc = slots[idx]
-    if (removedSrc) {
-      app.globalData.tryonInitialOutfit = removeSrcFromOutfit(app.globalData.tryonInitialOutfit, removedSrc)
+    if (result.removedSrc) {
+      app.globalData.tryonInitialOutfit = removeSrcFromOutfit(app.globalData.tryonInitialOutfit, result.removedSrc)
     }
     this.setData({ tryonItemSlots, selectedTryonSlotIndex: -1 })
   },
@@ -376,7 +363,7 @@ Page({
       return
     }
     const app = getApp()
-    if (slots.length) app.globalData.tryonItemSlots = slots.slice()
+    if (slots.length) tryonItemSlotsSync.setTryonItemSlotsToApp(slots)
     tryonFavorite.saveHomeFavoriteOutfitId(outfit.id)
     this.setData({
       showFavoriteTagPopup: false,

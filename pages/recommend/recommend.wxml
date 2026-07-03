@@ -34,7 +34,6 @@
         copywriting="{{copywriting}}"
         weather="{{weather}}"
       />
-      <button class="btn-tryon" bindtap="onTryRecommend">去试穿</button>
     </view>
 
     <view wx:else class="empty-hint">

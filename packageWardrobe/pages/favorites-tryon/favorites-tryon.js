@@ -489,23 +489,7 @@ Page({
   onTryOn() {
     const app = getApp()
     if (app.incrementStyledCount) app.incrementStyledCount()
-    const g = this.data.gender || 'female'
-    const slots = (this.data.tryonItemSlots || []).slice()
-    app.globalData.tryonItemSlots = slots.length ? slots.slice() : (app.globalData.favoritesTryonItemSlots || []).slice()
-    app.globalData.favoritesTryonItemSlots = app.globalData.tryonItemSlots
-    app.globalData.tryonLaunchContext = {
-      activeTab: 'tops',
-      categoryId: 'tops',
-      prefitMode: this.data.prefitMode || 'official',
-      categoryTabs: []
-    }
-    wx.navigateTo({
-      url: '/pages/tryon/tryon?gender=' + encodeURIComponent(g),
-      fail: function (err) {
-        console.error('favorites tryon navigateTo fail', err)
-        wx.showToast({ title: '无法打开试穿页', icon: 'none' })
-      }
-    })
+    wx.showToast({ title: '试穿功能开发中', icon: 'none' })
   },
 
   onSlotTap(e) {

@@ -42,15 +42,16 @@ App({
   },
   globalData: {
     homeWeather: null,     // 首页定位城市与天气，与天气日历本月统计同步
-    tryonItemSlots: null,  // 单品格数据，用于衣橱内页与分类详情页同步
+    tryonItemSlots: null,  // 首页与衣橱实时试穿区共用的单品格
+    tryonItemSlotsRevision: 0,
     modelDisplaySrc: null, // 首页模特展示图，用于实时试穿区左侧同步
     modelGender: 'female', // 首页模特角色性别，与 modelDisplaySrc 保持一致
     subCategoryOrder: {},  // 各分类的子分类卡片排序 { tops: ['id1','id2',...], bottoms: [...], ... }
     userWardrobeItems: {},  // 用户录入的单品 { 'tops:sweater': [{ src: '...' }], ... }
     isGuestMode: false,    // 未登录时为 true，我的页显示「演示账号」
     favoritesTryonItemSlots: null,  // 收藏区试穿页单品格，与分类详情页 tryonItemSlots 独立
-    tryonInitialOutfit: null, // 进入 pages/tryon/tryon 时的初始槽位数据 { inner, top, bottom, shoes, suit }
-    tryonLaunchContext: null // 从分类详情进入试穿全屏时携带的 activeTab / prefitMode / categoryTabs
+    tryonInitialOutfit: null, // 试穿槽位缓存（全屏试穿页暂下线）
+    tryonLaunchContext: null // 分类详情进入试穿时的上下文缓存
   },
 
   // 获取用户录入的单品（持久化）

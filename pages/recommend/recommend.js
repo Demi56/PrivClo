@@ -148,25 +148,6 @@ Page({
     this.fetchRecommend()
   },
 
-  onTryRecommend() {
-    const app = getApp()
-    app.globalData.tryonLaunchContext = {
-      activeTab: 'tops',
-      categoryId: 'tops',
-      prefitMode: 'official',
-      categoryTabs: [
-        { id: 'tops', name: '上衣' },
-        { id: 'bottoms', name: '下装' },
-        { id: 'sets', name: '套装' },
-        { id: 'inner', name: '内搭' },
-        { id: 'shoes', name: '鞋子' },
-        { id: 'accessories', name: '其他配饰' }
-      ]
-    }
-    const g = encodeURIComponent(this._effectiveGender())
-    wx.navigateTo({ url: '/pages/tryon/tryon?gender=' + g })
-  },
-
   onBack() {
     wx.navigateBack({ fail: () => wx.switchTab({ url: '/pages/model/model' }) })
   }
