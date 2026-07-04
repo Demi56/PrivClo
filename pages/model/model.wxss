@@ -671,7 +671,7 @@
 .model-wrap-2d {
   top: 50%;
   height: 1440rpx;
-  transform: translate(-50%, calc(-50% + 110rpx));
+  transform: translate(-50%, calc(-50% + 210rpx));
 }
 
 .model-wrap-3d {

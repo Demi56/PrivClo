@@ -95,7 +95,7 @@ Page({
     modelCameraZoom: CAMERA_ZOOM_DEFAULT,
     homeModelOffsetXRpx: -230,
     /** v2 人模：相对 shell 垂直中心的微调（原 710 会把头顶裁出容器） */
-    homeModelOffsetYRpx: 790,
+    homeModelOffsetYRpx: 890,
     homeModelSceneOffsetX: 0,
     homeModelWrapStyle: '',
     homeXrShellStyle: '',
