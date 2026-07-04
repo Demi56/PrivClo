@@ -4,6 +4,7 @@ const {
   refreshActiveThemeImage
 } = require('../../utils/wardrobeTheme.js')
 const { resolveWardrobeThemeTempUrl } = require('../../utils/pointsStoreImage.js')
+const { getSystemMetrics } = require('../../utils/systemInfo.js')
 
 // 衣橱页面 - 我的衣橱
 Page({
@@ -51,7 +52,7 @@ Page({
 
   onLoad(options) {
     try {
-      const sys = wx.getSystemInfoSync()
+      const sys = getSystemMetrics()
       this.setData({ statusBarHeight: sys.statusBarHeight || 20 })
     } catch (e) {
       this.setData({ statusBarHeight: 20 })

@@ -9,7 +9,7 @@ const {
   resolveClassification,
   getMattingOptions,
   shouldUseDualEngine
-} = require('../../../utils/wardrobeTaxonomy.js')
+} = require('../../utils/wardrobeTaxonomy.js')
 const { getSystemMetrics } = require('../../../utils/systemInfo.js')
 const { safeNavigateBack } = require('../../../utils/safeNavigate.js')
 

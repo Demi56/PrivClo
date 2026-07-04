@@ -1,7 +1,0 @@
-<xr-scene id="xr-scene">
-  <xr-asset-load asset-id="avatar" src="{{modelSrc}}" type="gltf" options="ignoreError: -1" />
-  <xr-node node-id="model-root" position="0 0 0" scale="1 1 1">
-    <xr-gltf model="avatar" />
-  </xr-node>
-  <xr-camera position="0 1.2 2.5" target="0 1 0" />
-</xr-scene>

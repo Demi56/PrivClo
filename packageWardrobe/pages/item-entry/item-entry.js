@@ -103,10 +103,10 @@ Page({
       const sys = wx.getSystemInfoSync()
       this.setData({
         statusBarHeight: sys.statusBarHeight || 20,
-        spriteUrl: getImageUrl('/images/sprite.png')
+        spriteUrl: getImageUrl('/images/sprite.webp')
       })
     } catch (e) {
-      this.setData({ statusBarHeight: 20, spriteUrl: getImageUrl('/images/sprite.png') })
+      this.setData({ statusBarHeight: 20, spriteUrl: getImageUrl('/images/sprite.webp') })
     }
     this._refreshCategoryTabs()
   },

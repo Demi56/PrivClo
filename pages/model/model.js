@@ -6,13 +6,19 @@ const colorPicker = require('../../utils/colorPicker.js')
 const wardrobeDisplay = require('../../utils/wardrobeDisplay.js')
 const tryonFavorite = require('../../utils/tryonFavorite.js')
 const tryonItemSlotsSync = require('../../utils/tryonItemSlotsSync.js')
-const { removeSrcFromOutfit } = require('../../utils/tryonOutfitHelpers.js')
+const { removeSrcFromOutfit, emptyOutfit, resolveHomeTryonFromApp } = require('../../utils/tryonOutfitHelpers.js')
+const {
+  CAMERA_DISTANCE,
+  CAMERA_ZOOM_DEFAULT,
+  clampCameraZoom
+} = require('../../utils/avatarFrame.js')
 const { MAIN_DIARY, MAIN_WARDROBE, MAIN_MINE, reLaunchMain } = require('../../utils/mainTabs.js')
 const locationAuth = require('../../utils/locationAuth.js')
 const qweatherIcon = require('../../utils/qweatherIcon.js')
 const chineseCities = require('../../utils/chineseCities.js')
 const { getSpriteImageUrl, getSpriteCdnUrl } = require('../../utils/spriteImage.js')
 const { textToWeatherEffect } = require('../../utils/weatherEffect.js')
+const { getSystemMetrics } = require('../../utils/systemInfo.js')
 
 // 3D 模特全身穿搭展示页面
 // 温度区间 -> 穿搭类型（对应上衣、下衣、鞋子的整体搭配）
@@ -46,6 +52,19 @@ const DEFAULT_ROLE_BODY = {
 }
 
 const HOME_TRYON_VISIBLE_SLOTS = tryonItemSlotsSync.DEFAULT_MIN_SLOTS
+
+/** 首页 3D 画布尺寸（rpx）；增高后容器顶端更贴近天气胶囊 */
+const HOME_XR_CANVAS_WIDTH_RPX = 1040
+const HOME_XR_CANVAS_HEIGHT_RPX = 1920
+/** model-xr-shell 向上延伸量，与画布高度匹配 */
+const HOME_XR_SHELL_TOP_RPX = 780
+
+function getTouchDistance(touches) {
+  if (!touches || touches.length < 2) return 0
+  var dx = touches[1].clientX - touches[0].clientX
+  var dy = touches[1].clientY - touches[0].clientY
+  return Math.sqrt(dx * dx + dy * dy)
+}
 const HOME_TRYON_PANEL_STORAGE_KEY = 'privclo_home_tryon_panel_collapsed'
 const SOLID_BG_STORAGE_KEY = 'privclo_solid_bg_color'
 const DEFAULT_SOLID_BG_COLOR = '#EFF6FC'
@@ -67,7 +86,25 @@ Page({
     statusBarHeight: 20,
     headerTop: 32,
     gender: 'female',
-    use3D: false,
+    use3D: true,
+    use3DFallback: false,
+    homeTryonOutfit: emptyOutfit(),
+    homeTryonTopSrc: '',
+    homeXrReady: false,
+    modelRotateY: 0,
+    modelCameraZoom: CAMERA_ZOOM_DEFAULT,
+    homeModelOffsetXRpx: -230,
+    /** v2 人模：相对 shell 垂直中心的微调（原 710 会把头顶裁出容器） */
+    homeModelOffsetYRpx: 790,
+    homeModelSceneOffsetX: 0,
+    homeModelWrapStyle: '',
+    homeXrShellStyle: '',
+    xrCanvasReady: false,
+    xrCanvasWidth: 0,
+    xrCanvasHeight: 0,
+    xrRenderWidth: 0,
+    xrRenderHeight: 0,
+    xrViewportScale: 1,
     city: '深圳',
     temp: '22',
     weather: '晴',
@@ -136,19 +173,73 @@ Page({
     return 'modelProfile_' + (this.data.gender || 'female')
   },
 
+  updateHomeXrLayout() {
+    if (!this.data.use3D || this.data.use3DFallback) return
+    try {
+      var sys = getSystemMetrics()
+      var w = sys.windowWidth || 375
+      var dpr = sys.pixelRatio || 2
+      var rpx2px = w / 750
+      var canvasW = Math.round(w * HOME_XR_CANVAS_WIDTH_RPX / 750)
+      var canvasH = Math.round(w * HOME_XR_CANVAS_HEIGHT_RPX / 750)
+      var refW = canvasW
+      var aspect = HOME_XR_CANVAS_WIDTH_RPX / HOME_XR_CANVAS_HEIGHT_RPX
+      var frustumH = 2 * CAMERA_DISTANCE * Math.tan(Math.PI / 6)
+      var frustumW = frustumH * aspect
+      var xRpx = this.data.homeModelOffsetXRpx || 0
+      var yRpx = this.data.homeModelOffsetYRpx || 0
+      var xPx = Math.round(xRpx * rpx2px)
+      var yPx = Math.round(yRpx * rpx2px)
+      var sceneOffsetX = (xRpx * rpx2px / refW) * frustumW
+      var wrapStyle = 'left:50%;top:50%;margin-left:' + xPx + 'px;transform:translate(-50%,calc(-50% + ' + yPx + 'px));'
+      var shellStyle = 'top:-' + HOME_XR_SHELL_TOP_RPX + 'rpx;bottom:100rpx;'
+      var resolved = resolveHomeTryonFromApp(getApp())
+      var patch = {
+        xrCanvasWidth: canvasW,
+        xrCanvasHeight: canvasH,
+        xrRenderWidth: Math.round(canvasW * dpr),
+        xrRenderHeight: Math.round(canvasH * dpr),
+        xrViewportScale: 1,
+        homeModelSceneOffsetX: sceneOffsetX,
+        homeModelWrapStyle: wrapStyle,
+        homeXrShellStyle: shellStyle,
+        homeTryonOutfit: resolved.outfit,
+        homeTryonTopSrc: resolved.topSrc,
+        xrCanvasReady: true
+      }
+      if (
+        patch.xrCanvasWidth === this.data.xrCanvasWidth &&
+        patch.xrCanvasHeight === this.data.xrCanvasHeight &&
+        patch.homeModelSceneOffsetX === this.data.homeModelSceneOffsetX &&
+        patch.homeModelWrapStyle === this.data.homeModelWrapStyle &&
+        patch.homeXrShellStyle === this.data.homeXrShellStyle &&
+        patch.homeTryonTopSrc === (this.data.homeTryonTopSrc || '') &&
+        this.data.xrCanvasReady
+      ) {
+        return
+      }
+      this.setData(patch)
+    } catch (e) {
+      console.warn('[model] updateHomeXrLayout failed', e)
+    }
+  },
+
   onLoad(options) {
     if (!qweatherIcon.isSafeWeatherIconUrl(this.data.weatherIconUrl)) {
       this.setData({ weatherIconUrl: qweatherIcon.getQWeatherIconFallbackUrl() })
     }
     try {
-      const sys = wx.getSystemInfoSync()
+      const sys = getSystemMetrics()
       const bar = sys.statusBarHeight || 20
       this.setData({
         statusBarHeight: bar,
         headerTop: bar + 12
       })
     } catch (e) {
-      this.setData({ statusBarHeight: 20, headerTop: 32 })
+      this.setData({
+        statusBarHeight: 20,
+        headerTop: 32
+      })
     }
     const app = getApp()
     const savedGender = app.getUserGender()
@@ -178,7 +269,84 @@ Page({
   },
 
   onReady() {
-    this.measureHomeTryonPanel()
+    var self = this
+    wx.nextTick(function () {
+      self.measureHomeTryonPanel()
+      self.updateHomeXrLayout()
+    })
+  },
+
+  syncHomeTryonOutfitFromApp() {
+    if (!this.data.use3D || this.data.use3DFallback) return
+    const resolved = resolveHomeTryonFromApp(getApp())
+    this.setData({
+      homeTryonOutfit: resolved.outfit,
+      homeTryonTopSrc: resolved.topSrc
+    })
+  },
+
+  onHomeTryonXrReady() {
+    this.setData({ homeXrReady: true })
+    this.syncHomeTryonOutfitFromApp()
+  },
+
+  onHomeTryonXrError(e) {
+    var detail = (e && e.detail) || {}
+    console.warn('[model] home 3D tryon failed, fallback to 2D', detail)
+    this.setData({ use3DFallback: true, homeXrReady: false })
+
+    if (detail.reason === 'missing_shell_top') {
+      wx.showModal({
+        title: '3D 模型缺少 shell_top',
+        content: '请确认 avatar-test.glb 内包含名为 shell_top 的网格，并与 body 在同一文件中导出。',
+        showCancel: false,
+        confirmText: '知道了'
+      })
+      return
+    }
+
+    if (detail.reason === 'missing_companion_files' && detail.missing && detail.missing.length) {
+      var list = detail.missing.join('\n')
+      wx.showModal({
+        title: '3D 模型资源不完整',
+        content: '当前 GLB 使用了 toolkit 压缩纹理，还需上传：\n' + list + '\n\n与 avatar-female.glb 放在同一云存储 models/ 目录。也可在 toolkit 中关闭「压缩纹理」后重新导出为单文件 GLB。',
+        showCancel: false,
+        confirmText: '知道了'
+      })
+      return
+    }
+
+    if (detail.reason === 'domain_not_allowed') {
+      wx.showModal({
+        title: '3D 资源域名未配置',
+        content: '当前已优先走云存储下载模型；若仍出现此提示，请在微信公众平台 → 开发管理 → 开发设置 → 服务器域名中，将 tcb.qcloud.la 加入 downloadFile 合法域名后重试。',
+        showCancel: false,
+        confirmText: '知道了'
+      })
+      return
+    }
+
+    if (detail.reason === 'cloud_download_failed') {
+      wx.showModal({
+        title: '3D 模型下载失败',
+        content: (detail.hint || '请确认云存储 models/avatar-test.glb 已上传，并在 app.js 中正确 init 云开发环境。') + (detail.detail ? '\n\n' + detail.detail : ''),
+        showCancel: false,
+        confirmText: '知道了'
+      })
+      return
+    }
+
+    if (detail.reason === 'invalid_glb') {
+      wx.showModal({
+        title: '3D 模型文件无效',
+        content: '云存储中的 avatar-test.glb 可能未上传完整或已损坏，请重新导出并上传后再试。',
+        showCancel: false,
+        confirmText: '知道了'
+      })
+      return
+    }
+
+    wx.showToast({ title: '3D 加载失败，已切换 2D', icon: 'none', duration: 2500 })
   },
 
   refreshWardrobeHandleImage() {
@@ -213,7 +381,7 @@ Page({
         const handleW = handleRect && handleRect.width ? handleRect.width : 18
         const hidePx = Math.max(0, panelRect.width - handleW)
         self._homeTryonPanelHidePx = hidePx
-        if (self.data.homeTryonPanelCollapsed) {
+        if (self.data.homeTryonPanelCollapsed && self.data.homeTryonPanelTranslateX !== hidePx) {
           self.setData({ homeTryonPanelTranslateX: hidePx })
         }
       })
@@ -271,7 +439,13 @@ Page({
 
   syncTryonItemSlotsFromApp() {
     const tryonItemSlots = tryonItemSlotsSync.getTryonItemSlotsFromApp()
-    this.setData({ tryonItemSlots })
+    const patch = { tryonItemSlots }
+    if (this.data.use3D && !this.data.use3DFallback) {
+      const resolved = resolveHomeTryonFromApp(getApp())
+      patch.homeTryonOutfit = resolved.outfit
+      patch.homeTryonTopSrc = resolved.topSrc
+    }
+    this.setData(patch)
   },
 
   onHomeSlotTap(e) {
@@ -293,7 +467,13 @@ Page({
     if (result.removedSrc) {
       app.globalData.tryonInitialOutfit = removeSrcFromOutfit(app.globalData.tryonInitialOutfit, result.removedSrc)
     }
-    this.setData({ tryonItemSlots, selectedTryonSlotIndex: -1 })
+    const patch = { tryonItemSlots, selectedTryonSlotIndex: -1 }
+    if (this.data.use3D && !this.data.use3DFallback) {
+      const resolved = resolveHomeTryonFromApp(app)
+      patch.homeTryonOutfit = resolved.outfit
+      patch.homeTryonTopSrc = resolved.topSrc
+    }
+    this.setData(patch)
   },
 
   onHomeTryonFavorite() {
@@ -607,6 +787,7 @@ Page({
     this.syncTryonItemSlotsFromApp()
     this.refreshWardrobeHandleImage()
     this.restoreHomeTryonFavoriteState()
+    this.updateHomeXrLayout()
   },
 
   onModelImgError() {
@@ -705,9 +886,62 @@ Page({
     })
   },
 
-  onModelTouchStart() {},
-  onModelTouchMove() {},
-  onModelTouchEnd() {},
+  onModelRotateStart(e) {
+    if (!this.data.use3D || this.data.use3DFallback || !this.data.homeXrReady) return
+    var touches = e.touches
+    if (!touches || !touches.length) return
+    if (touches.length >= 2) {
+      this._pinchStartDist = getTouchDistance(touches)
+      this._pinchBaseZoom = this.data.modelCameraZoom || CAMERA_ZOOM_DEFAULT
+      this._modelRotateStartX = null
+      return
+    }
+    this._pinchStartDist = null
+    this._modelRotateStartX = touches[0].clientX
+    this._modelRotateBaseY = this.data.modelRotateY || 0
+  },
+
+  onModelRotateMove(e) {
+    var touches = e.touches
+    if (!touches || !touches.length) return
+    if (touches.length >= 2) {
+      if (!this._pinchStartDist) {
+        this._pinchStartDist = getTouchDistance(touches)
+        this._pinchBaseZoom = this.data.modelCameraZoom || CAMERA_ZOOM_DEFAULT
+        this._modelRotateStartX = null
+      }
+      var dist = getTouchDistance(touches)
+      if (!this._pinchStartDist) return
+      var scale = dist / this._pinchStartDist
+      var zoom = clampCameraZoom((this._pinchBaseZoom || CAMERA_ZOOM_DEFAULT) * scale)
+      if (zoom !== this.data.modelCameraZoom) {
+        this.setData({ modelCameraZoom: zoom })
+      }
+      return
+    }
+    if (this._pinchStartDist != null) return
+    if (this._modelRotateStartX == null) return
+    var deltaX = touches[0].clientX - this._modelRotateStartX
+    this.setData({ modelRotateY: this._modelRotateBaseY + deltaX * 0.8 })
+  },
+
+  onModelRotateEnd(e) {
+    var touches = e.touches
+    if (touches && touches.length >= 2) {
+      this._pinchStartDist = getTouchDistance(touches)
+      this._pinchBaseZoom = this.data.modelCameraZoom || CAMERA_ZOOM_DEFAULT
+      this._modelRotateStartX = null
+      return
+    }
+    if (touches && touches.length === 1) {
+      this._pinchStartDist = null
+      this._modelRotateStartX = touches[0].clientX
+      this._modelRotateBaseY = this.data.modelRotateY || 0
+      return
+    }
+    this._modelRotateStartX = null
+    this._pinchStartDist = null
+  },
 
   onAdd() {
     const gender = this.data.gender || 'female'
@@ -909,7 +1143,7 @@ Page({
         if (!ctx) return
         let dpr = 2
         try {
-          dpr = wx.getSystemInfoSync().pixelRatio || 2
+          dpr = getSystemMetrics().pixelRatio || 2
         } catch (e) {}
         const width = res[0].width || this.data.svCanvasWidth
         const height = res[0].height || this.data.svCanvasHeight

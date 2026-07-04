@@ -84,19 +84,19 @@ Page({
     if (this._memoirFallbackOutfit) return
     this._memoirFallbackOutfit = true
     // 子包实拍图 CDN/本地缺失时，用主包精灵图占位，避免白块
-    this.setData({ outfitImgSrc: getImageUrl('/images/sprite.png') })
+    this.setData({ outfitImgSrc: getImageUrl('/images/sprite.webp') })
   },
 
   onHeaderIllusError() {
     if (this._memoirFallbackHeader) return
     this._memoirFallbackHeader = true
-    this.setData({ headerIllusSrc: getImageUrl('/images/sprite.png') })
+    this.setData({ headerIllusSrc: getImageUrl('/images/sprite.webp') })
   },
 
   onSpeechIllusError() {
     if (this._memoirFallbackSpeech) return
     this._memoirFallbackSpeech = true
-    this.setData({ speechIllusSrc: getImageUrl('/images/sprite.png') })
+    this.setData({ speechIllusSrc: getImageUrl('/images/sprite.webp') })
   },
 
   onShareAppMessage() {

@@ -17,6 +17,7 @@ const CDN_ROOT = 'https://636c-cloud1-0g2w40mm2e9e5623-1404894323.tcb.qcloud.la/
  */
 function getImageUrl(localPath) {
   if (!localPath || typeof localPath !== 'string') return ''
+  if (localPath.startsWith('cloud://')) return localPath
   if (!USE_CDN) return localPath
   if (localPath.startsWith('http://') || localPath.startsWith('https://')) return localPath
   if (localPath.includes('packageDiary/images/diary-calendar/')) {
@@ -38,6 +39,10 @@ function getImageUrl(localPath) {
   return CDN_BASE + rel
 }
 
+/** 云存储 models/avatar-test.glb（优先，无需配置 request 合法域名） */
+const AVATAR_TEST_CLOUD_FILE_ID =
+  'cloud://cloud1-0g2w40mm2e9e5623.636c-cloud1-0g2w40mm2e9e5623-1404894323/models/avatar-test.glb'
+
 /** 3D 人模 GLB（需上传至云存储 models/ 目录，并经 xr-frame-toolkit 优化、无 Draco） */
 function getModel3dUrl(gender) {
   const g = gender === 'male' ? 'male' : 'female'
@@ -46,10 +51,19 @@ function getModel3dUrl(gender) {
   return '/models/' + file
 }
 
+/** v2 试验模型：优先 cloud://，xr-frame 经 wx.cloud.downloadFile 加载本地路径 */
+function getAvatarTestModelUrl() {
+  if (AVATAR_TEST_CLOUD_FILE_ID) return AVATAR_TEST_CLOUD_FILE_ID
+  if (USE_CDN) return CDN_ROOT + 'models/avatar-test.glb'
+  return '/models/avatar-test.glb'
+}
+
 module.exports = {
   USE_CDN,
   CDN_BASE,
   CDN_ROOT,
   getImageUrl,
-  getModel3dUrl
+  getModel3dUrl,
+  getAvatarTestModelUrl,
+  AVATAR_TEST_CLOUD_FILE_ID
 }

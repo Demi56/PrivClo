@@ -6,7 +6,8 @@ try {
 
 const { getSystemMetrics } = require('../../../utils/systemInfo.js')
 
-const { emptyOutfit, applyTabPickToOutfit, removeSrcFromOutfit } = require('../../../utils/tryonOutfitHelpers.js')
+const { emptyOutfit, applyTabPickToOutfit, removeSrcFromOutfit, commitTryonToHome, findWardrobeItemBySrc } = require('../../../utils/tryonOutfitHelpers.js')
+const { reLaunchMain, MAIN_MODEL } = require('../../../utils/mainTabs.js')
 const { getModelImagePath } = require('../../../utils/clothingPositions.js')
 const tryonFavorite = require('../../../utils/tryonFavorite.js')
 const tryonItemSlotsSync = require('../../../utils/tryonItemSlotsSync.js')
@@ -570,8 +571,22 @@ Page({
   },
 
   onTryOn() {
-    if (getApp().incrementStyledCount) getApp().incrementStyledCount()
-    wx.showToast({ title: '试穿功能开发中', icon: 'none' })
+    if (this._tryOnNavigating) return
+    const app = getApp()
+    if (app.incrementStyledCount) app.incrementStyledCount()
+    const result = commitTryonToHome(this.data.tryonItemSlots, {
+      app: app,
+      gender: this.data.gender || 'female'
+    })
+    if (!result.ok) {
+      const msg = result.reason === 'empty'
+        ? '请先选择衣物'
+        : '所选衣物暂不支持 3D 试穿'
+      wx.showToast({ title: msg, icon: 'none' })
+      return
+    }
+    this._tryOnNavigating = true
+    reLaunchMain(MAIN_MODEL, result.gender)
   },
 
   onSlotTap(e) {
@@ -647,7 +662,10 @@ Page({
     const tryonItems = tryonItemSlotsSync.getFilledItems(tryonItemSlots)
     const appPick = getApp()
     const prevOutfit = appPick.globalData.tryonInitialOutfit || emptyOutfit()
-    appPick.globalData.tryonInitialOutfit = applyTabPickToOutfit(prevOutfit, this.data.activeTab, src)
+    const sub = (this.data.subCategories || []).find(function (s) { return s.id === subId })
+    const subItem = sub && sub.items && sub.items[parseInt(itemIndex, 10)]
+    const item = findWardrobeItemBySrc(src, appPick) || subItem || src
+    appPick.globalData.tryonInitialOutfit = applyTabPickToOutfit(prevOutfit, this.data.activeTab, item)
     this.setData({ tryonItemSlots, tryonItems })
   },
 

@@ -11,7 +11,7 @@ const SPRITE_CLOUD_FILE_ID =
 const SPRITE_IMAGE_PATH = '/images/sprite.webp'
 
 /** 加载过渡页专用（与首页精灵分离） */
-const LOADING_SPRITE_IMAGE_PATH = '/images/loading-sprite.png'
+const LOADING_SPRITE_IMAGE_PATH = '/images/loading-sprite.webp'
 
 module.exports = {
   SPRITE_CLOUD_FILE_ID,

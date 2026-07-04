@@ -98,7 +98,7 @@
   </view>
 
   <!-- 主内容区：背景渐变 + 天气动画 + 模特 + 精灵 -->
-  <view class="model-area">
+  <view class="model-area {{use3D && !use3DFallback ? 'model-area-3d' : ''}}">
     <!-- 默认渐变背景：底层 -->
     <view class="model-bg model-bg-{{activeBgMode || 'default'}}" style="{{activeBgMode === 'solid' ? 'background-color:' + solidBgColor + ';' : ''}}"></view>
     <!-- 天气动画层：仅默认背景时显示 -->
@@ -168,9 +168,50 @@
         </view>
       </view>
     </view>
-    <!-- 2D 模特图片展示 -->
-    <view class="model-wrap model-wrap-fallback" bindtouchstart="onModelTouchStart" bindtouchmove="onModelTouchMove" bindtouchend="onModelTouchEnd">
-      <view class="model-placeholder avatar-{{gender || 'female'}}">
+    <!-- 中心角色：3D 试验（失败时回退 2D 图片） -->
+    <view
+      wx:if="{{use3D && !use3DFallback}}"
+      class="model-xr-shell"
+      id="homeXrShell"
+      style="{{homeXrShellStyle}}"
+    >
+      <view
+        class="model-wrap model-wrap-3d"
+        style="{{homeModelWrapStyle}}"
+        catchtouchstart="onModelRotateStart"
+        catchtouchmove="onModelRotateMove"
+        catchtouchend="onModelRotateEnd"
+        catchtouchcancel="onModelRotateEnd"
+      >
+        <view class="model-placeholder model-placeholder-3d avatar-{{gender || 'female'}}">
+          <avatar-xr
+            wx:if="{{xrCanvasReady}}"
+            class="model-3d-stage"
+            width="{{xrRenderWidth}}"
+            height="{{xrRenderHeight}}"
+            style="width:{{xrCanvasWidth}}px;height:{{xrCanvasHeight}}px;"
+            gender="{{gender}}"
+            outfit="{{homeTryonOutfit}}"
+            topSrc="{{homeTryonTopSrc}}"
+            tryonSlots="{{tryonItemSlots}}"
+            rotateY="{{modelRotateY}}"
+            cameraZoom="{{modelCameraZoom}}"
+            sceneOffsetX="{{homeModelSceneOffsetX}}"
+            transparentBg="{{true}}"
+            bind:ready="onHomeTryonXrReady"
+            bind:error="onHomeTryonXrError"
+          />
+          <view wx:if="{{!homeXrReady}}" class="model-3d-loading">
+            <text>3D 加载中…</text>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view
+      wx:else
+      class="model-wrap model-wrap-2d model-wrap-fallback"
+    >
+      <view class="model-placeholder model-placeholder-2d avatar-{{gender || 'female'}}">
         <image wx:if="{{!modelImgError}}" class="model-2d-img" src="{{modelDisplaySrc || modelOutfitSrc || modelDefaultUrl}}" mode="aspectFit" binderror="onModelImgError" />
         <view wx:else class="model-fallback">
           <view class="model-silhouette"></view>

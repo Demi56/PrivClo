@@ -6,12 +6,6 @@
   "permission": {
     "scope.userLocation": {
       "desc": "用于获取当地天气并推荐合适的穿搭"
-    },
-    "scope.camera": {
-      "desc": "用于扫描录入衣物单品"
-    },
-    "scope.album": {
-      "desc": "用于选择衣物图片进行录入"
     }
   },
   "pages": [

@@ -1,6 +1,8 @@
 const { getImageUrl } = require('../../../utils/image.js')
 const { getModelImagePath } = require('../../../utils/clothingPositions.js')
 const tryonFavorite = require('../../../utils/tryonFavorite.js')
+const { commitTryonToHome } = require('../../../utils/tryonOutfitHelpers.js')
+const { reLaunchMain, MAIN_MODEL } = require('../../../utils/mainTabs.js')
 const wardrobeNav = require('../../utils/wardrobeNav.js')
 
 // 收藏区试穿页 - 顶部实时试穿区不变，中下部为筛选栏 + 搭配卡片网格
@@ -487,9 +489,22 @@ Page({
   },
 
   onTryOn() {
+    if (this._tryOnNavigating) return
     const app = getApp()
     if (app.incrementStyledCount) app.incrementStyledCount()
-    wx.showToast({ title: '试穿功能开发中', icon: 'none' })
+    const result = commitTryonToHome(this.data.tryonItemSlots, {
+      app: app,
+      gender: this.data.gender || 'female'
+    })
+    if (!result.ok) {
+      const msg = result.reason === 'empty'
+        ? '请先选择衣物'
+        : '所选衣物暂不支持 3D 试穿'
+      wx.showToast({ title: msg, icon: 'none' })
+      return
+    }
+    this._tryOnNavigating = true
+    reLaunchMain(MAIN_MODEL, result.gender)
   },
 
   onSlotTap(e) {

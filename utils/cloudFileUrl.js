@@ -1,10 +1,23 @@
 /**
  * 将 cloud:// 或本地路径解析为 xr-frame / Canvas 可加载的 https
  */
-function resolveCloudUrl(url) {
+const { getImageUrl } = require('../config/cdn.js')
+
+function normalizeTryonImageSrc(url) {
   const u = (url && String(url).trim()) || ''
+  if (!u) return ''
+  if (u.indexOf('cloud://') === 0) return u
+  if (u.indexOf('http://') === 0 || u.indexOf('https://') === 0) return u
+  if (u.indexOf('wxfile://') === 0) return u
+  if (u.indexOf('/') === 0) return getImageUrl(u)
+  return u
+}
+
+function resolveCloudUrl(url) {
+  const u = normalizeTryonImageSrc(url)
   if (!u) return Promise.resolve('')
   if (u.indexOf('http://') === 0 || u.indexOf('https://') === 0) return Promise.resolve(u)
+  if (u.indexOf('wxfile://') === 0) return Promise.resolve(u)
   if (u.indexOf('cloud://') !== 0) return Promise.resolve(u)
   if (!wx.cloud || !wx.cloud.getTempFileURL) return Promise.resolve('')
   return wx.cloud.getTempFileURL({ fileList: [u] })
@@ -20,7 +33,7 @@ function resolveCloudUrlMap(urls) {
   const list = Array.isArray(urls) ? urls.filter(Boolean) : []
   const unique = []
   list.forEach(u => {
-    const s = String(u).trim()
+    const s = normalizeTryonImageSrc(u)
     if (s && unique.indexOf(s) < 0) unique.push(s)
   })
   const cloudIds = unique.filter(u => u.indexOf('cloud://') === 0)
@@ -41,6 +54,7 @@ function resolveCloudUrlMap(urls) {
 }
 
 module.exports = {
+  normalizeTryonImageSrc,
   resolveCloudUrl,
   resolveCloudUrlMap
 }

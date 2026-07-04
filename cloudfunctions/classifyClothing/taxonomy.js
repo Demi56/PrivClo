@@ -1,4 +1,4 @@
-/** 与 utils/wardrobeTaxonomy.js 保持同步（云函数侧副本） */
+/** 与 packageWardrobe/utils/wardrobeTaxonomy.js 保持同步（云函数侧副本） */
 const CATEGORY_TABS = [
   { id: 'tops', name: '上衣' },
   { id: 'bottoms', name: '下装' },

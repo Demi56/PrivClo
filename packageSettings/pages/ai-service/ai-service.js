@@ -70,7 +70,7 @@ Page({
       this.setData({ statusBarHeight: 20 })
     }
     const privacySprite = getImageUrl('/images/privacy-sprite.png')
-    const fallback = getImageUrl('/images/sprite.png')
+    const fallback = getImageUrl('/images/sprite.webp')
     this.setData({
       spriteUrl: privacySprite,
       spriteFallbackUrl: fallback

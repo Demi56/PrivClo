@@ -22,14 +22,14 @@ Page({
         gender,
         statusBarHeight: sys.statusBarHeight || 20,
         spriteUrl: getImageUrl('/packageWardrobe/images/resale/sprite.png'),
-        spriteFallbackUrl: getImageUrl('/images/sprite.png')
+        spriteFallbackUrl: getImageUrl('/images/sprite.webp')
       })
     } catch (e) {
       this.setData({
         gender,
         statusBarHeight: 20,
         spriteUrl: getImageUrl('/packageWardrobe/images/resale/sprite.png'),
-        spriteFallbackUrl: getImageUrl('/images/sprite.png')
+        spriteFallbackUrl: getImageUrl('/images/sprite.webp')
       })
     }
   },

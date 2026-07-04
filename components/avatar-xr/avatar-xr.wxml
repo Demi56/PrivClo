@@ -1,0 +1,59 @@
+<xr-scene
+  id="avatar-xr-scene"
+  render-system="alpha:true"
+  bind:ready="onSceneReady"
+  bind:error="onSceneError"
+>
+  <xr-assets bind:progress="onAssetsProgress" bind:loaded="onAssetsLoaded">
+    <xr-asset-load
+      wx:for="{{textureAssets}}"
+      wx:key="id"
+      asset-id="{{item.id}}"
+      src="{{item.src}}"
+      type="texture"
+    />
+    <xr-asset-load
+      wx:if="{{resolvedModelUrl}}"
+      asset-id="avatar"
+      src="{{resolvedModelUrl}}"
+      type="gltf"
+      options="ignoreError: -1"
+    />
+  </xr-assets>
+
+  <xr-node node-id="look-target" position="{{lookTarget}}" />
+
+  <xr-light type="ambient" color="1 1 1" intensity="1.2" />
+  <xr-light type="directional" rotation="35 60 0" color="1 1 1" intensity="1.8" />
+
+  <xr-node node-id="spin-root" position="{{spinPivot}}" rotation="0 {{rotateY}} 0">
+    <xr-node node-id="avatar-root" position="{{modelRootPosition}}" scale="{{modelRootScale}}">
+      <xr-gltf
+        wx:if="{{resolvedModelUrl}}"
+        id="avatar-gltf"
+        model="avatar"
+        anim-autoplay="false"
+        bind:gltf-loaded="onAvatarGltfLoaded"
+      />
+      <block wx:for="{{clothMeshes}}" wx:key="id">
+        <xr-mesh
+          geometry="plane"
+          material="standard"
+          uniforms="u_baseColorMap: {{item.texId}}"
+          position="{{item.position}}"
+          rotation="{{item.rotation}}"
+          scale="{{item.scale}}"
+          states="alphaMode: BLEND, cullOn: false, depthWrite: false, renderQueue: 3000"
+        />
+      </block>
+    </xr-node>
+  </xr-node>
+
+  <xr-camera
+    id="main-camera"
+    node-id="main-camera"
+    position="{{cameraPosition}}"
+    target="look-target"
+    clear-color="{{transparentBg ? '0 0 0 0' : '0.96 0.94 0.91 1'}}"
+  />
+</xr-scene>

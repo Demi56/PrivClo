@@ -1,6 +1,8 @@
 {
   "navigationStyle": "custom",
+  "disableScroll": true,
   "usingComponents": {
-    "chat-assistant": "/components/chat-assistant/chat-assistant"
+    "chat-assistant": "/components/chat-assistant/chat-assistant",
+    "avatar-xr": "/components/avatar-xr/avatar-xr"
   }
 }
